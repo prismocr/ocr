@@ -3,10 +3,7 @@
 struct image {
     FILE *file;
     int dimensions[2];
-    int *value;
 };
-
-FILE *fr;
 
 int file_header[2] = {66, 77};
 
@@ -39,15 +36,6 @@ int file_header[2] = {66, 77};
 
 // print hex value : %02x
 
-// TODO : remove height/width array
-
-
-int file_height[4];
-int file_width[4];
-
-int height = 0;
-int width = 0;
-
 int power16(int number) {
     if(number > 1) {
         return 16 * power16(number-1);
@@ -58,14 +46,13 @@ int power16(int number) {
     return 16;
 }
 
-int main(){
+struct image read_image(char path[]){
 
     struct image image;
-    image.file = fopen("lena.bmp", "rt");
+    image.file = fopen(path, "rt");
 
-    int c;
-    int val;
-    int index = 0;
+    int c, index = 0;
+    int height, width = 0;
 
     while (!feof(image.file)) {
         c = fgetc(image.file);
@@ -77,21 +64,14 @@ int main(){
         index++;
 
         if(index > 18 && index <= 22) {
-            file_width[(index - 3) % 4] = c;
+            width += c * power16(22 - index);
         } else if (index > 22 && index <= 26) {
-            file_height[(index - 3) % 4] = c;
+            height += c * power16(26 - index);
         }
     }
 
-    for (index = 0 ; index < 4 ; index++) {
-        width += file_width[index] * power16(3-index);
-    }
-
-    for (index = 0 ; index < 4 ; index++) {
-        height += file_width[index] * power16(3-index);
-    }
-    
-    printf("width : %d, height : %d\n", width, height);
     image.dimensions[0] = width;
     image.dimensions[1] = height;
+    
+    return image;
 }
