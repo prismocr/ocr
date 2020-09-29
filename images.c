@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "images.h"
 
-struct image {
-    size_t ndim;
-    size_t dimensions[2]; //size_t ?
-    double *values;
-};
 
 int file_header[2] = {66, 77};
 
@@ -38,14 +34,10 @@ int file_header[2] = {66, 77};
 
 // print hex value : %02x
 
-int power16(int number) {
-    if(number > 1) {
-        return 16 * power16(number-1);
-    }
-    if(number == 0){
-        return 1;
-    }
-    return 16;
+unsigned int read_bmp_qword(FILE *f) {
+    unsigned char b[4];
+    fscanf(f, "%c%c%c%c", &b[0], &b[1], &b[2], &b[3]);
+    return b[0] | b[1] << 8 | b[2] << 16 | b[3] << 24;
 }
 
 double color_to_grey(double values[3]) {
@@ -62,84 +54,60 @@ double color_to_grey_simple(double values[3]) {
     return (values[0] + values[1] + values[2]) / 3;
 }
 
-void save_image(char path[], struct image im) {
+
+
+void save_image(char path[], char path_grey[], struct image im) {
     FILE *f;
     FILE *fgrey;
     f = fopen(path, "rt");
-    fgrey = fopen("paint_grey.bmp", "w");
+    fgrey = fopen(path_grey, "w");
 
-    int c, index, grey_index, i = 0;
-    
-    while (!feof(f) && grey_index * 8 < im.dimensions[0] * im.dimensions[1] * sizeof(double) + 24) {
-        c = fgetc(f);
-        if(index < 54) {
-            fputc(c, fgrey);
-            
-        } else {
-            for (int i = 0; i < 3; i++)
-            {
-                fputc((int)im.values[grey_index], fgrey);
-            }
-            grey_index++;
-        }
-        index++;
+    int j, i = 0;
+    int count = im.dimensions[0] * im.dimensions[1];
+
+    for (int i = 0; i < 54; i++)
+    {
+        fputc(fgetc(f), fgrey);
     }
+    for (int i = 0; i < count; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            fputc((int)im.values[i], fgrey);
+        }
+    }
+
+    fclose(f);
+    fclose(fgrey);
 }
 
-struct image read_image(char path[]){
+struct image load_image_grey(char path[]) {
 
     struct image im;
     im.ndim = 2;
     FILE *f;
+
     f = fopen(path, "rt");
 
-    int c, index, grey_index = 0;
-    
-    while (!feof(f)) {
-        c = fgetc(f);
-        // Make sure this is a valid BMP file
-        if (index < 2) {
-            if(file_header[index] != c) {
-                printf("This is not a correct BMP image");
-            }
-        }
-        index++;
-        // Get and Set Dimensions
-        if(index > 18 && index <= 22) {
-
-            //im.dimensions[0] += c * power16(22 - index); // not working
-            im.dimensions[0] = 200;
-            // Example : 800 pixels * 800 pixels images will be in hex: 20 03, yet
-            // The int "c" will give 32(10) instead of 20(16).
-            // Basically, 20 * 16 + 3 * 16 * 16 = 800
-            // Or we have, 32 * 16 + 3 * 16 * 16 = 1280
-
-        } else if (index > 22 && index <= 26) {
-            
-            //im.dimensions[1] += c * power16(26 - index);
-            im.dimensions[1] = 200;
-        }
-        
-        // Color palette
-
-        // Comp
-
-
-        //values
-        if(index >= 49) { // ???
-            if (index == 49) {
-                im.values = (double *) malloc(im.dimensions[0] * im.dimensions[1] * sizeof(double));
-            }
-            im.values[grey_index] = color_to_grey((double[]){c, fgetc(f), fgetc(f)});
-            grey_index++;
-        }
+    if(fgetc(f) != 0x42 || fgetc(f) != 0x4D){
+        printf("This is no a correct BMP image");
     }
-    return im;
-}
 
-int main() {
-    struct image im = read_image("paint.bmp");
-    save_image("paint.bmp", im);
-    free(im.values);
-    return 0;
+    fseek(f, 18, SEEK_SET);
+
+    im.dimensions[0] = read_bmp_qword(f);
+    im.dimensions[1] = read_bmp_qword(f);
+
+    fseek(f, 54, SEEK_SET);
+
+    im.values = (double *) malloc(im.dimensions[0] * im.dimensions[1] * sizeof(double));
+
+    int grey_index = 0;
+
+    while (!feof(f)) {
+        im.values[grey_index] = color_to_grey((double[]){fgetc(f), fgetc(f), fgetc(f)});
+        grey_index++;
+    }
+    fclose(f);
+    return im;
 }
