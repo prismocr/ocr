@@ -49,6 +49,16 @@ int power16(int number) {
 }
 
 double color_to_grey(double values[3]) {
+    int val = ((float)(values[0])*0.07f + (float)(values[1])*0.71f + (float)(values[2])*0.21f);
+    if (val > 255) {
+        return 255;
+    } else if (val < 0) {
+        return 0;
+    }
+    return val;
+}
+
+double color_to_grey_simple(double values[3]) {
     return (values[0] + values[1] + values[2]) / 3;
 }
 
@@ -56,7 +66,7 @@ void save_image(char path[], struct image im) {
     FILE *f;
     FILE *fgrey;
     f = fopen(path, "rt");
-    fgrey = fopen("paint2_grey.bmp", "w");
+    fgrey = fopen("paint_grey.bmp", "w");
 
     int c, index, grey_index, i = 0;
     
@@ -98,7 +108,7 @@ struct image read_image(char path[]){
         if(index > 18 && index <= 22) {
 
             //im.dimensions[0] += c * power16(22 - index); // not working
-            im.dimensions[0] = 800;
+            im.dimensions[0] = 200;
             // Example : 800 pixels * 800 pixels images will be in hex: 20 03, yet
             // The int "c" will give 32(10) instead of 20(16).
             // Basically, 20 * 16 + 3 * 16 * 16 = 800
@@ -128,8 +138,8 @@ struct image read_image(char path[]){
 }
 
 int main() {
-    struct image im = read_image("paint2.bmp");
-    save_image("paint2.bmp", im);
+    struct image im = read_image("paint.bmp");
+    save_image("paint.bmp", im);
     free(im.values);
     return 0;
 }
