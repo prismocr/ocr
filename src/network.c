@@ -1,6 +1,6 @@
+#include <stdio.h>
 #include "network.h"
 #include "layer.h"
-#include <stdio.h>
 
 struct Network new_network(size_t nb_layers, size_t *sizes) {
     // instantiating network struct

@@ -1,8 +1,8 @@
 #ifndef NEURONE_H
 #define NEURONE_H
 
-//#include "array.h"
 #include <stdlib.h>
+//#include "array.h"
 
 struct Neurone {
     double *bias;

@@ -1,8 +1,8 @@
 #ifndef LAYER_H
 #define LAYER_H
 
-#include "neurone.h"
 #include <stdlib.h>
+#include "neurone.h"
 
 struct Layer {
     size_t nb_neurones;

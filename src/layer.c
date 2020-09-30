@@ -1,6 +1,6 @@
+#include <stdio.h>
 #include "layer.h"
 #include "neurone.h"
-#include <stdio.h>
 
 struct Layer new_layer(size_t nb_neurones, struct Layer *prev_layer,
                        struct Layer *next_layer) {
