@@ -13,5 +13,7 @@ struct ndarray {
 
 void ndarray_print(const ndarray *a);
 
+size_t ndarray_size(const ndarray *a);
+
 #endif // NDARRAY_H
 

@@ -38,11 +38,11 @@ unsigned int read_bmp_qword(FILE *f) {
 }
 
 float color_to_gray(float colors[3]) {
-    return colors[0] * 0.07f + colors[1] * 0.71f + colors[2]) * 0.21f;
+    return colors[0] * 0.07f + colors[1] * 0.71f + colors[2] * 0.21f;
 }
 
 float color_to_gray_simple(float colors[3]) {
-    return (values[0] + values[1] + values[2]) / 3;
+    return (colors[0] + colors[1] + colors[2]) / 3;
 }
 
 // TODO handle errors correctly
@@ -82,6 +82,17 @@ int load_bmp_image(const char *path, ndarray **im) {
     }
     fclose(f);
 
+    return 0;
+}
+
+int image_threshold(float thresh, float max_value, ndarray **image) {
+    size_t image_size = ndarray_size(*image);
+
+    for (int i = 0; i < image_size; i++) {
+        (*image)->val[i] = (*image)->val[i] < thresh ? 0 : max_value;
+    }
+
+    // TODO do something with return code
     return 0;
 }
 
