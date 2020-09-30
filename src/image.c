@@ -37,41 +37,12 @@ unsigned int read_bmp_qword(FILE *f) {
     return b[0] | b[1] << 8 | b[2] << 16 | b[3] << 24;
 }
 
-float color_to_gray(float values[3]) {
-    int val = ((float) (values[0]) * 0.07f + (float) (values[1]) * 0.71f
-               + (float) (values[2]) * 0.21f);
-    if (val > 255) {
-        return 255;
-    } else if (val < 0) {
-        return 0;
-    }
-    return val;
+float color_to_gray(float colors[3]) {
+    return colors[0] * 0.07f + colors[1] * 0.71f + colors[2]) * 0.21f;
 }
 
-float color_to_gray_simple(float values[3]) {
+float color_to_gray_simple(float colors[3]) {
     return (values[0] + values[1] + values[2]) / 3;
-}
-
-void save_image(const char *path, const char *path_grey, ndarray *im) {
-    FILE *f;
-    FILE *fgrey;
-    f = fopen(path, "rt");
-    fgrey = fopen(path_grey, "w");
-
-    int j, i = 0;
-    int count = im->dim[0] * im->dim[1];
-
-    for (i = 0; i < 54; i++) {
-        fputc(fgetc(f), fgrey);
-    }
-    for (i = 0; i < count; i++) {
-        for (j = 0; j < 3; j++) {
-            fputc((int) im->val[i], fgrey);
-        }
-    }
-
-    fclose(f);
-    fclose(fgrey);
 }
 
 // TODO handle errors correctly
@@ -104,13 +75,10 @@ int load_bmp_image(const char *path, ndarray **im) {
     fseek(f, 54, SEEK_SET);
 
     (*im)->val = (float *) malloc((*im)->dim[0] * (*im)->dim[1] * sizeof(float));
-
-    int gray_index = 0;
-
+    int pixel_index = 0;
     while (!feof(f)) {
-        (*im)->val[gray_index]
+        (*im)->val[pixel_index++]
           = color_to_gray((float[]){fgetc(f), fgetc(f), fgetc(f)});
-        gray_index++;
     }
     fclose(f);
 
