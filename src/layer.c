@@ -2,9 +2,8 @@
 #include "layer.h"
 #include "neurone.h"
 
-struct Layer new_layer(size_t nb_neurones, struct Layer *prev_layer,
-                       struct Layer *next_layer) {
-    struct Layer layer;
+Layer layer_new(size_t nb_neurones, Layer *prev_layer, Layer *next_layer) {
+    Layer layer;
 
     layer.prev_layer = prev_layer;
     layer.next_layer = next_layer;
@@ -22,17 +21,15 @@ struct Layer new_layer(size_t nb_neurones, struct Layer *prev_layer,
     return layer;
 }
 
-void free_layer(struct Layer *layer) {
-    printf("free_layer\n");
+void layer_free(Layer *layer) {
     free(layer->neurones);
     free(layer->biases);
     // free_array(layer->array);
 }
 
-void initialize_neurones(struct Layer *layer) {
-    layer->neurones
-      = (struct Neurone *) malloc(layer->nb_neurones * sizeof(struct Neurone));
+void initialize_neurones(Layer *layer) {
+    layer->neurones = (Neuron *) malloc(layer->nb_neurones * sizeof(Neuron));
     for (size_t i = 1; i < layer->nb_neurones; ++i) {
-        layer->neurones[i] = new_neurone(&(layer->biases[i]), layer, i);
+        layer->neurones[i] = neuron_new(&(layer->biases[i]), layer, i);
     }
 }

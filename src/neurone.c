@@ -2,10 +2,11 @@
 #include "neurone.h"
 #include "layer.h"
 
-struct Neurone new_neurone(double *biaise, struct Layer *layer, size_t index) {
-    struct Neurone neurone;
+typedef struct Neuron Neuron;
+Neuron neuron_new(double *bias, Layer *layer, size_t index) {
+    Neuron neurone;
 
-    neurone.bias = biaise;
+    neurone.bias = bias;
     // link weights_in
     // link weights_out
 

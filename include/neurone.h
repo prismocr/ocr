@@ -2,15 +2,15 @@
 #define NEURONE_H
 
 #include <stdlib.h>
-//#include "array.h"
 
-struct Neurone {
+typedef struct Neuron Neuron;
+struct Neuron {
     double *bias;
-    double *weights_in;
-    double *weights_out;
+    double **weights_in;
+    double **weights_out;
 };
 
-struct Layer;
-struct Neurone new_neurone(double *biais, struct Layer *layer, size_t index);
+typedef struct Layer Layer;
+Neuron neuron_new(double *biais, Layer *layer, size_t index);
 
 #endif

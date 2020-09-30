@@ -11,6 +11,6 @@ struct ndarray {
     float *val;
 };
 
-void ndarray_print(const ndarray *a);
+// void ndarray_print(const ndarray *a);
 
 #endif // NDARRAY_H

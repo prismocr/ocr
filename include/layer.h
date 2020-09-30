@@ -4,19 +4,19 @@
 #include <stdlib.h>
 #include "neurone.h"
 
+typedef struct Layer Layer;
 struct Layer {
     size_t nb_neurones;
-    struct Neurone *neurones;
+    struct Neuron *neurones;
     double *biases;
     // array weights;
 
-    struct Layer *prev_layer;
-    struct Layer *next_layer;
+    Layer *prev_layer;
+    Layer *next_layer;
 };
 
-struct Layer new_layer(size_t nb_neurones, struct Layer *prev_layer,
-                       struct Layer *next_layer);
-void initialize_neurones(struct Layer *layer);
-void free_layer(struct Layer *layer);
+Layer layer_new(size_t nb_neurones, Layer *prev_layer, Layer *next_layer);
+void initialize_neurones(Layer *layer);
+void layer_free(Layer *layer);
 
 #endif
