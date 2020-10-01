@@ -5,12 +5,12 @@
 
 typedef struct Neuron Neuron;
 struct Neuron {
+    float value;
     float *bias;
-    float **weights_in;
-    float **weights_out;
+    float *weights_in;
 };
 
 typedef struct Layer Layer;
-Neuron neuron_new(float *biais, Layer *layer, size_t index);
+Neuron neuron_new(float *bias, float *weights_in);
 
 #endif

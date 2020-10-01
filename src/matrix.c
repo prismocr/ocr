@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include "matrix.h"
 
-Matrix matrix_new(size_t w, size_t h) {
+Matrix matrix_new(size_t h, size_t w) {
     Matrix mat;
-    mat.w = w;
     mat.h = h;
+    mat.w = w;
 
     // Dynamic allocation of first dim
     mat.val = (float **) malloc(h * sizeof(float *));
@@ -18,6 +18,8 @@ Matrix matrix_new(size_t w, size_t h) {
 }
 
 void matrix_free(Matrix *mat) {
+    if (!mat->val)
+        return;
     // Freeing every line of the matrix
     for (size_t i = 0; i < mat->h; i++) {
         free(mat->val[i]);
@@ -27,6 +29,8 @@ void matrix_free(Matrix *mat) {
 }
 
 void matrix_print(Matrix mat) {
+    if (!mat.val)
+        return;
     for (size_t i = 0; i < mat.h; i++) {
         for (size_t j = 0; j < mat.w; j++) {
             printf("%f ", mat.val[i][j]);
@@ -36,6 +40,8 @@ void matrix_print(Matrix mat) {
 }
 
 void matrix_randomize(Matrix *mat) {
+    if (!mat->val)
+        return;
     for (size_t i = 0; i < mat->h; i++) {
         for (size_t j = 0; j < mat->w; j++) {
             mat->val[i][j] = 2 * ((float) rand() / RAND_MAX) - 1;
