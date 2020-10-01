@@ -8,7 +8,7 @@ typedef struct Layer Layer;
 struct Layer {
     size_t nb_neurones;
     struct Neuron *neurones;
-    double *biases;
+    float *biases;
     // array weights;
 
     Layer *prev_layer;
@@ -16,7 +16,9 @@ struct Layer {
 };
 
 Layer layer_new(size_t nb_neurones, Layer *prev_layer, Layer *next_layer);
-void initialize_neurones(Layer *layer);
 void layer_free(Layer *layer);
+
+void initialize_biases_and_weights(Layer *layer, size_t nb_neurones);
+void initialize_neurones(Layer *layer);
 
 #endif

@@ -14,9 +14,9 @@ main: ${OBJ}
 .PHONY: clean format
 
 clean:
-	@${RM} main ${OBJ} ${DEP}
+	${RM} main ${OBJ} ${DEP}
 
 format: src/*.c include/*.h
-	@clang-format --style=file -i $^
+	clang-format --style=file -i $^
 
 -include ${DEP}

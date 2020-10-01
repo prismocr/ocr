@@ -3,7 +3,7 @@
 #include "layer.h"
 
 typedef struct Neuron Neuron;
-Neuron neuron_new(double *bias, Layer *layer, size_t index) {
+Neuron neuron_new(float *bias, Layer *layer, size_t index) {
     Neuron neurone;
 
     neurone.bias = bias;
