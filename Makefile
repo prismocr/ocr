@@ -2,9 +2,14 @@ CC := gcc
 CFLAGS := -Wall -Werror -pedantic -Wpointer-arith
 LDFLAGS := -Iinclude/
 
-all:
-	$(CC) src/*.c $(CFLAGS) $(LDFLAGS)
+.PHONY: all run format
 
-format:
-	clang-format --style=file -i src/*.c
+all: src/*.c
+	$(CC) $^ $(CFLAGS) $(LDFLAGS)
+
+run: all
+	./a.out lena.bmp
+
+format: src/*.c include/*.h
+	clang-format --style=file -i $^
 

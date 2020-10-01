@@ -1,5 +1,5 @@
 #include "image.h"
-#include "ndarray.h"
+#include "matrix.h"
 #include "error.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,59 +37,35 @@ unsigned int read_bmp_qword(FILE *f) {
     return b[0] | b[1] << 8 | b[2] << 16 | b[3] << 24;
 }
 
-float color_to_gray(float values[3]) {
-    int val = ((float) (values[0]) * 0.07f + (float) (values[1]) * 0.71f
-               + (float) (values[2]) * 0.21f);
-    if (val > 255) {
-        return 255;
-    } else if (val < 0) {
-        return 0;
-    }
-    return val;
+float rgb_to_gray(unsigned char color[3]) {
+    return (color[0] * 0.07f + color[1] * 0.71f + color[2] * 0.21f) / 255;
 }
 
-float color_to_gray_simple(float values[3]) {
-    return (values[0] + values[1] + values[2]) / 3;
-}
-
-void save_image(const char *path, const char *path_grey, ndarray *im) {
-    FILE *f;
-    FILE *fgrey;
+void save_bmp_image(const char *path, Matrix *image) {
+    FILE *f, *fgray;
+    int i, j, c;
     f = fopen(path, "rt");
-    fgrey = fopen(path_grey, "w");
-
-    int j, i = 0;
-    int count = im->dim[0] * im->dim[1];
+    fgray = fopen(path_gray, "w");
 
     for (i = 0; i < 54; i++) {
-        fputc(fgetc(f), fgrey);
+        fputc(fgetc(f), fgray);
     }
-    for (i = 0; i < count; i++) {
-        for (j = 0; j < 3; j++) {
-            fputc((int) im->val[i], fgrey);
+    for (i =  0; i < image->h; i++) {
+        for (j = 0; j < image->w; i++) {
+            for (c = 0; c < 3; c++) {
+                fputc((int) image->val[i][j], fgray);
+            }
         }
     }
 
     fclose(f);
-    fclose(fgrey);
+    fclose(fgray);
 }
 
 // TODO handle errors correctly
 
-int load_bmp_image(const char *path, ndarray **im) {
+int load_bmp_image(const char *path, Matrix *image) {
     FILE *f;
-    *im = (ndarray *) malloc(sizeof(ndarray));
-    if (*im == NULL) {
-        set_last_error("Failed to allocate memory for ndarray");
-        return 1;
-    }
-
-    (*im)->ndim = 2;
-    (*im)->dim = (size_t *) malloc(2 * sizeof(size_t));
-    if ((*im)->dim == NULL) {
-        set_last_error("Failed to allocate memory for dim");
-        return 1;
-    }
 
     f = fopen(path, "rb");
     if ((fgetc(f) << 8 | fgetc(f)) != 0x424d) {
@@ -98,19 +74,15 @@ int load_bmp_image(const char *path, ndarray **im) {
     }
 
     fseek(f, 18, SEEK_SET);
-    (*im)->dim[0] = read_bmp_qword(f);
-    (*im)->dim[1] = read_bmp_qword(f);
+    *image = matrix_new(read_bmp_qword(f), read_bmp_qword(f));
+    // TODO check allocation fail
 
     fseek(f, 54, SEEK_SET);
-
-    (*im)->val = (float *) malloc((*im)->dim[0] * (*im)->dim[1] * sizeof(float));
-
-    int gray_index = 0;
-
+    int pixel = 0;
     while (!feof(f)) {
-        (*im)->val[gray_index]
-          = color_to_gray((float[]){fgetc(f), fgetc(f), fgetc(f)});
-        gray_index++;
+        image->val[pixel / image->w][pixel % image->w]
+          = rgb_to_gray((unsigned char[]){fgetc(f), fgetc(f), fgetc(f)});
+        pixel++;
     }
     fclose(f);
 
