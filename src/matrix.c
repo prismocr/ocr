@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "matrix.h"
 
-Matrix matrix_new(size_t w, size_t h) {
+Matrix matrix_new(size_t h, size_t w) {
     Matrix mat;
     mat.w = w;
     mat.h = h;
@@ -18,7 +18,9 @@ Matrix matrix_new(size_t w, size_t h) {
 }
 
 void matrix_free(Matrix *mat) {
-    // Freeing every line of the matrix
+	if(!mat) return;
+	
+	// Freeing every line of the matrix
     for (size_t i = 0; i < mat->h; i++) {
         free(mat->val[i]);
     }
@@ -26,16 +28,20 @@ void matrix_free(Matrix *mat) {
     free(mat->val);
 }
 
-void matrix_print(Matrix mat) {
-    for (size_t i = 0; i < mat.h; i++) {
-        for (size_t j = 0; j < mat.w; j++) {
-            printf("%f ", mat.val[i][j]);
+void matrix_print(Matrix *mat) {
+	if(!mat) return;
+
+    for (size_t i = 0; i < mat->h; i++) {
+        for (size_t j = 0; j < mat->w; j++) {
+            printf("%f ", mat->val[i][j]);
         }
         printf("\n");
     }
 }
 
 void matrix_randomize(Matrix *mat) {
+	if(!mat) return;
+
     for (size_t i = 0; i < mat->h; i++) {
         for (size_t j = 0; j < mat->w; j++) {
             mat->val[i][j] = 2 * ((float) rand() / RAND_MAX) - 1;

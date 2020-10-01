@@ -17,7 +17,7 @@ Matrix matrix_new(size_t w, size_t h);
 void matrix_free(Matrix *mat);
 
 // Prints a matrix
-void matrix_print(Matrix mat);
+void matrix_print(Matrix *mat);
 
 // Randomizes a matrix with floats between 0 and 1
 void matrix_randomize(Matrix *mat);
