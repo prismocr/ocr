@@ -3,13 +3,14 @@
 
 #include <stdlib.h>
 #include "neurone.h"
+#include "matrix.h"
 
 typedef struct Layer Layer;
 struct Layer {
     size_t nb_neurones;
     struct Neuron *neurones;
     float *biases;
-    // array weights;
+    Matrix weights;
 
     Layer *prev_layer;
     Layer *next_layer;

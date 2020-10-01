@@ -21,7 +21,7 @@ Layer layer_new(size_t nb_neurones, Layer *prev_layer, Layer *next_layer) {
 void layer_free(Layer *layer) {
     free(layer->neurones);
     free(layer->biases);
-    // free_array(layer->array);
+    matrix_free(&(layer->weights));
 }
 
 void initialize_biases_and_weights(Layer *layer, size_t nb_neurones) {
@@ -32,6 +32,12 @@ void initialize_biases_and_weights(Layer *layer, size_t nb_neurones) {
     }
 
     // Initializing weights
+    layer->weights.val = NULL;
+    Layer *prev_layer = layer->prev_layer;
+    if (prev_layer != NULL) {
+        layer->weights = matrix_new(nb_neurones, prev_layer->nb_neurones);
+        matrix_randomize(&(layer->weights));
+    }
     // do matrix stuff (I need to push matrix before making this part go brrr)
 }
 
