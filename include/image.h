@@ -1,10 +1,9 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include "ndarray.h"
+#include "matrix.h"
 
-// Load an image in grayscale colorspace into an ndarray
-int load_bmp_image(const char *path, ndarray **im);
+void image_threshold(float thresh, float maxval, Matrix *image);
+void image_invert_color(Matrix *image);
 
 #endif // IMAGE_H
-
