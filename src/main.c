@@ -18,5 +18,10 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+
+    image_contrast(&image, 100.f);
+
+    save_bmp_image("./test.bmp", &image);
+    printf("Saved image\n");
     return 0;
 }
