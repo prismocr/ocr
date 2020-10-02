@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    image_contrast(&image, 100.f);
+    image_contrast(&image, 180.f);
 
     save_bmp_image("./test.bmp", &image);
     printf("Saved image\n");
