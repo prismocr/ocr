@@ -149,7 +149,6 @@ int load_bmp_image(const char *path, Matrix *image) {
 
     fseek(f, 0xa, SEEK_SET);
     pixel_data_offset = read_bmp_dword(f);
-    printf("%d\n", pixel_data_offset);
 
     fseek(f, 0x12, SEEK_SET);
     w = read_bmp_dword(f);
