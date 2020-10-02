@@ -1,8 +1,8 @@
 #include "bitmap.h"
-#include "matrix.h"
 #include "error.h"
-#include <stdlib.h>
+#include "matrix.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #define BMP_HEADER_SIZE 14
 #define BITMAPINFOHEADER_SIZE 40
@@ -39,15 +39,11 @@ float rgb_to_gray(unsigned char color[3]) {
 }
 
 unsigned int read_bmp_dword(FILE *f) {
-    char b[4];
-    fread(b, 4, 1, f);
-    return b[0] | b[1] << 8 | b[2] << 16 | b[3] << 24;
+    return fgetc(f) | fgetc(f) << 8 | fgetc(f) << 16 | fgetc(f) << 24;
 }
 
 unsigned int read_bmp_word(FILE *f) {
-    char b[2];
-    fread(b, 2, 1, f);
-    return b[0] | b[1] << 8;
+    return fgetc(f) | fgetc(f) << 8;
 }
 
 void save_bmp_image(const char *path, Matrix *image) {
@@ -60,38 +56,70 @@ void save_bmp_image(const char *path, Matrix *image) {
     size_t pixel_data_size = image->h * (image->w * 3 + padding);
     size_t file_size = 54 + pixel_data_size;
 
-    char bmp_header[] =  {
-        'B', 'M',
-        file_size & 0xff, file_size >> 8 & 0xff,
-        file_size >> 16 & 0xff, file_size >> 24 & 0xff,
-        0, 0,
-        0, 0,
-        header_size & 0xff, header_size >> 8 & 0xff,
-        header_size >> 16 & 0xff, header_size >> 24 & 0xff,
+    char bmp_header[] = {
+      'B',
+      'M',
+      file_size & 0xff,
+      file_size >> 8 & 0xff,
+      file_size >> 16 & 0xff,
+      file_size >> 24 & 0xff,
+      0,
+      0,
+      0,
+      0,
+      header_size & 0xff,
+      header_size >> 8 & 0xff,
+      header_size >> 16 & 0xff,
+      header_size >> 24 & 0xff,
     };
     fwrite(bmp_header, 1, sizeof(bmp_header), f);
 
     // BITMAPINFOHEADER
     char dib_header[] = {
-        BITMAPINFOHEADER_SIZE & 0xff, BITMAPINFOHEADER_SIZE >> 8 & 0xff,
-        BITMAPINFOHEADER_SIZE >> 16 & 0xff, BITMAPINFOHEADER_SIZE >> 24 & 0xff,
-        image->w & 0xff, image->w >> 8 & 0xff,
-        image->w >> 16 & 0xff, image->w >> 24 & 0xff,
-        image->h & 0xff, image->h >> 8 & 0xff,
-        image->h >> 16 & 0xff, image->h >> 24 & 0xff,
-        1, 0,
-        24, 0,
-        0, 0, 0, 0,
-        pixel_data_size & 0xff, pixel_data_size >> 8 & 0xff,
-        pixel_data_size >> 16 & 0xff, pixel_data_size >> 24 & 0xff,
-        0x13, 0x0b, 0, 0,
-        0x13, 0x0b, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
+      BITMAPINFOHEADER_SIZE & 0xff,
+      BITMAPINFOHEADER_SIZE >> 8 & 0xff,
+      BITMAPINFOHEADER_SIZE >> 16 & 0xff,
+      BITMAPINFOHEADER_SIZE >> 24 & 0xff,
+      image->w & 0xff,
+      image->w >> 8 & 0xff,
+      image->w >> 16 & 0xff,
+      image->w >> 24 & 0xff,
+      image->h & 0xff,
+      image->h >> 8 & 0xff,
+      image->h >> 16 & 0xff,
+      image->h >> 24 & 0xff,
+      1,
+      0,
+      24,
+      0,
+      0,
+      0,
+      0,
+      0,
+      pixel_data_size & 0xff,
+      pixel_data_size >> 8 & 0xff,
+      pixel_data_size >> 16 & 0xff,
+      pixel_data_size >> 24 & 0xff,
+      0x13,
+      0x0b,
+      0,
+      0,
+      0x13,
+      0x0b,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
     };
     fwrite(dib_header, 1, sizeof(dib_header), f);
 
-    for (i = image->h-1; i >= 0 ; i--) {
+    for (i = image->h - 1; i >= 0; i--) {
         for (j = 0; j < (int) image->w; j++) {
             unsigned char gray = (unsigned char) (image->val[i][j] * 255);
             fputc(gray, f);
@@ -110,7 +138,7 @@ void save_bmp_image(const char *path, Matrix *image) {
 
 int load_bmp_image(const char *path, Matrix *image) {
     int i, j;
-    unsigned int pixel_data_offset, padding;
+    unsigned int pixel_data_offset, padding, w, h;
     FILE *f;
 
     f = fopen(path, "rb");
@@ -121,9 +149,12 @@ int load_bmp_image(const char *path, Matrix *image) {
 
     fseek(f, 0xa, SEEK_SET);
     pixel_data_offset = read_bmp_dword(f);
+    printf("%d\n", pixel_data_offset);
 
     fseek(f, 0x12, SEEK_SET);
-    *image = matrix_new(read_bmp_dword(f), read_bmp_dword(f));
+    w = read_bmp_dword(f);
+    h = read_bmp_dword(f);
+    *image = matrix_new(h, w);
     // TODO check allocation fail
     padding = (4 - (image->w * 3) % 4) % 4;
 
@@ -134,6 +165,7 @@ int load_bmp_image(const char *path, Matrix *image) {
     }
 
     fseek(f, pixel_data_offset, SEEK_SET);
+
     for (i = image->h-1; i >= 0; i--) {
         for (j = 0; j < (int) image->w; j++) {
             image->val[i][j] = rgb_to_gray(

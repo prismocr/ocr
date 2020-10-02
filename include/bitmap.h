@@ -14,4 +14,3 @@ int load_bmp_image(const char *path, Matrix *image);
 void save_bmp_image(const char *path, Matrix *image);
 
 #endif // BITMAP_H
-

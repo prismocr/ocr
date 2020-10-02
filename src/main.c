@@ -1,5 +1,5 @@
-#include "error.h"
 #include "bitmap.h"
+#include "error.h"
 #include "image.h"
 #include "matrix.h"
 #include <stdio.h>
@@ -18,11 +18,5 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    //image_threshold(0.5f, 1.0f, &image);
-    image_invert_color(&image);
-
-    save_bmp_image("out.bmp", &image);
-
     return 0;
 }
-
