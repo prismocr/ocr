@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -Wall -Werror -pedantic -Wpointer-arith
+CFLAGS := -std=c99 -Wextra -Wall -Werror -g -pedantic -Wpointer-arith
 LDFLAGS := -Iinclude/
 
 .PHONY: all run format

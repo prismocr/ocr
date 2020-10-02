@@ -1,6 +1,6 @@
+#include "matrix.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "matrix.h"
 
 Matrix matrix_new(size_t h, size_t w) {
     Matrix mat;
@@ -53,4 +53,3 @@ void matrix_randomize(Matrix *mat) {
         }
     }
 }
-
