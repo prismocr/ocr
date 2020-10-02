@@ -22,4 +22,16 @@ void matrix_print(Matrix mat);
 // Randomizes a matrix with floats between 0 and 1
 void matrix_randomize(Matrix *mat);
 
+// Convolution a matrix
+void matrix_convolution(Matrix *mat, int mode);
+
+// Create the matrix needed for the convolution
+// 0 = identity
+// 1 = sharpen
+// 2 = edge detection
+void matrix_convolution_init(Matrix *mat, int mode);
+
+// Calculate each pixel value
+void calculate_values_convolution(Matrix *mat, Matrix *convo_mat);
+
 #endif // MATRIX_H
