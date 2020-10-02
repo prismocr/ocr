@@ -1,9 +1,7 @@
 #include "bitmap.h"
-#include "debug.h"
 #include "error.h"
 #include "image.h"
 #include "matrix.h"
-#include "segmentation.h"
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
