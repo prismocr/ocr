@@ -4,8 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define try (a) if (a != 0){fprintf(stderr, "%s\n", get_last_error()); \
+// clang-format off
+#define try(a) if (a != 0){fprintf(stderr, "%s\n", get_last_error()); \
                             exit(EXIT_FAILURE); }
+// clang-format on
 
 const char *get_last_error();
 

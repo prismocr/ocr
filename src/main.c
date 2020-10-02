@@ -17,12 +17,10 @@ int main(int argc, char *argv[]) {
     try
         (bitmap_load(argv[1], &image));
 
+
+    //image_contrast(&image, 180.f);
+
     try
         (bitmap_save("out.bmp", &image));
-
-    image_contrast(&image, 180.f);
-
-    save_bmp_image("./test.bmp", &image);
-    printf("Saved image\n");
     return 0;
 }
