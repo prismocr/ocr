@@ -6,6 +6,7 @@
 void image_threshold(float thresh, float maxval, Matrix *image);
 void image_threshold_inv(float thresh, float maxval, Matrix *image);
 void image_invert_color(Matrix *image);
+void image_contrast(Matrix *image, float delta);
 
 /*
  * Crops the image and return a copy
