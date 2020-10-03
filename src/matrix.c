@@ -53,3 +53,11 @@ void matrix_randomize(Matrix *mat) {
         }
     }
 }
+
+void matrix_scale(Matrix *mat, float scalar) {
+    for(size_t i = 0; i<mat->h; i++){
+        for(size_t j = 0; j<mat->w; j++) {
+            mat->val[i][j] *= scalar;
+        }
+    }    
+}
