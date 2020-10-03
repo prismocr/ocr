@@ -22,4 +22,6 @@ void matrix_print(Matrix mat);
 // Randomizes a matrix with floats between 0 and 1
 void matrix_randomize(Matrix *mat);
 
+void matrix_scale(Matrix *mat, float scalar);
+
 #endif // MATRIX_H
