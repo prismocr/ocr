@@ -11,7 +11,7 @@ struct matrix {
 };
 
 // Creates a new matrix of width @w and height @h filled with 0
-Matrix matrix_new(size_t w, size_t h);
+Matrix matrix_new(size_t h, size_t w);
 
 // Frees dynamically allocated array inside matrix struct
 void matrix_free(Matrix *mat);
