@@ -1,3 +1,4 @@
+#include "convolution.h"
 #include "matrix.h"
 #include <stdlib.h>
 #include <stdio.h>
