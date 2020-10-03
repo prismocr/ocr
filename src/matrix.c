@@ -1,8 +1,10 @@
 #include "matrix.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 Matrix matrix_new(size_t h, size_t w) {
+    assert(h > 0 && w > 0);
     Matrix mat;
     mat.w = w;
     mat.h = h;
@@ -32,24 +34,37 @@ void matrix_free(Matrix *mat) {
 }
 
 void matrix_print(Matrix mat) {
-    if (!mat.val)
-        return;
+    assert(mat.val != NULL);
+    size_t i, j;
 
-    for (size_t i = 0; i < mat.h; i++) {
-        for (size_t j = 0; j < mat.w; j++) {
+    for (i = 0; i < mat.h; i++) {
+        for (j = 0; j < mat.w; j++) {
             printf("%f ", mat.val[i][j]);
         }
         printf("\n");
     }
 }
 
-void matrix_randomize(Matrix *mat) {
-    if (!mat->val)
-        return;
+void matrix_printf(const char *elem_fmt, Matrix mat) {
+    assert(mat.val != NULL);
+    size_t i, j;
 
-    for (size_t i = 0; i < mat->h; i++) {
-        for (size_t j = 0; j < mat->w; j++) {
-            mat->val[i][j] = 2 * ((float) rand() / RAND_MAX) - 1;
+    for (i = 0; i < mat.h; i++) {
+        for (j = 0; j < mat.w; j++) {
+            printf(elem_fmt, mat.val[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void matrix_randomize(float min, float max, Matrix *mat) {
+    assert(min < max);
+    assert(mat->val != NULL);
+    size_t i, j;
+
+    for (i = 0; i < mat->h; i++) {
+        for (j = 0; j < mat->w; j++) {
+            mat->val[i][j] = ((float) rand() / RAND_MAX) * (max - min) + min;
         }
     }
 }
