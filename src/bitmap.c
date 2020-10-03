@@ -116,9 +116,9 @@ int bitmap_load(const char *path, Matrix *image) {
 }
 
 int bitmap_save(const char *path, Matrix *image) {
-    unsigned char gray;
-    int i, j, padding;
-    size_t header_size, pixel_data_size, file_size;
+    unsigned char gray, padding;
+    int i;
+    size_t j, header_size, pixel_data_size, file_size;
     FILE *f;
     f = fopen(path, "wb");
     if (f == NULL) {
@@ -201,8 +201,8 @@ int bitmap_save(const char *path, Matrix *image) {
     }
 
     for (i = image->h - 1; i >= 0; i--) {
-        for (j = 0; j < (int) image->w; j++) {
-            gray = (unsigned char) image->val[i][j];
+        for (j = 0; j < image->w; j++) {
+            gray = image->val[i][j];
             fputc(gray, f);
             fputc(gray, f);
             fputc(gray, f);

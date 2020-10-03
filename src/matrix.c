@@ -1,7 +1,7 @@
 #include "matrix.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
 Matrix matrix_new(size_t h, size_t w) {
     assert(h > 0 && w > 0);
@@ -18,6 +18,20 @@ Matrix matrix_new(size_t h, size_t w) {
     }
 
     return mat;
+}
+
+Matrix matrix_copy(Matrix mat) {
+    assert(mat.val != NULL);
+    size_t i, j;
+    Matrix mat_copy = matrix_new(mat.h, mat.w);
+
+    for (i = 0; i < mat.h; i++) {
+        for (j = 0; j < mat.w; j++) {
+            mat_copy.val[i][j] = mat.val[i][j];
+        }
+    }
+
+    return mat_copy;
 }
 
 void matrix_free(Matrix *mat) {

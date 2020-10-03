@@ -13,6 +13,8 @@ struct matrix {
 // Creates a new matrix of width @w and height @h filled with 0
 Matrix matrix_new(size_t h, size_t w);
 
+Matrix matrix_copy(Matrix mat);
+
 // Frees dynamically allocated array inside matrix struct
 void matrix_free(Matrix *mat);
 
