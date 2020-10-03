@@ -19,7 +19,10 @@ void matrix_free(Matrix *mat);
 // Prints a matrix
 void matrix_print(Matrix mat);
 
-// Randomizes a matrix with floats between 0 and 1
-void matrix_randomize(Matrix *mat);
+// Prints each element of the matrix with the given format
+void matrix_printf(const char *elem_fmt, Matrix mat);
+
+// Fill matrix with random value between min and max
+void matrix_randomize(float min, float max, Matrix *mat);
 
 #endif // MATRIX_H
