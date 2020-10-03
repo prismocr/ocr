@@ -19,7 +19,8 @@ int main(int argc, char *argv[]) {
     }
 
 
-    image_contrast(&image, 180.f);
+    // image_contrast(&image, 180.f);
+    image_rotate(&image, 0.f);
 
     save_bmp_image("./test.bmp", &image);
     printf("Saved image\n");

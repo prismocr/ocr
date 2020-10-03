@@ -1,6 +1,8 @@
 #include "matrix.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
+#include <string.h>
 
 void image_threshold(float thresh, float maxval, Matrix *image) {
     size_t i, j;
@@ -40,3 +42,28 @@ void image_contrast(Matrix *image, float delta) {
         }
     }
 } 
+
+void image_rotate(Matrix *image, float angle) {
+    size_t i, j;
+    
+    size_t w = image->w;
+    size_t h = image->h;
+
+    float midx = w/2;
+    float midy = h/2;
+
+    Matrix dest = matrix_new(h, w);
+
+    for(j = 0; j < h; j++) {
+        for(i = 0; i < w; i++) {
+            size_t x = (i - midx) * cos(angle) + (j - midy) * sin(angle) + midx;
+            size_t y = (j - midx) * cos(angle) + (midx - i) * sin(angle) + midy;
+            
+            if(x < w && y < h) {
+                dest.val[x][y] = image->val[i][j];
+            }
+        }
+    }
+
+    *image = dest;
+}
