@@ -2,7 +2,9 @@
 #include "error.h"
 #include "image.h"
 #include "matrix.h"
+#include "convolution.h"
 #include <stdio.h>
+
 
 int main(int argc, char *argv[]) {
     int res;
@@ -18,12 +20,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    // image_contrast(&image, 180.f);
 
-    //image_contrast(&image, 180.f);
+    
 
-    matrix_convolution(&image, 0);
+    sharpen(&image);
 
     save_bmp_image("./test.bmp", &image);
     printf("Saved image\n");
+    matrix_free(&image);
     return 0;
 }

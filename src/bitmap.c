@@ -165,10 +165,10 @@ int load_bmp_image(const char *path, Matrix *image) {
 
     fseek(f, pixel_data_offset, SEEK_SET);
 
-    for (i = image->h-1; i >= 0; i--) {
+    for (i = image->h - 1; i >= 0; i--) {
         for (j = 0; j < (int) image->w; j++) {
-            image->val[i][j] = rgb_to_gray(
-                (unsigned char[]) {fgetc(f), fgetc(f), fgetc(f)});
+            image->val[i][j]
+              = rgb_to_gray((unsigned char[]){fgetc(f), fgetc(f), fgetc(f)});
         }
         fseek(f, padding, SEEK_CUR);
     }
@@ -176,4 +176,3 @@ int load_bmp_image(const char *path, Matrix *image) {
 
     return 0;
 }
-

@@ -1,6 +1,6 @@
 #include "matrix.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void image_threshold(float thresh, float maxval, Matrix *image) {
     size_t i, j;
@@ -23,8 +23,10 @@ void image_invert_color(Matrix *image) {
 }
 
 float Restrict(float value) {
-    if(value > 255) return 255;
-    if(value < 0) return 0;
+    if (value > 255)
+        return 255;
+    if (value < 0)
+        return 0;
 
     return value;
 }
@@ -39,4 +41,4 @@ void image_contrast(Matrix *image, float delta) {
             image->val[i][j] = Restrict(color) / 255.f;
         }
     }
-} 
+}
