@@ -9,6 +9,7 @@ typedef struct Layer Layer;
 struct Layer {
     size_t nb_neurons;
     struct Neuron *neurons;
+    float *values;
     float *biases;
     Matrix weights;
 
@@ -25,4 +26,6 @@ void initialize_neurons(Layer *layer);
 float *get_weights_in(Layer layer, size_t index);
 // float* get_weights_out(Layer layer, size_t index);
 
+void layer_feed(Layer *layer, float *values);
+void layer_front_pop(Layer *layer);
 #endif

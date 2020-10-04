@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "matrix.h"
 
-Matrix matrix_new(size_t h, size_t w) {
+Matrix matrix_new(size_t w, size_t h) {
     Matrix mat;
     mat.h = h;
     mat.w = w;
