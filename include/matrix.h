@@ -3,15 +3,15 @@
 
 #include <stddef.h>
 
-typedef struct Matrix Matrix;
+typedef struct matrix Matrix;
 
-struct Matrix {
+struct matrix {
     size_t h, w;
     float **val;
 };
 
 // Creates a new matrix of width @w and height @h filled with 0
-Matrix matrix_new(size_t w, size_t h);
+Matrix matrix_new(size_t h, size_t w);
 
 // Frees dynamically allocated array inside matrix struct
 void matrix_free(Matrix *mat);
@@ -19,8 +19,11 @@ void matrix_free(Matrix *mat);
 // Prints a matrix
 void matrix_print(Matrix mat);
 
-// Randomizes a matrix with floats between 0 and 1
-void matrix_randomize(Matrix *mat);
+// Prints each element of the matrix with the given format
+void matrix_printf(const char *elem_fmt, Matrix mat);
+
+// Fill matrix with random value between min and max
+void matrix_randomize(float min, float max, Matrix *mat);
 
 // Dot
 
