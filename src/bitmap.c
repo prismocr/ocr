@@ -78,7 +78,9 @@ int bitmap_load(const char *path, Matrix *image) {
     }
     w = read_dword(f);
     h = read_dword(f);
-    matrix_new(h, w, image);
+    if (matrix_new(h, w, image)) {
+        return 1;
+    }
     // TODO check allocation fail
     padding = (4 - (image->w * 3) % 4) % 4;
 

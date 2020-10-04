@@ -16,7 +16,7 @@ void feature_extraction(Matrix *image) {
     matrix_free(&kernel);
 
     kernel = structuring_element(1, 21);
-    closed = matrix_copy(*image);
+    matrix_copy(*image, &closed);
     closing(&closed, kernel);
     opening(image, kernel);
     matrix_free(&kernel);

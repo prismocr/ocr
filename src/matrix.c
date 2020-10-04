@@ -36,7 +36,9 @@ int matrix_copy(Matrix mat, Matrix *copy) {
     assert(mat.val != NULL);
     size_t i, j;
 
-    matrix_new(mat.h, mat.w, copy);
+    if (matrix_new(mat.h, mat.w, copy)) {
+        return 1;
+    }
     for (i = 0; i < mat.h; i++) {
         for (j = 0; j < mat.w; j++) {
             copy->val[i][j] = mat.val[i][j];
