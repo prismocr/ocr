@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     try
         (bitmap_load(argv[1], &image));
 
-    feature_extraction(&image);
+    segment(image);
 
     try
         (bitmap_save("out.bmp", &image));
