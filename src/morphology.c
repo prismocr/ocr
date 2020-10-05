@@ -23,7 +23,8 @@ Matrix structuring_element(size_t m, size_t n) {
 }
 
 void smooth(Matrix *image, Matrix kernel) {
-    assert(kernel.h > 0 && kernel.w > 0 && kernel.h%2 == 1 && kernel.w%2 == 1);
+    assert(kernel.h > 0 && kernel.w > 0 && kernel.h % 2 == 1
+           && kernel.w % 2 == 1);
     size_t i, j;
     Matrix smoothed;
 
@@ -58,7 +59,8 @@ float smooth_pixel(size_t y, size_t x, Matrix *image, Matrix kernel) {
 }
 
 void dilate(Matrix *image, Matrix kernel) {
-    assert(kernel.h > 0 && kernel.w > 0 && kernel.h%2 == 1 && kernel.w%2 == 1);
+    assert(kernel.h > 0 && kernel.w > 0 && kernel.h % 2 == 1
+           && kernel.w % 2 == 1);
     size_t i, j;
     Matrix dilated;
 
@@ -96,7 +98,8 @@ float dilate_pixel(size_t y, size_t x, Matrix *image, Matrix kernel) {
 }
 
 void erode(Matrix *image, Matrix kernel) {
-    assert(kernel.h > 0 && kernel.w > 0 && kernel.h%2 == 1 && kernel.w%2 == 1);
+    assert(kernel.h > 0 && kernel.w > 0 && kernel.h % 2 == 1
+           && kernel.w % 2 == 1);
     size_t i, j;
     Matrix eroded;
 
@@ -134,13 +137,15 @@ float erode_pixel(size_t y, size_t x, Matrix *image, Matrix kernel) {
 }
 
 void opening(Matrix *image, Matrix kernel) {
-    assert(kernel.h > 0 && kernel.w > 0 && kernel.h%2 == 1 && kernel.w%2 == 1);
+    assert(kernel.h > 0 && kernel.w > 0 && kernel.h % 2 == 1
+           && kernel.w % 2 == 1);
     dilate(image, kernel);
     erode(image, kernel);
 }
 
 void closing(Matrix *image, Matrix kernel) {
-    assert(kernel.h > 0 && kernel.w > 0 && kernel.h%2 == 1 && kernel.w%2 == 1);
+    assert(kernel.h > 0 && kernel.w > 0 && kernel.h % 2 == 1
+           && kernel.w % 2 == 1);
     erode(image, kernel);
     dilate(image, kernel);
 }

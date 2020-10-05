@@ -1,10 +1,10 @@
 #include "matrix.h"
 #include "error.h"
 #include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 
 int matrix_new(size_t h, size_t w, Matrix *mat) {
     assert(h > 0 && w > 0);
@@ -15,7 +15,7 @@ int matrix_new(size_t h, size_t w, Matrix *mat) {
     mat->val = (float **) malloc(h * sizeof(float *));
     if (mat->val == NULL) {
         set_last_errorf("Failed to allocated memory for matrix: %s",
-            strerror(errno));
+                        strerror(errno));
         return 1;
     }
 
@@ -24,7 +24,7 @@ int matrix_new(size_t h, size_t w, Matrix *mat) {
         mat->val[i] = (float *) calloc(w, sizeof(float));
         if (mat->val[i] == NULL) {
             set_last_errorf("Failed to allocated memory for matrix: %s",
-                strerror(errno));
+                            strerror(errno));
             return 1;
         }
     }
@@ -96,6 +96,14 @@ void matrix_randomize(float min, float max, Matrix *mat) {
     }
 }
 
+void matrix_scale(Matrix *mat, float scalar) {
+    for (size_t i = 0; i < mat->h; i++) {
+        for (size_t j = 0; j < mat->w; j++) {
+            mat->val[i][j] *= scalar;
+        }
+    }
+}
+
 float matrix_average(Matrix mat) {
     assert(mat.val != NULL);
     size_t i, j;
@@ -109,4 +117,3 @@ float matrix_average(Matrix mat) {
 
     return sum / (mat.h + mat.w);
 }
-

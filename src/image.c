@@ -58,11 +58,11 @@ void image_normalize(Matrix *image) {
     }
 }
 
-float Restrict(float value) {
-    if (value > 255)
-        return 255;
-    if (value < 0)
-        return 0;
+float clamp(float value, float min, float max) {
+    if (value <= min)
+        return min;
+    if (value >= max)
+        return max;
 
     return value;
 }
@@ -74,7 +74,7 @@ void image_contrast(Matrix *image, float delta) {
     for (i = 0; i < image->h; i++) {
         for (j = 0; j < image->w; j++) {
             float color = factor * (image->val[i][j] * 255.f - 128) + 128;
-            image->val[i][j] = Restrict(color) / 255.f;
+            image->val[i][j] = clamp(color, 0.f, 255.f) / 255.f;
         }
     }
 }
