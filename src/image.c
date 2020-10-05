@@ -23,22 +23,22 @@ void image_threshold_inv(float thresh, float maxval, Matrix *image) {
     }
 }
 
-void image_invert_color(Matrix *image) {
+void image_invert_color(float maxval, Matrix *image) {
     size_t i, j;
 
     for (i = 0; i < image->h; i++) {
         for (j = 0; j < image->w; j++) {
-            image->val[i][j] = 1 - image->val[i][j];
+            image->val[i][j] = maxval - image->val[i][j];
         }
     }
 }
 
 Matrix image_crop(size_t x, size_t y, size_t w, size_t h, Matrix image) {
-    size_t i, j;
     assert(x + w <= image.w && y + h <= image.h);
+    size_t i, j;
+    Matrix cropped_image;
 
-    Matrix cropped_image = matrix_new(h, w);
-
+    matrix_new(h, w, &cropped_image);
     for (i = 0; i < h; i++) {
         for (j = 0; j < w; j++) {
             cropped_image.val[i][j] = image.val[i + y][j + x];
@@ -58,11 +58,11 @@ void image_normalize(Matrix *image) {
     }
 }
 
-float Restrict(float value) {
-    if (value > 255)
-        return 255;
-    if (value < 0)
-        return 0;
+float clamp(float value, float min, float max) {
+    if (value <= min)
+        return min;
+    if (value >= max)
+        return max;
 
     return value;
 }
@@ -74,7 +74,7 @@ void image_contrast(Matrix *image, float delta) {
     for (i = 0; i < image->h; i++) {
         for (j = 0; j < image->w; j++) {
             float color = factor * (image->val[i][j] * 255.f - 128) + 128;
-            image->val[i][j] = Restrict(color) / 255.f;
+            image->val[i][j] = clamp(color, 0.f, 255.f) / 255.f;
         }
     }
 }
