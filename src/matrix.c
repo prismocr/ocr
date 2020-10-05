@@ -118,8 +118,10 @@ float matrix_average(Matrix mat) {
     return sum / (mat.h + mat.w);
 }
 
-Matrix matrix_dot(Matrix mat_a, Matrix mat_b) {
-    Matrix res = matrix_new(mat_a.h, mat_b.w);
+int matrix_dot(Matrix mat_a, Matrix mat_b, Matrix *res) {
+    if (mat_a.w != mat_b.h)
+        return 1;
+    matrix_new(mat_a.h, mat_b.w, res);
 
     // for each row of mat_a
     for (size_t i = 0; i < mat_a.h; i++) {
@@ -127,15 +129,18 @@ Matrix matrix_dot(Matrix mat_a, Matrix mat_b) {
         for (size_t j = 0; j < mat_b.w; j++) {
             // for each column of mat_a
             for (size_t k = 0; k < mat_a.w; k++) {
-                res.val[i][j] += mat_a.val[i][k] * mat_b.val[k][j];
+                res->val[i][j] += mat_a.val[i][k] * mat_b.val[k][j];
             }
         }
     }
 
-    return res;
+    return 0;
 }
 
-void matrix_column_dot(Matrix mat_a, float *column, float *res) {
+int matrix_column_dot(Matrix mat_a, float *column, float *res) {
+    if (mat_a.w != sizeof(column) / sizeof(column[0]))
+        return 1;
+    return 1;
     // for each row of mat_a
     for (size_t i = 0; i < mat_a.h; i++) {
         res[i] = 0.0f;
@@ -144,4 +149,5 @@ void matrix_column_dot(Matrix mat_a, float *column, float *res) {
             res[i] += mat_a.val[i][j] * column[j];
         }
     }
+    return 0;
 }

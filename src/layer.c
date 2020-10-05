@@ -24,7 +24,9 @@ Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer) {
 void layer_free(Layer *layer) {
     free(layer->neurons);
     free(layer->biases);
-    matrix_free(&(layer->weights));
+    if (layer->weights.val != NULL)
+        matrix_free(&(layer->weights));
+    free(layer->values);
 }
 
 void initialize_biases_and_weights(Layer *layer, size_t nb_neurons) {
@@ -38,7 +40,7 @@ void initialize_biases_and_weights(Layer *layer, size_t nb_neurons) {
     layer->weights.val = NULL;
     Layer *prev_layer = layer->prev_layer;
     if (prev_layer != NULL) {
-        layer->weights = matrix_new(nb_neurons, prev_layer->nb_neurons);
+        matrix_new(nb_neurons, prev_layer->nb_neurons, &(layer->weights));
         matrix_randomize(-1.0f, 1.0f, &(layer->weights));
     }
 }
@@ -62,21 +64,12 @@ void layer_feed(Layer *layer, float *values) {
     memcpy(layer->values, values, sizeof(float) * layer->nb_neurons);
 }
 
-void print_array(float *arr, size_t n) {
-    for (size_t i = 0; i < n; i++) {
-        printf("%f ", arr[i]);
-    }
-    printf("\n");
-}
-
 void layer_front_pop(Layer *layer) {
     float new_values[layer->nb_neurons];
 
     matrix_column_dot(layer->weights, layer->prev_layer->values, new_values);
 
     for (size_t i = 0; i < layer->nb_neurons; i++) {
-        /*printf("bias = %f\n", layer->biases[i]);
-        printf("pre sigmoid = %f\n", new_values[i] + layer->biases[i]);*/
         new_values[i] = sigmoid(new_values[i] + layer->biases[i]);
     }
 

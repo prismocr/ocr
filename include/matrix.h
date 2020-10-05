@@ -33,7 +33,7 @@ void matrix_scale(Matrix *mat, float scalar);
 float matrix_average(Matrix mat);
 
 // Dot
-Matrix matrix_dot(Matrix mat_a, Matrix mat_b);
-void matrix_column_dot(Matrix mat_a, float *column, float *res);
+int matrix_dot(Matrix mat_a, Matrix mat_b, Matrix *res);
+int matrix_column_dot(Matrix mat_a, float *column, float *res);
 
 #endif // MATRIX_H

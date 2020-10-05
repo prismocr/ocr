@@ -46,7 +46,6 @@ int main(int argc, char *argv[]) {
 		printf("\nfeeding 1 1\n");
 		printf("output %f\n",network_feed_forward(&network,(float[]){1.f,1.f})[0]);
 
-		//freing network
 		network_free(&network);
 	}
 	else
