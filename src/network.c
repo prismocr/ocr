@@ -49,3 +49,14 @@ float *network_feed_forward(Network *network, float *input) {
     }
     return network->output_layer->values;
 }
+
+void network_print(Network network) {
+    for (size_t i = 1; i < network.nb_layers; i++) {
+        printf("Layer %ld:\nWeights:\n", i);
+        matrix_print(network.layers[i].weights);
+        printf("Biases:\n");
+        for (size_t j = 0; j < network.layers[i].nb_neurons; j++)
+            printf("%f ", network.layers[i].biases[j]);
+        printf("\n\n");
+    }
+}

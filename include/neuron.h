@@ -13,4 +13,7 @@ struct Neuron {
 typedef struct Layer Layer;
 Neuron neuron_new(float *value, float *bias, float *weights_in);
 
+float relu(float x);
+float sigmoid(float x);
+
 #endif

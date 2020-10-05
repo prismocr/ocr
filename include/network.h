@@ -20,4 +20,5 @@ void network_free(Network *network);
 void initialize_layers(Network *network, size_t nb_layers, size_t *sizes);
 
 float *network_feed_forward(Network *network, float *input);
+void network_print(Network network);
 #endif

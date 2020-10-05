@@ -1,7 +1,7 @@
-#include "matrix.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include "matrix.h"
 
 Matrix matrix_new(size_t h, size_t w) {
     assert(h > 0 && w > 0);
@@ -65,6 +65,34 @@ void matrix_randomize(float min, float max, Matrix *mat) {
     for (i = 0; i < mat->h; i++) {
         for (j = 0; j < mat->w; j++) {
             mat->val[i][j] = ((float) rand() / RAND_MAX) * (max - min) + min;
+        }
+    }
+}
+
+Matrix matrix_dot(Matrix mat_a, Matrix mat_b) {
+    Matrix res = matrix_new(mat_a.h, mat_b.w);
+
+    // for each row of mat_a
+    for (size_t i = 0; i < mat_a.h; i++) {
+        // for each column of mat_b
+        for (size_t j = 0; j < mat_b.w; j++) {
+            // for each column of mat_a
+            for (size_t k = 0; k < mat_a.w; k++) {
+                res.val[i][j] += mat_a.val[i][k] * mat_b.val[k][j];
+            }
+        }
+    }
+
+    return res;
+}
+
+void matrix_column_dot(Matrix mat_a, float *column, float *res) {
+    // for each row of mat_a
+    for (size_t i = 0; i < mat_a.h; i++) {
+        res[i] = 0.0f;
+        // for each column of mat_a
+        for (size_t j = 0; j < mat_a.w; j++) {
+            res[i] += mat_a.val[i][j] * column[j];
         }
     }
 }

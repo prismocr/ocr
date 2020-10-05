@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "string.h"
 #include "layer.h"
 #include "neuron.h"
 
@@ -37,8 +38,8 @@ void initialize_biases_and_weights(Layer *layer, size_t nb_neurons) {
     layer->weights.val = NULL;
     Layer *prev_layer = layer->prev_layer;
     if (prev_layer != NULL) {
-        layer->weights = matrix_new(prev_layer->nb_neurons, nb_neurons);
-        matrix_randomize(&(layer->weights));
+        layer->weights = matrix_new(nb_neurons, prev_layer->nb_neurons);
+        matrix_randomize(-1.0f, 1.0f, &(layer->weights));
     }
 }
 
@@ -58,14 +59,26 @@ float *get_weights_in(Layer layer, size_t index) {
 // float* get_weights_out(Layer layer, size_t index){}
 
 void layer_feed(Layer *layer, float *values) {
-    /*Neuron *neurons = layer->neurons;
-    if(sizeof(neurons)/sizeof(neurons[0]) != sizeof(values)/sizeof(values[0])){
-        printf("\033[1;31mnetwork_feed : Argument Exception, array's size does
-    not match layer's number of neurons\033[m"); return;
-    }*/
-    memcpy(layer->values,values,layer->nb_neurons);
+    memcpy(layer->values, values, sizeof(float) * layer->nb_neurons);
+}
+
+void print_array(float *arr, size_t n) {
+    for (size_t i = 0; i < n; i++) {
+        printf("%f ", arr[i]);
+    }
+    printf("\n");
 }
 
 void layer_front_pop(Layer *layer) {
-    //Matrix dot product and addition
+    float new_values[layer->nb_neurons];
+
+    matrix_column_dot(layer->weights, layer->prev_layer->values, new_values);
+
+    for (size_t i = 0; i < layer->nb_neurons; i++) {
+        /*printf("bias = %f\n", layer->biases[i]);
+        printf("pre sigmoid = %f\n", new_values[i] + layer->biases[i]);*/
+        new_values[i] = sigmoid(new_values[i] + layer->biases[i]);
+    }
+
+    layer_feed(layer, new_values);
 }

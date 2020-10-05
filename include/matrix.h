@@ -26,5 +26,7 @@ void matrix_printf(const char *elem_fmt, Matrix mat);
 void matrix_randomize(float min, float max, Matrix *mat);
 
 // Dot
+Matrix matrix_dot(Matrix mat_a, Matrix mat_b);
+void matrix_column_dot(Matrix mat_a, float *column, float *res);
 
 #endif // MATRIX_H
