@@ -1,7 +1,7 @@
 EXEC = ocr
 CPPFLAGS = -MMD
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -Iinclude/
+CFLAGS = -Wall -Wextra -Werror -std=c99 -Wpointer-arith -Iinclude/
 LDFLAGS = -lm
 LDLIBS =
 
@@ -9,20 +9,23 @@ SRC := main.c ${shell find src -name "*.c"}
 OBJ := ${SRC:.c=.o}
 DEP := ${SRC:.c=.d}
 
-all: format ${EXEC}
+all: format ${EXEC} clean
 
 ${EXEC}: ${OBJ}
-	$(CC) -o $@ $^ $(LDFLAGS)
+	@$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c
-	$(CC) -o $@ -c $< $(CFLAGS)
+	@$(CC) -o $@ -c $< $(CFLAGS)
 
 .PHONY: clean format
 
 clean:
-	${RM} ${EXEC} ${OBJ} ${DEP}
+	@${RM} ${OBJ} ${DEP}
+
+mrproper: clean
+	@${RM} ${EXEC}
 
 format: src/*.c include/*.h
-	clang-format --style=file -i $^
+	@clang-format --style=file -i $^
 
 -include ${DEP}
