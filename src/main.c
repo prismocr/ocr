@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
     	dataset.datas[2] = data10;
     	dataset.datas[3] = data11;
 
-    	network_sgd(&network, &dataset, 1, 4, 2.5f);
+    	network_sgd(&network, &dataset, 1000000, 4, 2.5f);
         
     	dataset_free(&dataset);
 		network_free(&network);
