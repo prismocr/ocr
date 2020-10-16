@@ -10,7 +10,6 @@ struct Neuron {
     float *weights_in;
 };
 
-typedef struct Layer Layer;
 Neuron neuron_new(float *value, float *bias, float *weights_in);
 
 float relu(float x);

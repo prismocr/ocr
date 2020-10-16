@@ -73,7 +73,7 @@ void network_sgd(Network *network, Dataset *dataset, size_t epochs,
         }
     }
 
-    // network_print_results(*network, *dataset);
+    network_print_results(*network, *dataset);
     for (size_t i = 0; i < nb_batches; i++) {
         dataset_free(&batches[i]);
     }

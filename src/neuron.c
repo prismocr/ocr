@@ -3,7 +3,6 @@
 #include "neuron.h"
 #include "layer.h"
 
-typedef struct Neuron Neuron;
 Neuron neuron_new(float *value, float *bias, float *weights_in) {
     Neuron neuron;
 

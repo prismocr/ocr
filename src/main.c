@@ -61,15 +61,19 @@ int main(int argc, char *argv[]) {
     {
     	Matrix image;
 
-	    if (argc < 2) {
-	        printf("Missing image path.\n");
-	        return 1;
-	    }
+        if (argc < 2) {
+            printf("Missing image path.\n");
+            return 1;
+        }
 
-	    try
-	        (bitmap_load(argv[1], &image));
+        try
+            (bitmap_load(argv[1], &image));
 
-	    try
-	        (bitmap_save("out.bmp", &image));
+        feature_extraction(&image);
+
+        try
+            (bitmap_save("out.bmp", &image));
+
+        matrix_free(&image);
     }
 }

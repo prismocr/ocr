@@ -2,9 +2,8 @@
 #define NETWORK_H
 
 #include <stdlib.h>
+#include "layer.h"
 #include "data.h"
-
-typedef struct Layer Layer;
 
 typedef struct Network Network;
 struct Network {
