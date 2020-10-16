@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include "segmentation.h"
 #include "bitmap.h"
 #include "image.h"
 #include "error.h"
@@ -53,7 +54,7 @@ int main(int argc, char *argv[]) {
     	dataset.datas[3] = data11;
 
     	network_sgd(&network, &dataset, 1, 4, 2.5f);
-
+        
     	dataset_free(&dataset);
 		network_free(&network);
 	}
