@@ -1,31 +1,80 @@
-EXEC = ocr
-CPPFLAGS = -MMD
-CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -Wpointer-arith -Iinclude
-LDFLAGS = -lm
-LDLIBS =
+#
+# Makefile of prismocr
+#
+# To build the project run `make`, it will create an executable called **ocr**
+# in the **build/** directory
+#
 
-SRC := main.c ${shell find src -name "*.c"}
-OBJ := ${SRC:.c=.o}
-DEP := ${SRC:.c=.d}
+# TODO: add support for .c not at the root of src/
 
-all: format ${EXEC} clean
+CC := gcc
+CPPFLAGS := -MMD -Iinclude/
+CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic
+LDLIBS := -lm
 
-${EXEC}: ${OBJ}
-	@$(CC) -o $@ $^ $(LDFLAGS)
+BUILDDIR := build
+EXEC := ocr
 
-%.o: %.c
-	@$(CC) -o $@ -c $< $(CFLAGS) $(CPPFLAGS)
+OBJS := $(patsubst %.c,%.o,$(notdir $(wildcard src/*.c)))
 
-.PHONY: clean format
+#
+# Debug variables
+#
+DBGCFLAGS := -g -O0
+
+DBGDIR := $(BUILDDIR)/debug
+DBGOBJDIR := $(DBGDIR)/obj
+DBGOBJS := $(addprefix $(DBGOBJDIR)/,$(OBJS))
+
+#
+# Release variables
+#
+RLSCFLAGS := -O3
+
+RLSDIR := $(BUILDDIR)/release
+RLSOBJDIR := $(RLSDIR)/obj
+RLSOBJS := $(addprefix $(RLSOBJDIR)/,$(OBJS))
+
+
+.PHONY: all prep remake debug release clean mrproper format
+
+all: prep debug
+
+#
+# Debug rules
+#
+debug: $(DBGDIR)/$(EXEC)
+
+$(DBGDIR)/$(EXEC): $(DBGOBJS)
+	$(CC) $^ -o $@ $(CPPFLAGS) $(CFLAGS) $(LDLIBS) $(DBGCFLAGS)
+
+$(DBGOBJDIR)/%.o: src/%.c
+	$(CC) -c $< -o $@ $(CPPFLAGS) $(CFLAGS) $(DBGCFLAGS)
+
+#
+# Release rules
+#
+release: $(RLSDIR)/$(EXEC)
+
+$(RLSDIR)/$(EXEC): $(RLSOBJS)
+	$(CC) $^ -o $@ $(CCPFLAGS) $(CFLAGS) $(LDLIBS) $(RLSCFLAGS)
+
+$(RLSOBJDIR)/%.o: src/%.c
+	$(CC) -c $< -o $@ $(CPPFLAGS) $(CFLAGS) $(RLSCFLAGS)
+
+#
+# Other rules
+#
+prep:
+	@mkdir -p $(DBGDIR) $(RLSDIR) $(DBGOBJDIR) $(RLSOBJDIR)
+
+remake: clean all
 
 clean:
-	@${RM} ${OBJ} ${DEP}
+	$(RM) -r $(OBJDIR)
 
-mrproper: clean
-	@${RM} ${EXEC}
+mrproper:
+	$(RM) -r $(BUILDDIR)
 
 format: src/*.c include/*.h
 	@clang-format --style=file -i $^
-
--include ${DEP}
