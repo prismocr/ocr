@@ -10,7 +10,7 @@
 CC := gcc
 CPPFLAGS := -MMD -Iinclude/
 CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic
-LDLIBS :=
+LDLIBS := -lm
 
 BUILDDIR := build
 EXEC := ocr
