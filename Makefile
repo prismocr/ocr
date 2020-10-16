@@ -1,7 +1,7 @@
 EXEC = ocr
 CPPFLAGS = -MMD
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -std=c99 -Wpointer-arith -Iinclude/
+CFLAGS = -Wall -Wextra -std=c99 -Wpointer-arith -Iinclude
 LDFLAGS = -lm
 LDLIBS =
 
@@ -15,7 +15,7 @@ ${EXEC}: ${OBJ}
 	@$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c
-	@$(CC) -o $@ -c $< $(CFLAGS)
+	@$(CC) -o $@ -c $< $(CFLAGS) $(CPPFLAGS)
 
 .PHONY: clean format
 

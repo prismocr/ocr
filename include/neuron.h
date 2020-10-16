@@ -15,5 +15,6 @@ Neuron neuron_new(float *value, float *bias, float *weights_in);
 
 float relu(float x);
 float sigmoid(float x);
+float sigmoid_prime(float z);
 
 #endif

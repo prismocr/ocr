@@ -4,7 +4,7 @@
 typedef struct Vector Vector;
 struct Vector {
     size_t size;
-    float *values;
+    float *val;
 };
 
 int vector_new(size_t size, Vector *Vector);
@@ -15,11 +15,12 @@ void vector_printf(const char *format, Vector vector);
 
 void vector_randomize(Vector *vect, float min, float max);
 
-void vector_add(Vector a, Vector b, Vector *res);
-void vector_sub(Vector a, Vector b, Vector *res);
-void vector_scale(Vector vect, float scalar, Vector *res);
-float vector_dot(Vector a, Vector b);
+void vector_add(size_t size, float *a, float *b);
+void vector_sub(size_t size, float *a, float *res);
+void vector_scale(size_t size, float scalar, float *arr);
+void vector_dot(size_t size, float *a, float *b);
 
-Vector array_to_vector(float *array, size_t size);
+Vector arr2vect(float *array, size_t size);
+void vector_copy(size_t size, float *a, float *b);
 
 #endif

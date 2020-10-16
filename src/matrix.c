@@ -1,10 +1,10 @@
-#include "matrix.h"
-#include "error.h"
-#include <assert.h>
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+#include <errno.h>
+#include "matrix.h"
+#include "error.h"
 
 int matrix_new(size_t h, size_t w, Matrix *mat) {
     assert(h > 0 && w > 0);
@@ -140,7 +140,6 @@ int matrix_dot(Matrix mat_a, Matrix mat_b, Matrix *res) {
 int matrix_column_dot(Matrix mat_a, float *column, float *res) {
     if (mat_a.w != sizeof(column) / sizeof(column[0]))
         return 1;
-    return 1;
     // for each row of mat_a
     for (size_t i = 0; i < mat_a.h; i++) {
         res[i] = 0.0f;
@@ -150,4 +149,26 @@ int matrix_column_dot(Matrix mat_a, float *column, float *res) {
         }
     }
     return 0;
+}
+
+// Dot product between a matrix @mat_a and a @column.Result is transposed.
+int matrix_cdt(Matrix mat_a, float *column, float *res) {
+    // for each column of mat_a
+    for (size_t i = 0; i < mat_a.w; i++) {
+        res[i] = 0.0f;
+        // for each row of mat_a
+        for (size_t j = 0; j < mat_a.h; j++) {
+            res[i] += mat_a.val[j][i] * column[j];
+        }
+    }
+    return 0;
+}
+
+// Dot product between a column @a and a line @b, stored into the matrix @mat.
+void matrix_dcl(size_t nb_lin, float *a, size_t nb_col, float *b, Matrix *mat) {
+    for (size_t i = 0; i < nb_lin; i++) {
+        for (size_t j = 0; j < nb_col; j++) {
+            mat->val[i][j] += a[i] * b[j];
+        }
+    }
 }

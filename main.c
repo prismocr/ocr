@@ -12,40 +12,49 @@
 int main(int argc, char *argv[]) {
 	if(argc < 2){
 		srand(time(NULL));
-		//creating dim array to feed to network_new()
+		//create dim array to feed to network_new()
 		size_t nb_layers = 3;
 		size_t sizes_static[] = {2,2,1};
-		size_t *sizes = (size_t*) malloc(nb_layers*sizeof(size_t));
-		memcpy(sizes, sizes_static, nb_layers*sizeof(size_t));
 
-		//creating new network
-		Network network = network_new(nb_layers,sizes);
-		network.layers[1].weights.val[0][0] = 20;
-		network.layers[1].weights.val[0][1] = 20;
-		network.layers[1].biases[0] = -10;
+		//create new network
+		Network network = network_new(nb_layers,sizes_static);
 
-		network.layers[1].weights.val[1][0] = -20;
-		network.layers[1].weights.val[1][1] = -20;
-		network.layers[1].biases[1] = 30;
+        // --- Create dataset---
+    	Dataset dataset;
+    	dataset_new(&dataset,4);
 
-		network.layers[2].weights.val[0][0] = 20;
-		network.layers[2].weights.val[0][1] = 20;
-		network.layers[2].biases[0] = -30;
+        Vector vect00, vect01, vect10, vect11, vect0, vect1;
+        vector_new(2,&vect00);
+        vector_copy(2,(float[]){0,0},vect00.val);
+        vector_new(2,&vect01);
+        vector_copy(2,(float[]){0,1},vect01.val);
+        vector_new(2,&vect10);
+        vector_copy(2,(float[]){1,0},vect10.val);
+        vector_new(2,&vect11);
+        vector_copy(2,(float[]){1,1},vect11.val);
+        vector_new(1,&vect0);
+        vector_copy(1,(float[]){0},vect0.val);
+        vector_new(1,&vect1);
+        vector_copy(1,(float[]){1},vect1.val);
 
-		network_print(network);
+    	Data data00,data01,data10,data11;
+    	data00.input = vect00;
+    	data00.target = vect0;
+    	data01.input = vect01;
+    	data01.target = vect1;
+    	data10.input = vect10;
+    	data10.target = vect1;
+    	data11.input = vect11;
+    	data11.target = vect0;
 
-		printf("\nfeeding 0 0\n");
-		printf("output %f\n",network_feed_forward(&network,(float[]){0.f,0.f})[0]);
+    	dataset.datas[0] = data00;
+    	dataset.datas[1] = data01;
+    	dataset.datas[2] = data10;
+    	dataset.datas[3] = data11;
 
-		printf("\nfeeding 0 1\n");
-		printf("output %f\n",network_feed_forward(&network,(float[]){0.f,1.f})[0]);
+    	network_sgd(&network, &dataset, 1, 4, 2.5f);
 
-		printf("\nfeeding 1 0\n");
-		printf("output %f\n",network_feed_forward(&network,(float[]){1.f,0.f})[0]);
-
-		printf("\nfeeding 1 1\n");
-		printf("output %f\n",network_feed_forward(&network,(float[]){1.f,1.f})[0]);
-
+    	dataset_free(&dataset);
 		network_free(&network);
 	}
 	else

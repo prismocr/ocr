@@ -21,3 +21,7 @@ float relu(float x) {
 float sigmoid(float x) {
     return 1.f / (1 + expf(-x));
 }
+
+float sigmoid_prime(float z) {
+    return sigmoid(z) * (1 - sigmoid(z));
+}
