@@ -20,7 +20,7 @@ OBJS := $(patsubst %.c,%.o,$(notdir $(wildcard src/*.c)))
 #
 # Debug variables
 #
-DBGCFLAGS := -g -O0
+DBGCFLAGS := -g -O0 -DDEBUG
 
 DBGDIR := $(BUILDDIR)/debug
 DBGOBJDIR := $(DBGDIR)/obj
@@ -29,7 +29,7 @@ DBGOBJS := $(addprefix $(DBGOBJDIR)/,$(OBJS))
 #
 # Release variables
 #
-RLSCFLAGS := -O3
+RLSCFLAGS := -O3 -DNDEBUG
 
 RLSDIR := $(BUILDDIR)/release
 RLSOBJDIR := $(RLSDIR)/obj
