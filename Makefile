@@ -36,7 +36,7 @@ RLSOBJDIR := $(RLSDIR)/obj
 RLSOBJS := $(addprefix $(RLSOBJDIR)/,$(OBJS))
 
 
-.PHONY: all prep remake debug release clean mrproper format
+.PHONY: all prep remake debug release clean mrproper format cppcheck
 
 all: prep debug
 
@@ -78,3 +78,7 @@ mrproper:
 
 format: src/*.c include/*.h
 	@clang-format --style=file -i $^
+
+cppcheck: src/*.c
+	@cppcheck --enable=all -q --std=c99 -Iinclude/ $^
+
