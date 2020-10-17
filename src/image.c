@@ -131,8 +131,8 @@ void gauss(Matrix *image) {
     Matrix mat;
     matrix_new(3, 3, &mat);
 
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             mat.val[i][j] = convo_mat[i][j];
         }
     }

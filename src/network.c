@@ -57,7 +57,7 @@ float *network_feed_forward(Network *network, float *input) {
 // Network stochastic gradient descent
 void network_sgd(Network *network, Dataset *dataset, size_t epochs,
                  size_t batch_size, float learning_rate) {
-    Dataset *batches;
+    Dataset *batches = NULL;
     size_t nb_batches = dataset->size / batch_size;
     // Main training loop
     for (size_t i = 1; i <= epochs; i++) {
