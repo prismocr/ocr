@@ -135,7 +135,7 @@ void matrix_dot(Matrix mat_a, Matrix mat_b, Matrix *res) {
 
 void matrix_column_dot(Matrix mat_a, float *column, float *res) {
     // WARN: You cannot check array size from a pointer
-    //assert(mat_a.w == sizeof(column) / sizeof(column[0]);
+    // assert(mat_a.w == sizeof(column) / sizeof(column[0]);
 
     // for each row of mat_a
     for (size_t i = 0; i < mat_a.h; i++) {
@@ -167,4 +167,3 @@ void matrix_dcl(size_t nb_lin, float *a, size_t nb_col, float *b, Matrix *mat) {
         }
     }
 }
-

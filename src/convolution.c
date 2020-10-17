@@ -1,7 +1,9 @@
 #include "convolution.h"
 #include <stdio.h>
-float calculate_values_convolution(size_t i, size_t j, Matrix *mat,
-                                   Matrix *convo_mat);
+
+static inline float calculate_values_convolution(size_t i, size_t j,
+                                                 Matrix *mat,
+                                                 Matrix *convo_mat);
 
 void convolute(Matrix *mat, Matrix *convo_mat) {
     Matrix temp;
@@ -18,8 +20,9 @@ void convolute(Matrix *mat, Matrix *convo_mat) {
     matrix_free(convo_mat);
 }
 
-float calculate_values_convolution(size_t i, size_t j, Matrix *mat,
-                                   Matrix *convo_mat) {
+static inline float calculate_values_convolution(size_t i, size_t j,
+                                                 Matrix *mat,
+                                                 Matrix *convo_mat) {
     float sum = 0;
     for (size_t k = 0; k < convo_mat->h; k++) {
         for (size_t l = 0; l < convo_mat->w; l++) {

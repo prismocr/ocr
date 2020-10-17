@@ -71,7 +71,7 @@ prep:
 remake: clean all
 
 clean:
-	$(RM) -r $(OBJDIR)
+	$(RM) -r $(DBGOBJDIR) $(RLSOBJDIR)
 
 mrproper:
 	$(RM) -r $(BUILDDIR)

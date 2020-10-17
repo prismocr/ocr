@@ -3,9 +3,12 @@
 #include <assert.h>
 #include <float.h>
 
-float smooth_pixel(size_t y, size_t x, Matrix *image, Matrix kernel);
-float dilate_pixel(size_t y, size_t x, Matrix *image, Matrix kernel);
-float erode_pixel(size_t y, size_t x, Matrix *image, Matrix kernel);
+static inline float smooth_pixel(size_t y, size_t x, Matrix *image,
+                                 Matrix kernel);
+static inline float dilate_pixel(size_t y, size_t x, Matrix *image,
+                                 Matrix kernel);
+static inline float erode_pixel(size_t y, size_t x, Matrix *image,
+                                Matrix kernel);
 
 Matrix structuring_element(size_t m, size_t n) {
     assert(m > 0 && n > 0 && m % 2 == 1 && n % 2 == 1);
@@ -39,7 +42,8 @@ void smooth(Matrix *image, Matrix kernel) {
     *image = smoothed;
 }
 
-float smooth_pixel(size_t y, size_t x, Matrix *image, Matrix kernel) {
+static inline float smooth_pixel(size_t y, size_t x, Matrix *image,
+                                 Matrix kernel) {
     size_t i, j;
     float pixel;
 
@@ -75,7 +79,8 @@ void dilate(Matrix *image, Matrix kernel) {
     *image = dilated;
 }
 
-float dilate_pixel(size_t y, size_t x, Matrix *image, Matrix kernel) {
+static inline float dilate_pixel(size_t y, size_t x, Matrix *image,
+                                 Matrix kernel) {
     size_t i, j;
     float max, v;
 
@@ -114,7 +119,8 @@ void erode(Matrix *image, Matrix kernel) {
     *image = eroded;
 }
 
-float erode_pixel(size_t y, size_t x, Matrix *image, Matrix kernel) {
+static inline float erode_pixel(size_t y, size_t x, Matrix *image,
+                                Matrix kernel) {
     size_t i, j;
     float min, v;
 

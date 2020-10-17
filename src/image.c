@@ -84,22 +84,22 @@ void image_contrast(Matrix *image, float delta) {
 
 void image_rotate(Matrix *image, float angle) {
     size_t i, j;
-    
+
     size_t w = image->w;
     size_t h = image->h;
 
-    float midx = w/2;
-    float midy = h/2;
+    float midx = w / 2;
+    float midy = h / 2;
 
     Matrix dest;
     matrix_new(h, w, &dest);
 
-    for(j = 0; j < h; j++) {
-        for(i = 0; i < w; i++) {
+    for (j = 0; j < h; j++) {
+        for (i = 0; i < w; i++) {
             size_t x = (i - midx) * cos(angle) + (j - midy) * sin(angle) + midx;
             size_t y = (j - midx) * cos(angle) + (midx - i) * sin(angle) + midy;
-            
-            if(x < w && y < h) {
+
+            if (x < w && y < h) {
                 dest.val[x][y] = image->val[i][j];
             }
         }
@@ -147,7 +147,7 @@ void wide_gauss(Matrix *image) {
          {5 / 159.f, 12 / 159.f, 15 / 159.f, 12 / 159.f, 5 / 159.f},
          {4 / 159.f, 9 / 159.f, 12 / 159.f, 9 / 159.f, 4 / 159.f},
          {2 / 159.f, 4 / 159.f, 5 / 159.f, 4 / 159.f, 2 / 159.f}};
-    
+
     Matrix mat;
     matrix_new(5, 5, &mat);
 
@@ -162,7 +162,7 @@ void wide_gauss(Matrix *image) {
 
 void sharpen(Matrix *image) {
     float convo_mat[3][3] = {{0., -1., 0.}, {-1., 5., -1.}, {0., -1., 0.}};
-    
+
     Matrix mat;
     matrix_new(3, 3, &mat);
 
