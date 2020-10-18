@@ -38,7 +38,7 @@ RLSOBJS := $(addprefix $(RLSOBJDIR)/,$(OBJS))
 
 .PHONY: all prep remake debug release clean mrproper format cppcheck
 
-all: prep debug
+all: prep release
 
 #
 # Debug rules
