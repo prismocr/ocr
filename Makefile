@@ -10,7 +10,7 @@
 CC := gcc
 CPPFLAGS := -MMD -Iinclude/
 CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic
-LDLIBS :=
+LDLIBS := -lm
 
 BUILDDIR := build
 EXEC := ocr
@@ -20,7 +20,7 @@ OBJS := $(patsubst %.c,%.o,$(notdir $(wildcard src/*.c)))
 #
 # Debug variables
 #
-DBGCFLAGS := -g -O0
+DBGCFLAGS := -g -O0 -DDEBUG
 
 DBGDIR := $(BUILDDIR)/debug
 DBGOBJDIR := $(DBGDIR)/obj
@@ -29,16 +29,16 @@ DBGOBJS := $(addprefix $(DBGOBJDIR)/,$(OBJS))
 #
 # Release variables
 #
-RLSCFLAGS := -O3
+RLSCFLAGS := -O3 -DNDEBUG
 
 RLSDIR := $(BUILDDIR)/release
 RLSOBJDIR := $(RLSDIR)/obj
 RLSOBJS := $(addprefix $(RLSOBJDIR)/,$(OBJS))
 
 
-.PHONY: all prep remake debug release clean mrproper format
+.PHONY: all prep remake debug release clean mrproper format cppcheck
 
-all: prep debug
+all: prep release
 
 #
 # Debug rules
@@ -71,11 +71,14 @@ prep:
 remake: clean all
 
 clean:
-	$(RM) -r $(OBJDIR)
+	$(RM) -r $(DBGOBJDIR) $(RLSOBJDIR)
 
 mrproper:
 	$(RM) -r $(BUILDDIR)
 
 format: src/*.c include/*.h
-	clang-format --style=file -i $^
+	@clang-format --style=file -i $^
+
+cppcheck: src/*.c
+	@cppcheck --enable=all -q --std=c99 -Iinclude/ $^
 

@@ -1,4 +1,6 @@
+build
 *.out
 *.swp
+*.o
+*.d
 *.bmp
-

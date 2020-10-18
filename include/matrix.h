@@ -32,4 +32,12 @@ void matrix_scale(Matrix *mat, float scalar);
 // Returns the average of the matrix values
 float matrix_average(Matrix mat);
 
+// ----- Matrix operations ---
+void matrix_dot(Matrix mat_a, Matrix mat_b, Matrix *res);
+void matrix_column_dot(Matrix mat_a, float *column, float *res);
+// matrix column dot transposed
+void matrix_cdt(Matrix mat_a, float *column, float *res);
+// matrix dot column-line
+void matrix_dcl(size_t nb_lin, float *a, size_t nb_col, float *b, Matrix *mat);
+
 #endif // MATRIX_H
