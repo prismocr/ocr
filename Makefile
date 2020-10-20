@@ -35,8 +35,15 @@ RLSDIR := $(BUILDDIR)/release
 RLSOBJDIR := $(RLSDIR)/obj
 RLSOBJS := $(addprefix $(RLSOBJDIR)/,$(OBJS))
 
+#
+# Test variables
+#
+TSTDIR := $(BUILDDIR)/test
+TSTOBJDIR := $(TSTDIR)/obj
+TSTEXEC := $(addprefix $(TSTDIR)/,$(basename $(notdir $(wildcard test/*.c))))
+TSTOBJS := $(addprefix $(TSTOBJDIR)/,$(addsuffix .o,$(notdir $(TSTEXEC))))
 
-.PHONY: all prep remake debug release clean mrproper format cppcheck
+.PHONY: all prep remake debug release test clean mrproper format cppcheck
 
 all: prep release
 
@@ -63,10 +70,22 @@ $(RLSOBJDIR)/%.o: src/%.c
 	$(CC) -c $< -o $@ $(CPPFLAGS) $(CFLAGS) $(RLSCFLAGS)
 
 #
+# Test rules
+#
+test: prep $(TSTEXEC)
+	$(foreach TEST,$(filter $(TSTDIR)/%,$^),./$(TEST) &&) echo "All test passed"
+
+$(TSTDIR)/%: $(TSTOBJDIR)/%.o Unity/src/unity.c
+	$(CC) $^ -o $@ $(CPPFLAGS) $(CFLAGS) $(DBGCFLAGS) -IUnity/src
+
+$(TSTOBJDIR)/%.o: test/%.c $(DBGOBJS)
+	$(CC) -c $^ -o $@ $(CPPFLAGS) $(CFLAGS) $(DBGCFLAGS) -IUnity/src
+
+#
 # Other rules
 #
 prep:
-	@mkdir -p $(DBGDIR) $(RLSDIR) $(DBGOBJDIR) $(RLSOBJDIR)
+	@mkdir -p $(DBGOBJDIR) $(RLSOBJDIR) $(TSTOBJDIR)
 
 remake: clean all
 
