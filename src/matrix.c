@@ -91,7 +91,7 @@ bool matrix_equal(Matrix mat1, Matrix mat2) {
 
     for (size_t i = 0; i < mat1.h; i++) {
         for (size_t j = 0; j < mat1.w; j++) {
-            if (mat1.val[i][j] == mat2.val[i][j]) {
+            if (mat1.val[i][j] != mat2.val[i][j]) {
                 return false;
             }
         }
