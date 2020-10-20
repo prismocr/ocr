@@ -6,6 +6,9 @@
 // Apply treshold to an image
 void image_threshold(float thresh, float maxval, Matrix *image);
 
+// Apply treshold to an inverted image
+void image_threshold_inv(float thresh, float maxval, Matrix *image);
+
 // Invert images colors
 void image_invert_color(Matrix *image);
 
