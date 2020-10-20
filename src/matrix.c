@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
+#include <stdbool.h>
 #include "matrix.h"
 #include "error.h"
 
@@ -79,6 +80,24 @@ void matrix_printf(const char *elem_fmt, Matrix mat) {
         }
         printf("\n");
     }
+}
+
+bool matrix_equal(Matrix mat1, Matrix mat2) {
+    assert(mat1.val != NULL && mat2.val != NULL);
+
+    if (mat1.w != mat2.w || mat1.h != mat2.h) {
+        return false;
+    }
+
+    for (size_t i = 0; i < mat1.h; i++) {
+        for (size_t j = 0; j < mat1.w; j++) {
+            if (mat1.val[i][j] == mat2.val[i][j]) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 void matrix_randomize(float min, float max, Matrix *mat) {

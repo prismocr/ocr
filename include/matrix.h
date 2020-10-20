@@ -2,6 +2,7 @@
 #define MATRIX_H
 
 #include <stddef.h>
+#include <stdbool.h>
 
 typedef struct matrix Matrix;
 
@@ -23,6 +24,8 @@ void matrix_print(Matrix mat);
 
 // Prints each element of the matrix with the given format
 void matrix_printf(const char *elem_fmt, Matrix mat);
+
+bool matrix_equal(Matrix mat1, Matrix mat2);
 
 // Fill matrix with random value between min and max
 void matrix_randomize(float min, float max, Matrix *mat);
