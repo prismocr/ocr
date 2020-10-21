@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <assert.h>
+#include <errno.h>
 #include "network.h"
 #include "layer.h"
 #include "neuron.h"
 #include "data.h"
 #include "vector.h"
+
+#define UNUSED(x) (void)(x)
 
 Network network_new(size_t nb_layers, size_t *sizes) {
     Network network;
@@ -170,4 +173,57 @@ void network_print_results(Network network, Dataset dataset) {
                       arr2vect(output, network.output_layer->nb_neurons));
         printf("\n");
     }
+}
+// marche uniquement pour des int
+void network_save(const char *path, Network network) {
+    FILE *f;
+    f = fopen(path, "wb");
+    fputc(network.nb_layers, f);
+
+    for (size_t i = 0; i < network.nb_layers; i++) {
+        fputc(network.layers[i-1].nb_neurons, f);
+    }
+    for (size_t i = 1; i < network.nb_layers; i++) {
+        for (size_t j = 0; j < network.layers[i].nb_neurons; j++) {
+            for (size_t k = 0; k < network.layers[i-1].nb_neurons; k++) {
+                fwrite(&network.layers[i].neurons[j].weights_in[k], 1,
+                       sizeof(float), f);
+            }
+            fwrite(network.layers[i].neurons[j].bias, 1, sizeof(float), f);
+        }
+    }
+    fclose(f);
+}
+
+int network_load(const char *path, Network *out) {
+    FILE *f;
+    f = fopen(path, "rb");
+    if (f == NULL) {
+        //set_last_errorf("Failed to open file: %s", strerror(errno));
+        return 1;
+    }
+
+    size_t nb_layers = fgetc(f);
+    size_t *sizes = (size_t *) malloc(nb_layers * sizeof(size_t));
+    for (size_t i = 0; i < nb_layers; i++) {
+        sizes[i] = fgetc(f);
+    }
+    Network network = network_new(nb_layers, sizes);
+
+    for (size_t i = 1; i < network.nb_layers; i++) {
+        for (size_t j = 0; j < network.layers[i].nb_neurons; j++) {
+            for (size_t k = 0; k < network.layers[i-1].nb_neurons; k++) {
+                size_t unused = fread(network.layers[i].neurons[j].weights_in + k, 1,
+                      sizeof(float), f);
+                UNUSED(unused);
+            }
+            size_t unused = fread(network.layers[i].neurons[j].bias, 1, sizeof(float), f);
+            UNUSED(unused);
+        }
+    }
+
+    *out = network;
+
+    fclose(f);
+    return 0;
 }

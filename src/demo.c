@@ -12,6 +12,7 @@
 
 
 
+
 void sharpen_demo(int argc, char *argv[]) {
     Matrix image;
 
@@ -179,7 +180,20 @@ void network_demo() {
     network_sgd(&network, &dataset, 1000000, 4, 2.5f);
 
     dataset_free(&dataset);
+    network_save("net.hex", network);
+    printf("saved\n");
     network_free(&network);
+}
+
+void network_load_demo() {
+    // create new network
+    Network network;
+
+    // load network
+    network_load("net.hex", &network);
+
+    // print network
+    network_print(network);
 }
 
 int demo(int argc, char *argv[]) {
@@ -222,6 +236,11 @@ int demo(int argc, char *argv[]) {
 
     if(!strcmp(c, "network")) {
         network_demo();
+        return 0;
+    }
+
+    if(!strcmp(c, "network_load")) {
+        network_load_demo();
         return 0;
     }
 
