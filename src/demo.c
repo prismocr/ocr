@@ -71,6 +71,27 @@ void rotate_demo(int argc, char *argv[]) {
     matrix_free(&image);
 }
 
+void contrast_demo(int argc, char *argv[]) {
+    Matrix image;
+
+    if (argc < 2) {
+        printf("Missing image path.\n");
+        return;
+    }
+
+    try
+        (bitmap_load(argv[2], &image));
+
+
+    double delta = strtod(argv[3], NULL);
+    image_contrast(&image, delta);
+
+    try
+        (bitmap_save("out.bmp", &image));
+
+    matrix_free(&image);
+}
+
 void edge_detect_demo(int argc, char *argv[]) {
     Matrix image;
 
@@ -84,6 +105,27 @@ void edge_detect_demo(int argc, char *argv[]) {
 
 
     edge_detect(&image);
+
+    try
+        (bitmap_save("out.bmp", &image));
+
+    matrix_free(&image);
+    
+}
+
+void invert_demo(int argc, char *argv[]) {
+    Matrix image;
+
+    if (argc < 2) {
+        printf("Missing image path.\n");
+        return;
+    }
+
+    try
+        (bitmap_load(argv[2], &image));
+
+
+    image_invert_color(&image);
 
     try
         (bitmap_save("out.bmp", &image));
@@ -165,6 +207,16 @@ int demo(int argc, char *argv[]) {
 
     if (!strcmp(c, "edge_detect")) {
         edge_detect_demo(argc, argv);
+        return 0;
+    }
+
+    if(!strcmp(c, "contrast")) {
+        contrast_demo(argc, argv);
+        return 0;
+    }
+
+    if(!strcmp(c, "invert")) {
+        invert_demo(argc, argv);
         return 0;
     }
 
