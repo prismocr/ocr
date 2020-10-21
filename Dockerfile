@@ -1,9 +1,13 @@
-FROM ubuntu
+FROM ubuntu AS builder
 
 RUN apt update && apt install -y make
 
 WORKDIR /app
 COPY . /app
-RUN make
+RUN make release
 
-ENTRYPOINT /app/build/release/ocr network
+FROM scratch
+COPY --from=builder /app/build/release/ocr /ocr
+
+ENTRYPOINT ["/ocr"]
+CMD ["network"]
