@@ -3,4 +3,4 @@ build
 *.swp
 *.o
 *.d
-*.bmp
+./*.bmp
