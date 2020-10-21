@@ -105,7 +105,7 @@ void network_demo() {
     Dataset dataset;
     dataset_new(&dataset, 4);
 
-    Vector vect00, vect01, vect10, vect11, vect0, vect1;
+    Vector vect00, vect01, vect10, vect11, vect0_1, vect0_2, vect1_1, vect1_2;
     vector_new(2, &vect00);
     vector_copy(2, (float[]){0, 0}, vect00.val);
     vector_new(2, &vect01);
@@ -114,20 +114,24 @@ void network_demo() {
     vector_copy(2, (float[]){1, 0}, vect10.val);
     vector_new(2, &vect11);
     vector_copy(2, (float[]){1, 1}, vect11.val);
-    vector_new(1, &vect0);
-    vector_copy(1, (float[]){0}, vect0.val);
-    vector_new(1, &vect1);
-    vector_copy(1, (float[]){1}, vect1.val);
+    vector_new(1, &vect0_1);
+    vector_copy(1, (float[]){0}, vect0_1.val);
+    vector_new(1, &vect1_1);
+    vector_copy(1, (float[]){1}, vect1_1.val);
+    vector_new(1, &vect0_2);
+    vector_copy(1, (float[]){0}, vect0_2.val);
+    vector_new(1, &vect1_2);
+    vector_copy(1, (float[]){1}, vect1_2.val);
 
     Data data00, data01, data10, data11;
     data00.input = vect00;
-    data00.target = vect0;
+    data00.target = vect0_1;
     data01.input = vect01;
-    data01.target = vect1;
+    data01.target = vect1_1;
     data10.input = vect10;
-    data10.target = vect1;
+    data10.target = vect1_2;
     data11.input = vect11;
-    data11.target = vect0;
+    data11.target = vect0_2;
 
     dataset.datas[0] = data00;
     dataset.datas[1] = data01;
