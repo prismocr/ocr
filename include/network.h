@@ -27,6 +27,7 @@ void init_cost(Layer *out_layer, float *output, float *target);
 void apply_grad(Network *network, size_t size_batch, float learning_rate);
 
 void network_print(Network network);
+void network_print_clean(Network network);
 void network_print_results(Network network, Dataset dataset);
 
 void network_save(const char *path, Network network);

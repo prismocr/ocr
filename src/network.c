@@ -136,6 +136,18 @@ void init_cost(Layer *out_layer, float *output, float *target) {
     }
 }
 
+void network_print_clean(Network network) {
+    printf("\n===================================================\n");
+    for (size_t i = 1; i < network.nb_layers; i++) {
+        printf("\n--------------------\nLayer %ld:\nWeights:\n", i);
+        matrix_print(network.layers[i].weights);
+        printf("Biases:\n");
+        for (size_t j = 0; j < network.layers[i].nb_neurons; j++)
+            printf("%f ", network.layers[i].biases[j]);
+        printf("\n");
+    }
+}
+
 void network_print(Network network) {
     printf("\n===================================================\n");
     for (size_t i = 1; i < network.nb_layers; i++) {
@@ -181,7 +193,7 @@ void network_save(const char *path, Network network) {
     fputc(network.nb_layers, f);
 
     for (size_t i = 0; i < network.nb_layers; i++) {
-        fputc(network.layers[i-1].nb_neurons, f);
+        fputc(network.layers[i].nb_neurons, f);
     }
     for (size_t i = 1; i < network.nb_layers; i++) {
         for (size_t j = 0; j < network.layers[i].nb_neurons; j++) {

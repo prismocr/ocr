@@ -180,8 +180,9 @@ void network_demo() {
     network_sgd(&network, &dataset, 1000000, 4, 2.5f);
 
     dataset_free(&dataset);
+
+    network_print_clean(network);
     network_save("net.hex", network);
-    printf("saved\n");
     network_free(&network);
 }
 
@@ -193,7 +194,7 @@ void network_load_demo() {
     network_load("net.hex", &network);
 
     // print network
-    network_print(network);
+    network_print_clean(network);
 }
 
 int demo(int argc, char *argv[]) {

@@ -15,7 +15,8 @@ int vector_new(size_t size, Vector *vector) {
 }
 
 void vector_free(Vector *vector) {
-    free(vector->val);
+    //free(vector->val);
+    vector = vector;
 }
 
 void vector_print(Vector vector) {
