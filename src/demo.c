@@ -144,7 +144,6 @@ int demo(int argc, char *argv[]) {
     }
 
     if(!strcmp(c, "network")) {
-        printf("ess\n\n");
         network_demo();
         return 0;
     }
