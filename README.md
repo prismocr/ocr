@@ -1,11 +1,11 @@
 <h1 align="center">
   <br>
-  <img src="https://imgur.com/a/KRlwXog" alt="Prism" width="200">
+  <img src="https://i.imgur.com/W85GUpg.png" alt="Prism" width="200">
 </h1>
 
 # Prism
 
-Prisl is a C written OCR for recognizing text.
+Prism is an efficient OCR written in C.
 
 ### Built With
 
@@ -23,7 +23,6 @@ sudo apt install make
 
 * [GTK](https://www.gtk.org/)
 ```bash
-sudo apt update
 sudo apt install libgtk-3-dev
 ```
 
