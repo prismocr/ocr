@@ -69,6 +69,26 @@ void rotate_demo(int argc, char *argv[]) {
         (bitmap_save("out.bmp", &image));
 
     matrix_free(&image);
+}
+
+void edge_detect_demo(int argc, char *argv[]) {
+    Matrix image;
+
+    if (argc < 2) {
+        printf("Missing image path.\n");
+        return;
+    }
+
+    try
+        (bitmap_load(argv[2], &image));
+
+
+    edge_detect(&image);
+
+    try
+        (bitmap_save("out.bmp", &image));
+
+    matrix_free(&image);
     
 }
 
@@ -140,6 +160,11 @@ int demo(int argc, char *argv[]) {
 
     if(!strcmp(c, "rotate")) {
         rotate_demo(argc, argv);
+        return 0;
+    }
+
+    if (!strcmp(c, "edge_detect")) {
+        edge_detect_demo(argc, argv);
         return 0;
     }
 
