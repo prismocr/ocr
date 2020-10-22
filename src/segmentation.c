@@ -2,13 +2,22 @@
 #include "image.h"
 #include "matrix.h"
 #include "morphology.h"
+#include "linked_list.h"
 
 // TODO remove these headers
 #include "bitmap.h"
 #include <stdio.h>
 
-Matrix histogram_y(Matrix image);
-float average_height(Matrix hist);
+static Matrix histogram_y(Matrix image);
+static Matrix histogram_x(Matrix image);
+static float average_height(Matrix hist);
+static void extract_words(Matrix *image);
+
+struct word {
+    size_t length;
+    char *letters;
+    Matrix *images;
+};
 
 /*
  * Text line segmentation based on morphology and histogram projection
@@ -22,15 +31,15 @@ void segment_morph_hist(Matrix image) {
 
     Matrix hist = histogram_y(image_copy);
 
-    // thresh based on average line length
+    // Threshold based on average line length
     float length_thresh = matrix_average(hist) * 0.2f; // TODO: tweak value
     for (i = 0; i < hist.h; i++) {
         hist.val[i][0] = hist.val[i][0] > length_thresh ? hist.val[i][0] : 0;
     }
 
+    // Threshold based on line height
     float height_thresh = average_height(hist) * 0.2f; // TODO: tweak value
     top = 0;
-    // TODO try to make this cleaner
     for (i = 0; i < hist.h; i++) {
         if (hist.val[i][0] == 0.f) {
             if (i - top < height_thresh + 2) {
@@ -42,23 +51,121 @@ void segment_morph_hist(Matrix image) {
         }
     }
 
-    // Save lines found to file
+    // TODO: Line recovery
+
+    // Process lines
     top = 0;
-    int d = 0;
+    MatrixLinkedList word_images;
+    mll_new(&word_images);
     for (i = 0; i < hist.h; i++) {
         if (hist.val[i][0] == 0.f) {
             if (i > top + 3) {
-                Matrix c = image_crop(0, top, image.w, i - top - 2, image);
-                char buff[200];
-                sprintf(buff, "seg/line-%d.bmp", d++);
-                bitmap_save(buff, &c);
-                matrix_free(&c);
+                Matrix line = image_crop(0, top, image.w, i - top - 2, image);
+                extract_words(&line);
+                Matrix line_hist = histogram_x(line);
+
+                // Threshold based on average word height
+                float height_thresh = matrix_average(line_hist) * 0.2f;
+                for (size_t j = 0; j < line_hist.h; j++) {
+                    line_hist.val[j][0] = line_hist.val[j][0] > height_thresh
+                                            ? line_hist.val[j][0]
+                                            : 0;
+                }
+
+                size_t left = 0;
+                for (size_t j = 0; j < line_hist.h; j++) {
+                    if (line_hist.val[j][0] == 0.f) {
+                        if (j > left + 3) {
+                            mll_insert(word_images.length,
+                                       image_crop(left, top, j - left - 2,
+                                                  i - top - 2, image),
+                                       &word_images);
+                        }
+                        left = j;
+                    }
+                }
+
+                matrix_free(&line_hist);
+                matrix_free(&line);
             }
             top = i;
         }
     }
 
-    // Not finished
+    char buff[200];
+    size_t c = 0;
+    for (size_t i = 0; i < word_images.length; i++) {
+        Matrix *word = mll_get(i, word_images);
+        // TODO test other operations
+        Matrix kernel = structuring_element(3, 3);
+        smooth(word, kernel);
+        dilate(word, kernel);
+        matrix_free(&kernel);
+        image_threshold_inv(120.f, 255.f, word);
+
+        size_t top, bot;
+        top = word->h;
+        bot = word->h;
+        for (size_t y = 0; y < word->h; y++) {
+            for (size_t x = 0; x < word->w; x++) {
+                if (top == word->h && word->val[y][x] > 0.f) {
+                    top = y;
+                }
+                if (bot == word->h && word->val[word->h - y - 1][x] > 0.f) {
+                    bot = word->h - y - 1;
+                }
+            }
+        }
+
+        // blank image
+        if (top == bot) {
+            continue;
+        }
+
+        size_t left, right;
+        left = word->w;
+        right = word->w;
+        for (size_t x = 0; x < word->w; x++) {
+            for (size_t y = 0; y < word->h; y++) {
+                if (left == word->w && word->val[y][x]) {
+                    left = x;
+                }
+                if (right == word->w && word->val[y][word->w - x - 1] > 0.f) {
+                    right = word->w - x - 1;
+                }
+            }
+        }
+
+        // TODO also do crop before
+
+        Matrix cropped_word = image_crop(left, top, right - left, bot - top, *word);
+        Matrix word_hist = histogram_x(cropped_word);
+
+        left = 0;
+        size_t j;
+        for (j = 0; j < word_hist.h; j++) {
+            if (word_hist.val[j][0] == 0.f) {
+                if (j > left + 3) {
+                    Matrix caracter = image_crop(left, 0, j - left - 2, cropped_word.h, cropped_word);
+                    sprintf(buff, "seg/car-%lu.bmp", c++);
+                    bitmap_save(buff, &caracter);
+                    matrix_free(&caracter);
+                }
+                left = j;
+            }
+        }
+        if (j > left + 3) {
+            Matrix caracter = image_crop(left, 0, j - left - 2, cropped_word.h, cropped_word);
+            sprintf(buff, "seg/car-%lu.bmp", c++);
+            bitmap_save(buff, &caracter);
+            matrix_free(&caracter);
+        }
+
+        matrix_free(&word_hist);
+        matrix_free(&cropped_word);
+    }
+
+    mll_free(&word_images);
 }
 
 /*
@@ -87,6 +194,22 @@ void feature_extract_morph_based(Matrix *image) {
     matrix_free(&kernel);
 
     image_threshold(10.f, 255.f, image);
+}
+
+void extract_words(Matrix *image) {
+    Matrix kernel;
+
+    // TODO test other operations
+    kernel = structuring_element(3, 3);
+    smooth(image, kernel);
+    matrix_free(&kernel);
+
+    kernel = structuring_element(1, 21);
+    erode(image, kernel);
+    erode(image, kernel);
+    matrix_free(&kernel);
+
+    image_threshold_inv(70.f, 255.f, image);
 }
 
 /*
@@ -120,13 +243,12 @@ void morphological_preproc(Matrix *image) {
     matrix_free(&kernel);
 }
 
-Matrix histogram_y(Matrix image) {
-    size_t i, j;
+static Matrix histogram_y(Matrix image) {
     Matrix hist;
 
     matrix_new(image.h, 1, &hist);
-    for (i = 0; i < image.h; i++) {
-        for (j = 0; j < image.w; j++) {
+    for (size_t i = 0; i < image.h; i++) {
+        for (size_t j = 0; j < image.w; j++) {
             hist.val[i][0] += image.val[i][j];
         }
     }
@@ -134,23 +256,34 @@ Matrix histogram_y(Matrix image) {
     return hist;
 }
 
+static Matrix histogram_x(Matrix image) {
+    Matrix hist;
+
+    matrix_new(image.w, 1, &hist);
+    for (size_t i = 0; i < image.h; i++) {
+        for (size_t j = 0; j < image.w; j++) {
+            hist.val[j][0] += image.val[i][j];
+        }
+    }
+
+    return hist;
+}
+
 float average_height(Matrix hist) {
-    size_t i, nlines, sum_height, top;
+    size_t nlines, sum_height, top;
 
     sum_height = 0;
     nlines = 0;
     top = 0;
-    for (i = 0; i < hist.h; i++) {
+    for (size_t i = 0; i < hist.h; i++) {
         if (hist.val[i][0] == 0.f) {
-            if (i > top + 3) {
+            if (i > top + 3) { // + 3 because line is at least 1px
                 sum_height += i - top - 2;
                 nlines++;
             }
             top = i;
         }
-
     }
 
     return (float) sum_height / nlines;
 }
-

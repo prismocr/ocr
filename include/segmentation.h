@@ -10,4 +10,3 @@ void segment_water_flow(Matrix image);
 void morphological_preproc(Matrix *image);
 
 #endif // SEGMENTATION_H
-
