@@ -68,7 +68,7 @@ void network_sgd(Network *network, Dataset *dataset, size_t epochs,
         for (size_t j = 0; j < nb_batches; j++) {
             // Apply gradient descent on a whole batch
             batch_gd(network, &batches[j]);
-            
+
             // Update network's weights and biases
             apply_grad(network, batches[j].size, learning_rate);
         }

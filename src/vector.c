@@ -15,9 +15,9 @@ int vector_new(size_t size, Vector *vector) {
 }
 
 void vector_free(Vector *vector) {
-    if(vector->val){
+    if (vector->val) {
         free(vector->val);
-        vector->val=NULL;
+        vector->val = NULL;
     }
 }
 
