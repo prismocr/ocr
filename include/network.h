@@ -28,22 +28,22 @@ void apply_grad(Network *network, size_t size_batch, float learning_rate);
 
 void network_print(Network network);
 
-/* BRICE
-* Prints only weights and biases
-* takes a network
-*/
+/**
+ * Prints only weights and biases
+ * takes a network
+ */
 void network_print_clean(Network network);
 void network_print_results(Network network, Dataset dataset);
 
-/* BRICE
-* Saves a network in a file
-* takes the path of the file and a network
-*/
+/**
+ * Saves a network in a file
+ * takes the path of the file and a network
+ */
 void network_save(const char *path, Network network);
-/* BRICE
-* Loads a network which is in a file
-* takes the path of the file and a network, return state (succeed)
-*/
+/**
+ * Loads a network which is in a file
+ * takes the path of the file and a network, return state (succeed)
+ */
 int network_load(const char *path, Network *out);
 
 #endif

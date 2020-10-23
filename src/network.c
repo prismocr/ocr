@@ -132,10 +132,10 @@ void init_cost(Layer *out_layer, float *output, float *target) {
         out_layer->deltas[i] *= sigmoid_prime(out_layer->z[i]);
     }
 }
-/* BRICE
-* Prints only weights and biases
-* takes a network
-*/
+/**
+ * Prints only weights and biases
+ * takes a network
+ */
 void network_print_clean(Network network) {
     printf("\n===================================================\n");
     for (size_t i = 1; i < network.nb_layers; i++) {
@@ -187,10 +187,10 @@ void network_print_results(Network network, Dataset dataset) {
     }
 }
 
-/* BRICE
-* Saves a network in a file
-* takes the path of the file and a network
-*/
+/**
+ * Saves a network in a file
+ * takes the path of the file and a network
+ */
 void network_save(const char *path, Network network) {
     FILE *f;
     f = fopen(path, "wb");
@@ -211,10 +211,10 @@ void network_save(const char *path, Network network) {
     fclose(f);
 }
 
-/* BRICE
-* Loads a network which is in a file
-* takes the path of the file and a network, return state (succeed)
-*/
+/**
+ * Loads a network which is in a file
+ * takes the path of the file and a network, return state (succeed)
+ */
 int network_load(const char *path, Network *out) {
     FILE *f;
     f = fopen(path, "rb");
