@@ -15,16 +15,28 @@ void image_contrast(Matrix *image, float delta);
 // Rotate image by an arbitrary radian angle
 void image_rotate(Matrix *image, float angle);
 
-// Sharpen convolution
+/* BRICE
+* Sharpen convolution using a 3x3 matrix
+* takes an image pointer
+*/
 void sharpen(Matrix *mat);
 
-// Edge detection convolution
+/* BRICE
+* Edge detect convolution using a 3x3 matrix
+* takes an image pointer
+*/
 void edge_detect(Matrix *mat);
 
-// Gaussian convolution using a 3x3 matrix
+/* BRICE
+* Gaussian convolution using a 3x3 matrix
+* takes an image pointer
+*/
 void gauss(Matrix *mat);
 
-// Gaussian convolution using a 5x5 matrix
+/* BRICE
+* Gaussian convolution using a 5x5 matrix
+* takes an image pointer
+*/
 void wide_gauss(Matrix *mat);
 
 #endif // IMAGE_H

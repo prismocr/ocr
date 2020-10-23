@@ -5,6 +5,10 @@ static inline float calculate_values_convolution(size_t i, size_t j,
                                                  Matrix *mat,
                                                  Matrix *convo_mat);
 
+/* BRICE
+* Uses a matrix to convolve an image
+* takes a matrix pointer (image) and a convolution matrix (pointer)
+*/
 void convolute(Matrix *mat, Matrix *convo_mat) {
     Matrix temp;
     matrix_new(mat->h, mat->w, &temp);
