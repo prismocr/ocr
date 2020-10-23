@@ -10,12 +10,10 @@
 #include "network.h"
 #include "layer.h"
 
-
-
 void sharpen_demo(int argc, char *argv[]) {
     Matrix image;
 
-    if (argc < 2) {
+    if (argc < 3) {
         printf("Missing image path.\n");
         return;
     }
@@ -34,7 +32,7 @@ void sharpen_demo(int argc, char *argv[]) {
 void blur_demo(int argc, char *argv[]) {
     Matrix image;
 
-    if (argc < 2) {
+    if (argc < 3) {
         printf("Missing image path.\n");
         return;
     }
@@ -53,14 +51,13 @@ void blur_demo(int argc, char *argv[]) {
 void rotate_demo(int argc, char *argv[]) {
     Matrix image;
 
-    if (argc < 2) {
+    if (argc < 3) {
         printf("Missing image path.\n");
         return;
     }
 
     try
         (bitmap_load(argv[2], &image));
-
 
     double angle = strtod(argv[3], NULL);
     image_rotate(&image, angle);
@@ -74,7 +71,7 @@ void rotate_demo(int argc, char *argv[]) {
 void edge_detect_demo(int argc, char *argv[]) {
     Matrix image;
 
-    if (argc < 2) {
+    if (argc < 3) {
         printf("Missing image path.\n");
         return;
     }
@@ -82,14 +79,12 @@ void edge_detect_demo(int argc, char *argv[]) {
     try
         (bitmap_load(argv[2], &image));
 
-
     edge_detect(&image);
 
     try
         (bitmap_save("out.bmp", &image));
 
     matrix_free(&image);
-    
 }
 
 void network_demo() {
@@ -144,25 +139,41 @@ void network_demo() {
     network_free(&network);
 }
 
-int demo(int argc, char *argv[]) {
-    char* c = argv[1];
+void segmentation_demo(int argc, char *argv[]) {
+    Matrix image;
 
-    if(argc < 2) {
+    if (argc < 3) {
+        printf("Missing image path.\n");
+        return;
+    }
+
+    try
+        (bitmap_load(argv[2], &image));
+
+    segment_morph_hist(image);
+
+    matrix_free(&image);
+}
+
+int demo(int argc, char *argv[]) {
+    char *c = argv[1];
+
+    if (argc < 2) {
         printf("Please enter a valid command.\n");
         return 1;
     }
 
-    if(!strcmp(c, "sharpen")) {
+    if (!strcmp(c, "sharpen")) {
         sharpen_demo(argc, argv);
         return 0;
     }
 
-    if(!strcmp(c, "blur")) {
+    if (!strcmp(c, "blur")) {
         blur_demo(argc, argv);
         return 0;
     }
 
-    if(!strcmp(c, "rotate")) {
+    if (!strcmp(c, "rotate")) {
         rotate_demo(argc, argv);
         return 0;
     }
@@ -172,8 +183,12 @@ int demo(int argc, char *argv[]) {
         return 0;
     }
 
-    if(!strcmp(c, "network")) {
+    if (!strcmp(c, "network")) {
         network_demo();
+        return 0;
+    }
+    if (!strcmp(c, "segmentation")) {
+        segmentation_demo(argc, argv);
         return 0;
     }
 
