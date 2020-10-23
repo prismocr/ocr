@@ -5,7 +5,9 @@
 
 /**
  * Uses a matrix to convolve an image
- * takes a matrix pointer (image) and a convolution matrix (pointer)
+ * 
+ * @param mat matrix, destination
+ * @param convo_mat convolution matrix to apply, source
  */
 void convolute(Matrix *mat, Matrix *convo_mat);
 

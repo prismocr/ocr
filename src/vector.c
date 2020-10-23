@@ -7,7 +7,10 @@
 
 /**
  * Creates a new vector
- * takes the size of the vector, a pointer to the vector, return state (succeed)
+ * 
+ * @param size of the vector
+ * @param pointer of the vector
+ * @return state (error)
  */
 int vector_new(size_t size, Vector *vector) {
     assert(size > 0);
@@ -20,7 +23,8 @@ int vector_new(size_t size, Vector *vector) {
 
 /**
  * Frees a vector
- * takes the vector to free
+ * 
+ * @param vector to free
  */
 void vector_free(Vector *vector) {
     if(vector->val){
@@ -31,7 +35,7 @@ void vector_free(Vector *vector) {
 
 /**
  * Prints a vector
- * takes the vector to print
+ * @param vector to print
  */
 void vector_print(Vector vector) {
     for (size_t i = 0; i < vector.size; i++) {
@@ -41,7 +45,9 @@ void vector_print(Vector vector) {
 
 /**
  * Prints a vector with a special format
- * takes the format to print and the vector to print
+ * 
+ * @param format to print 
+ * @param vector to print
  */
 void vector_printf(const char *format, Vector vector) {
     for (size_t i = 0; i < vector.size; i++) {
@@ -51,7 +57,10 @@ void vector_printf(const char *format, Vector vector) {
 
 /**
  * Randomizes values of a vector
- * takes the vector, a minimum value and a maximum value
+ * 
+ * @param the vector
+ * @param minimum value 
+ * @param maximum value
  */
 void vector_randomize(Vector *vector, float min, float max) {
     if (min > max) {
@@ -66,7 +75,10 @@ void vector_randomize(Vector *vector, float min, float max) {
 
 /**
  * Adds a value to the vector
- * takes the vector for the operation and two floats
+ * 
+ * @param vector for the operation
+ * @param a source
+ * @param b destination
  */
 void vector_add(size_t size, float *a, float *b) {
     for (size_t i = 0; i < size; i++) {
@@ -76,7 +88,10 @@ void vector_add(size_t size, float *a, float *b) {
 
 /**
  * Removes a value to the vector
- * takes the vector for the operation and two floats
+ * 
+ * @param vector for the operation
+ * @param a source
+ * @param b destination
  */
 void vector_sub(size_t size, float *a, float *b) {
     for (size_t i = 0; i < size; i++) {
@@ -86,7 +101,10 @@ void vector_sub(size_t size, float *a, float *b) {
 
 /**
  * Makes a homothety on an array
- * takes the size of the vector, a scalar and an array
+ * 
+ * @param vector for the operation
+ * @param scalar scalar
+ * @param arr source
  */
 void vector_scale(size_t size, float scalar, float *arr) {
     for (size_t i = 0; i < size; i++) {
@@ -96,7 +114,9 @@ void vector_scale(size_t size, float scalar, float *arr) {
 
 /**
  * Dot products on arrays
- * takes the size of the arrays and two arrays
+ *
+ * @param a source
+ * @param b destination
  */
 void vector_dot(size_t size, float *a, float *b) {
     for (size_t i = 0; i < size; i++) {
@@ -106,7 +126,10 @@ void vector_dot(size_t size, float *a, float *b) {
 
 /**
  * Converts arrays to vector
- * takes an array and the size of the vector, return a vector
+ * 
+ * @param array to convert
+ * @param size size
+ * @return vector
  */
 Vector arr2vect(float *array, size_t size) {
     Vector vector;
@@ -117,7 +140,10 @@ Vector arr2vect(float *array, size_t size) {
 
 /**
  * Copies values of a vector to another, changed array is the second
- * takes the size of the vector, and two vector
+* 
+ * @param size size
+ * @param a source
+ * @param b destination
  */
 void vector_copy(size_t size, float *a, float *b) {
     memcpy(b, a, sizeof(float) * size);

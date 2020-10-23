@@ -30,19 +30,25 @@ void network_print(Network network);
 
 /**
  * Prints only weights and biases
- * takes a network
+ * 
+ * @param network to print
  */
 void network_print_clean(Network network);
 void network_print_results(Network network, Dataset dataset);
 
 /**
  * Saves a network in a file
- * takes the path of the file and a network
+ * 
+ * @param path of the file
+ * @param network to save
  */
 void network_save(const char *path, Network network);
 /**
  * Loads a network which is in a file
- * takes the path of the file and a network, return state (succeed)
+ * 
+ * @param path of the file
+ * @param network
+ * @return state (error)
  */
 int network_load(const char *path, Network *out);
 

@@ -17,25 +17,29 @@ void image_rotate(Matrix *image, float angle);
 
 /**
  * Sharpen convolution using a 3x3 matrix
- * takes an image pointer
+ * 
+ * @param image
  */
 void sharpen(Matrix *mat);
 
 /**
  * Edge detect convolution using a 3x3 matrix
- * takes an image pointer
+ * 
+ * @param image
  */
 void edge_detect(Matrix *mat);
 
 /**
  * Gaussian convolution using a 3x3 matrix
- * takes an image pointer
+ * 
+ * @param image
  */
 void gauss(Matrix *mat);
 
 /**
  * Gaussian convolution using a 5x5 matrix
- * takes an image pointer
+ * 
+ * @param image
  */
 void wide_gauss(Matrix *mat);
 
