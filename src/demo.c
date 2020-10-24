@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include "demo.h"
 #include "segmentation.h"
 #include "bitmap.h"
 #include "image.h"
@@ -68,6 +69,27 @@ void rotate_demo(int argc, char *argv[]) {
     matrix_free(&image);
 }
 
+void contrast_demo(int argc, char *argv[]) {
+    Matrix image;
+
+    if (argc < 2) {
+        printf("Missing image path.\n");
+        return;
+    }
+
+    try
+        (bitmap_load(argv[2], &image));
+
+
+    double delta = strtod(argv[3], NULL);
+    image_contrast(&image, delta);
+
+    try
+        (bitmap_save("out.bmp", &image));
+
+    matrix_free(&image);
+}
+
 void edge_detect_demo(int argc, char *argv[]) {
     Matrix image;
 
@@ -80,6 +102,26 @@ void edge_detect_demo(int argc, char *argv[]) {
         (bitmap_load(argv[2], &image));
 
     edge_detect(&image);
+
+    try
+        (bitmap_save("out.bmp", &image));
+
+    matrix_free(&image);
+}
+
+void invert_demo(int argc, char *argv[]) {
+    Matrix image;
+
+    if (argc < 2) {
+        printf("Missing image path.\n");
+        return;
+    }
+
+    try
+        (bitmap_load(argv[2], &image));
+
+
+    image_invert_color(255.f, &image);
 
     try
         (bitmap_save("out.bmp", &image));
@@ -136,6 +178,9 @@ void network_demo() {
     network_sgd(&network, &dataset, 1000000, 4, 2.5f);
 
     dataset_free(&dataset);
+
+    network_print_clean(network);
+    network_save("net.hex", network);
     network_free(&network);
 }
 
@@ -153,6 +198,17 @@ void segmentation_demo(int argc, char *argv[]) {
     segment_morph_hist(image);
 
     matrix_free(&image);
+}
+
+void network_load_demo() {
+    // create new network
+    Network network;
+
+    // load network
+    network_load("net.hex", &network);
+
+    // print network
+    network_print_clean(network);
 }
 
 int demo(int argc, char *argv[]) {
@@ -183,12 +239,28 @@ int demo(int argc, char *argv[]) {
         return 0;
     }
 
-    if (!strcmp(c, "network")) {
+    if(!strcmp(c, "contrast")) {
+        contrast_demo(argc, argv);
+        return 0;
+    }
+
+    if(!strcmp(c, "invert")) {
+        invert_demo(argc, argv);
+        return 0;
+    }
+
+    if(!strcmp(c, "network")) {
         network_demo();
         return 0;
     }
+
     if (!strcmp(c, "segmentation")) {
         segmentation_demo(argc, argv);
+        return 0;
+    }
+
+    if(!strcmp(c, "network_load")) {
+        network_load_demo();
         return 0;
     }
 

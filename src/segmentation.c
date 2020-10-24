@@ -31,7 +31,7 @@ void segment_morph_hist(Matrix image) {
 
     Matrix kernel = structuring_element(3, 3);
     smooth(&image_copy, kernel);
-    matrix_free(kernel);
+    matrix_free(&kernel);
 
     feature_extract_morph_based(&image_copy);
 
