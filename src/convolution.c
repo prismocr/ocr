@@ -5,12 +5,6 @@ static inline float calculate_values_convolution(size_t i, size_t j,
                                                  Matrix *mat,
                                                  Matrix *convo_mat);
 
-/**
- * Uses a matrix to convolve an image
- * 
- * @param mat matrix, destination
- * @param convo_mat convolution matrix to apply, source
- */
 void convolute(Matrix *mat, Matrix *convo_mat) {
     Matrix temp;
     matrix_new(mat->h, mat->w, &temp);

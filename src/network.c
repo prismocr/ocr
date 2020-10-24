@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <assert.h>
+#include <errno.h>
 #include "network.h"
 #include "layer.h"
 #include "neuron.h"
 #include "data.h"
 #include "vector.h"
 
-#define UNUSED(x) (void)(x)
+#define UNUSED(x) (void) (x)
 
 Network network_new(size_t nb_layers, size_t *sizes) {
     Network network;
@@ -56,7 +57,6 @@ float *network_feed_forward(Network *network, float *input) {
     return out_layer->values;
 }
 
-// Network stochastic gradient descent
 void network_sgd(Network *network, Dataset *dataset, size_t epochs,
                  size_t batch_size, float learning_rate) {
     Dataset *batches = NULL;
@@ -69,34 +69,30 @@ void network_sgd(Network *network, Dataset *dataset, size_t epochs,
         // Train the network on each batch
         for (size_t j = 0; j < nb_batches; j++) {
             // Apply gradient descent on a whole batch
-            batch_gd(network, &batches[j]);
-            
-            // Update network's weights and biases
-            apply_grad(network, batches[j].size, learning_rate);
+            batch_gd(network, &batches[j], learning_rate);
         }
     }
 
-    network_print_results(*network, *dataset);
     free(batches);
 }
 
-// Apply gradient descent on a whole batch
-void batch_gd(Network *network, Dataset *batch) {
+void batch_gd(Network *network, Dataset *batch, float learning_rate) {
     for (size_t i = 0; i < batch->size; i++) {
         network_backpropagation(network, batch->datas[i]);
     }
+    // Update network's weights and biases
+    apply_grad(network, batch->size, learning_rate);
 }
 
-// Feed forward and backpropagate with a single @data
 void network_backpropagation(Network *network, Data data) {
     // Forward Propagation
-    float *output = network_feed_forward(network, data.input.val);
+    network_feed_forward(network, data.input.val);
 
     // Backward Propagation
     Layer *out_l = network->output_layer;
 
     // Apply backpropagation on the last layer
-    init_cost(out_l, output, data.target.val);
+    init_cost(out_l, data.target.val);
     vector_add(out_l->nb_neurons, out_l->deltas, out_l->d_biases);
     matrix_dcl(out_l->nb_neurons, out_l->deltas, out_l->prev_layer->nb_neurons,
                out_l->prev_layer->values, &out_l->d_weights);
@@ -107,7 +103,6 @@ void network_backpropagation(Network *network, Data data) {
     }
 }
 
-// Update network's weights and biases
 void apply_grad(Network *network, size_t size_batch, float learning_rate) {
     size_t i, j, k;
     for (i = 1; i < network->nb_layers; i++) {
@@ -125,18 +120,13 @@ void apply_grad(Network *network, size_t size_batch, float learning_rate) {
     }
 }
 
-// Initialize cost of last layer
-void init_cost(Layer *out_layer, float *output, float *target) {
+void init_cost(Layer *out_layer, float *target) {
+    float *output = out_layer->values;
     for (size_t i = 0; i < out_layer->nb_neurons; i++) {
         out_layer->deltas[i] = 2.f * (output[i] - target[i]); // derivative cost
         out_layer->deltas[i] *= sigmoid_prime(out_layer->z[i]);
     }
 }
-/**
- * Prints only weights and biases
- * 
- * @param network to print
- */
 void network_print_clean(Network network) {
     printf("\n===================================================\n");
     for (size_t i = 1; i < network.nb_layers; i++) {
@@ -188,12 +178,6 @@ void network_print_results(Network network, Dataset dataset) {
     }
 }
 
-/**
- * Saves a network in a file
- * 
- * @param path of the file
- * @param network to save
- */
 void network_save(const char *path, Network network) {
     FILE *f;
     f = fopen(path, "wb");
@@ -204,7 +188,7 @@ void network_save(const char *path, Network network) {
     }
     for (size_t i = 1; i < network.nb_layers; i++) {
         for (size_t j = 0; j < network.layers[i].nb_neurons; j++) {
-            for (size_t k = 0; k < network.layers[i-1].nb_neurons; k++) {
+            for (size_t k = 0; k < network.layers[i - 1].nb_neurons; k++) {
                 fwrite(&network.layers[i].neurons[j].weights_in[k], 1,
                        sizeof(float), f);
             }
@@ -214,18 +198,11 @@ void network_save(const char *path, Network network) {
     fclose(f);
 }
 
-/**
- * Loads a network which is in a file
- * 
- * @param path of the file
- * @param network
- * @return state (error)
- */
 int network_load(const char *path, Network *out) {
     FILE *f;
     f = fopen(path, "rb");
     if (f == NULL) {
-        //set_last_errorf("Failed to open file: %s", strerror(errno));
+        // set_last_errorf("Failed to open file: %s", strerror(errno));
         return 1;
     }
 
@@ -238,12 +215,14 @@ int network_load(const char *path, Network *out) {
 
     for (size_t i = 1; i < network.nb_layers; i++) {
         for (size_t j = 0; j < network.layers[i].nb_neurons; j++) {
-            for (size_t k = 0; k < network.layers[i-1].nb_neurons; k++) {
-                size_t unused = fread(network.layers[i].neurons[j].weights_in + k, 1,
-                      sizeof(float), f);
+            for (size_t k = 0; k < network.layers[i - 1].nb_neurons; k++) {
+                size_t unused
+                  = fread(network.layers[i].neurons[j].weights_in + k, 1,
+                          sizeof(float), f);
                 UNUSED(unused);
             }
-            size_t unused = fread(network.layers[i].neurons[j].bias, 1, sizeof(float), f);
+            size_t unused
+              = fread(network.layers[i].neurons[j].bias, 1, sizeof(float), f);
             UNUSED(unused);
         }
     }
