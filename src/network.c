@@ -71,15 +71,13 @@ void network_sgd(Network *network, Dataset *dataset, size_t epochs,
         for (size_t j = 0; j < nb_batches; j++) {
             // Apply gradient descent on a whole batch
             batch_gd(network, &batches[j]);
+            
             // Update network's weights and biases
             apply_grad(network, batches[j].size, learning_rate);
         }
     }
 
     network_print_results(*network, *dataset);
-    for (size_t i = 0; i < nb_batches; i++) {
-        dataset_free(&batches[i]);
-    }
     free(batches);
 }
 
@@ -135,6 +133,22 @@ void init_cost(Layer *out_layer, float *output, float *target) {
         out_layer->deltas[i] *= sigmoid_prime(out_layer->z[i]);
     }
 }
+/**
+ * Prints only weights and biases
+ * 
+ * @param network to print
+ */
+void network_print_clean(Network network) {
+    printf("\n===================================================\n");
+    for (size_t i = 1; i < network.nb_layers; i++) {
+        printf("\n--------------------\nLayer %ld:\nWeights:\n", i);
+        matrix_print(network.layers[i].weights);
+        printf("Biases:\n");
+        for (size_t j = 0; j < network.layers[i].nb_neurons; j++)
+            printf("%f ", network.layers[i].biases[j]);
+        printf("\n");
+    }
+}
 
 void network_print_clean(Network network) {
     printf("\n===================================================\n");
@@ -186,7 +200,13 @@ void network_print_results(Network network, Dataset dataset) {
         printf("\n");
     }
 }
-// marche uniquement pour des int
+
+/**
+ * Saves a network in a file
+ * 
+ * @param path of the file
+ * @param network to save
+ */
 void network_save(const char *path, Network network) {
     FILE *f;
     f = fopen(path, "wb");
@@ -207,6 +227,13 @@ void network_save(const char *path, Network network) {
     fclose(f);
 }
 
+/**
+ * Loads a network which is in a file
+ * 
+ * @param path of the file
+ * @param network
+ * @return state (error)
+ */
 int network_load(const char *path, Network *out) {
     FILE *f;
     f = fopen(path, "rb");

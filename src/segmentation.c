@@ -3,7 +3,7 @@
 #include "matrix.h"
 #include "morphology.h"
 
-/*
+/* LEO
  * Morphology based feature extraction method
  * Proposed by Wu, Hsieh and Chen:
  * https://www.cin.ufpe.br/~if751/projetos/artigos/Morphology-based%20text%20line%20extraction.pdf

@@ -9,7 +9,7 @@
 
 CC := gcc
 CPPFLAGS := -MMD -Iinclude/
-CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic
+CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic -static
 LDLIBS := -lm
 
 BUILDDIR := build

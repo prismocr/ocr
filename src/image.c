@@ -108,6 +108,11 @@ void image_rotate(Matrix *image, float angle) {
     *image = dest;
 }
 
+/**
+ * Edge detect convolution using a 3x3 matrix
+ * 
+ * @param image
+ */
 void edge_detect(Matrix *image) {
     float convo_mat[3][3] = {{-1., -1., -1.}, {-1., 8., -1.}, {-1., -1., -1.}};
 
@@ -122,7 +127,11 @@ void edge_detect(Matrix *image) {
 
     convolute(image, &mat);
 }
-
+/**
+ * Gaussian convolution using a 3x3 matrix
+ * 
+ * @param image
+ */
 void gauss(Matrix *image) {
     float convo_mat[3][3] = {{1 / 16.f, 2 / 16.f, 1 / 16.f},
                              {2 / 16.f, 4 / 16.f, 2 / 16.f},
@@ -140,6 +149,11 @@ void gauss(Matrix *image) {
     convolute(image, &mat);
 }
 
+/**
+ * Gaussian convolution using a 5x5 matrix
+ * 
+ * @param image
+ */
 void wide_gauss(Matrix *image) {
     float convo_mat[5][5]
       = {{2 / 159.f, 4 / 159.f, 5 / 159.f, 4 / 159.f, 2 / 159.f},
@@ -160,6 +174,11 @@ void wide_gauss(Matrix *image) {
     convolute(image, &mat);
 }
 
+/**
+ * Sharpen convolution using a 3x3 matrix
+ * 
+ * @param image
+ */
 void sharpen(Matrix *image) {
     float convo_mat[3][3] = {{0., -1., 0.}, {-1., 5., -1.}, {0., -1., 0.}};
 

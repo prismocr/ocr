@@ -30,27 +30,44 @@
  * 0x32   4    Number of important colors used
  */
 
-/*
+/**
  * Converts BGR color to grayscale using BT-709 method
+ * 
+ * @param color char array (pixel)
+ * @return mean of the pixel values with BT709
  */
 float bgr_to_gray(unsigned char color[3]) {
     return color[0] * 0.07f + color[1] * 0.71f + color[2] * 0.21f;
 }
 
-/*
+/**
  * Reads 2 bytes from file
+ * 
+ * @param f file
+ * @return uint
  */
 unsigned int read_word(FILE *f) {
     return fgetc(f) | fgetc(f) << 8;
 }
 
-/*
+/**
  * Reads 4 bytes from file
+ * 
+ * @param f file
+ * @return uint
  */
 unsigned int read_dword(FILE *f) {
     return fgetc(f) | fgetc(f) << 8 | fgetc(f) << 16 | fgetc(f) << 24;
 }
 
+
+/**
+ * Loads an image into a Matrix of grayscale pixels
+ * 
+ * @param path to load the file
+ * @param image to load
+ * @return state (error)
+ */
 int bitmap_load(const char *path, Matrix *image) {
     int i, j;
     unsigned int pixel_data_offset, padding, w, h;
@@ -117,6 +134,13 @@ int bitmap_load(const char *path, Matrix *image) {
     return 0;
 }
 
+/**
+ * Save Matrix into bmp image file format.
+ * 
+ * @param path to save the file
+ * @param image to save
+ * @return state (error)
+ */
 int bitmap_save(const char *path, Matrix *image) {
     unsigned char gray, padding;
     int i;
