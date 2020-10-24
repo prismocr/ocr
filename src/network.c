@@ -56,7 +56,6 @@ float *network_feed_forward(Network *network, float *input) {
     return out_layer->values;
 }
 
-// Network stochastic gradient descent
 void network_sgd(Network *network, Dataset *dataset, size_t epochs,
                  size_t batch_size, float learning_rate) {
     Dataset *batches = NULL;
@@ -69,34 +68,30 @@ void network_sgd(Network *network, Dataset *dataset, size_t epochs,
         // Train the network on each batch
         for (size_t j = 0; j < nb_batches; j++) {
             // Apply gradient descent on a whole batch
-            batch_gd(network, &batches[j]);
-            
-            // Update network's weights and biases
-            apply_grad(network, batches[j].size, learning_rate);
+            batch_gd(network, &batches[j], learning_rate);
         }
     }
 
-    network_print_results(*network, *dataset);
     free(batches);
 }
 
-// Apply gradient descent on a whole batch
-void batch_gd(Network *network, Dataset *batch) {
+void batch_gd(Network *network, Dataset *batch, float learning_rate) {
     for (size_t i = 0; i < batch->size; i++) {
         network_backpropagation(network, batch->datas[i]);
     }
+    // Update network's weights and biases
+    apply_grad(network, batch->size, learning_rate);
 }
 
-// Feed forward and backpropagate with a single @data
 void network_backpropagation(Network *network, Data data) {
     // Forward Propagation
-    float *output = network_feed_forward(network, data.input.val);
+    network_feed_forward(network, data.input.val);
 
     // Backward Propagation
     Layer *out_l = network->output_layer;
 
     // Apply backpropagation on the last layer
-    init_cost(out_l, output, data.target.val);
+    init_cost(out_l, data.target.val);
     vector_add(out_l->nb_neurons, out_l->deltas, out_l->d_biases);
     matrix_dcl(out_l->nb_neurons, out_l->deltas, out_l->prev_layer->nb_neurons,
                out_l->prev_layer->values, &out_l->d_weights);
@@ -107,7 +102,6 @@ void network_backpropagation(Network *network, Data data) {
     }
 }
 
-// Update network's weights and biases
 void apply_grad(Network *network, size_t size_batch, float learning_rate) {
     size_t i, j, k;
     for (i = 1; i < network->nb_layers; i++) {
@@ -125,8 +119,8 @@ void apply_grad(Network *network, size_t size_batch, float learning_rate) {
     }
 }
 
-// Initialize cost of last layer
-void init_cost(Layer *out_layer, float *output, float *target) {
+void init_cost(Layer *out_layer, float *target) {
+    float* output = out_layer->values;
     for (size_t i = 0; i < out_layer->nb_neurons; i++) {
         out_layer->deltas[i] = 2.f * (output[i] - target[i]); // derivative cost
         out_layer->deltas[i] *= sigmoid_prime(out_layer->z[i]);

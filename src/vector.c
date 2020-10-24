@@ -140,7 +140,7 @@ Vector arr2vect(float *array, size_t size) {
 
 /**
  * Copies values of a vector to another, changed array is the second
-* 
+ * 
  * @param size size
  * @param a source
  * @param b destination

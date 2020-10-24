@@ -139,6 +139,7 @@ void network_demo() {
     dataset.datas[3] = data11;
 
     network_sgd(&network, &dataset, 1000000, 4, 2.5f);
+    network_print_results(network,  dataset);
 
     dataset_free(&dataset);
     network_free(&network);
