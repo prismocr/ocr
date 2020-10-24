@@ -29,6 +29,8 @@ void image_threshold(float thresh, float maxval, Matrix *image);
  */
 void image_threshold_inv(float thresh, float maxval, Matrix *image);
 
+int image_threshold_otsu(Matrix *image);
+
 /**
  * Invert colors of an image.
  *

@@ -19,13 +19,11 @@ void sharpen_demo(int argc, char *argv[]) {
         return;
     }
 
-    try
-        (bitmap_load(argv[2], &image));
+    exit_on_error(bitmap_load(argv[2], &image));
 
     sharpen(&image);
 
-    try
-        (bitmap_save("out.bmp", &image));
+    exit_on_error(bitmap_save("out.bmp", &image));
 
     matrix_free(&image);
 }
@@ -38,13 +36,11 @@ void blur_demo(int argc, char *argv[]) {
         return;
     }
 
-    try
-        (bitmap_load(argv[2], &image));
+    exit_on_error(bitmap_load(argv[2], &image));
 
     wide_gauss(&image);
 
-    try
-        (bitmap_save("out.bmp", &image));
+    exit_on_error(bitmap_save("out.bmp", &image));
 
     matrix_free(&image);
 }
@@ -57,14 +53,12 @@ void rotate_demo(int argc, char *argv[]) {
         return;
     }
 
-    try
-        (bitmap_load(argv[2], &image));
+    exit_on_error(bitmap_load(argv[2], &image));
 
     double angle = strtod(argv[3], NULL);
     image_rotate(&image, angle);
 
-    try
-        (bitmap_save("out.bmp", &image));
+    exit_on_error(bitmap_save("out.bmp", &image));
 
     matrix_free(&image);
 }
@@ -77,15 +71,12 @@ void contrast_demo(int argc, char *argv[]) {
         return;
     }
 
-    try
-        (bitmap_load(argv[2], &image));
-
+    exit_on_error(bitmap_load(argv[2], &image));
 
     double delta = strtod(argv[3], NULL);
     image_contrast(&image, delta);
 
-    try
-        (bitmap_save("out.bmp", &image));
+    exit_on_error(bitmap_save("out.bmp", &image));
 
     matrix_free(&image);
 }
@@ -98,13 +89,11 @@ void edge_detect_demo(int argc, char *argv[]) {
         return;
     }
 
-    try
-        (bitmap_load(argv[2], &image));
+    exit_on_error(bitmap_load(argv[2], &image));
 
     edge_detect(&image);
 
-    try
-        (bitmap_save("out.bmp", &image));
+    exit_on_error(bitmap_save("out.bmp", &image));
 
     matrix_free(&image);
 }
@@ -117,14 +106,11 @@ void invert_demo(int argc, char *argv[]) {
         return;
     }
 
-    try
-        (bitmap_load(argv[2], &image));
-
+    exit_on_error(bitmap_load(argv[2], &image));
 
     image_invert_color(255.f, &image);
 
-    try
-        (bitmap_save("out.bmp", &image));
+    exit_on_error(bitmap_save("out.bmp", &image));
 
     matrix_free(&image);
 }
@@ -184,22 +170,6 @@ void network_demo() {
     network_free(&network);
 }
 
-void segmentation_demo(int argc, char *argv[]) {
-    Matrix image;
-
-    if (argc < 3) {
-        printf("Missing image path.\n");
-        return;
-    }
-
-    try
-        (bitmap_load(argv[2], &image));
-
-    segment_morph_hist(image);
-
-    matrix_free(&image);
-}
-
 void network_load_demo() {
     // create new network
     Network network;
@@ -209,6 +179,40 @@ void network_load_demo() {
 
     // print network
     network_print_clean(network);
+}
+
+int otsu_demo(int argc, char *argv[]) {
+    Matrix image;
+
+    if (argc < 3) {
+        printf("Missing image path.\n");
+        return 1;
+    }
+
+    exit_on_error(bitmap_load(argv[2], &image));
+
+    image_threshold_otsu(&image);
+
+    exit_on_error(bitmap_save("out.bmp", &image));
+
+    matrix_free(&image);
+    return 0;
+}
+
+int segmentation_demo(int argc, char *argv[]) {
+    Matrix image;
+
+    if (argc < 3) {
+        printf("Missing image path.\n");
+        return 1;
+    }
+
+    exit_on_error(bitmap_load(argv[2], &image));
+
+    segment_morph_hist(image);
+
+    matrix_free(&image);
+    return 0;
 }
 
 int demo(int argc, char *argv[]) {
@@ -239,29 +243,32 @@ int demo(int argc, char *argv[]) {
         return 0;
     }
 
-    if(!strcmp(c, "contrast")) {
+    if (!strcmp(c, "contrast")) {
         contrast_demo(argc, argv);
         return 0;
     }
 
-    if(!strcmp(c, "invert")) {
+    if (!strcmp(c, "invert")) {
         invert_demo(argc, argv);
         return 0;
     }
 
-    if(!strcmp(c, "network")) {
+    if (!strcmp(c, "network")) {
         network_demo();
         return 0;
     }
 
-    if (!strcmp(c, "segmentation")) {
-        segmentation_demo(argc, argv);
+    if (!strcmp(c, "network_load")) {
+        network_load_demo();
         return 0;
     }
 
-    if(!strcmp(c, "network_load")) {
-        network_load_demo();
-        return 0;
+    if (!strcmp(c, "otsu")) {
+        return otsu_demo(argc, argv);
+    }
+
+    if (!strcmp(c, "segmentation")) {
+        return segmentation_demo(argc, argv);
     }
 
     printf("what?\n");
