@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include "demo.h"
 #include "segmentation.h"
 #include "bitmap.h"
 #include "image.h"
@@ -10,12 +11,10 @@
 #include "network.h"
 #include "layer.h"
 
-
-
 void sharpen_demo(int argc, char *argv[]) {
     Matrix image;
 
-    if (argc < 2) {
+    if (argc < 3) {
         printf("Missing image path.\n");
         return;
     }
@@ -34,7 +33,7 @@ void sharpen_demo(int argc, char *argv[]) {
 void blur_demo(int argc, char *argv[]) {
     Matrix image;
 
-    if (argc < 2) {
+    if (argc < 3) {
         printf("Missing image path.\n");
         return;
     }
@@ -53,14 +52,13 @@ void blur_demo(int argc, char *argv[]) {
 void rotate_demo(int argc, char *argv[]) {
     Matrix image;
 
-    if (argc < 2) {
+    if (argc < 3) {
         printf("Missing image path.\n");
         return;
     }
 
     try
         (bitmap_load(argv[2], &image));
-
 
     double angle = strtod(argv[3], NULL);
     image_rotate(&image, angle);
@@ -71,7 +69,7 @@ void rotate_demo(int argc, char *argv[]) {
     matrix_free(&image);
 }
 
-void edge_detect_demo(int argc, char *argv[]) {
+void contrast_demo(int argc, char *argv[]) {
     Matrix image;
 
     if (argc < 2) {
@@ -83,13 +81,52 @@ void edge_detect_demo(int argc, char *argv[]) {
         (bitmap_load(argv[2], &image));
 
 
+    double delta = strtod(argv[3], NULL);
+    image_contrast(&image, delta);
+
+    try
+        (bitmap_save("out.bmp", &image));
+
+    matrix_free(&image);
+}
+
+void edge_detect_demo(int argc, char *argv[]) {
+    Matrix image;
+
+    if (argc < 3) {
+        printf("Missing image path.\n");
+        return;
+    }
+
+    try
+        (bitmap_load(argv[2], &image));
+
     edge_detect(&image);
 
     try
         (bitmap_save("out.bmp", &image));
 
     matrix_free(&image);
-    
+}
+
+void invert_demo(int argc, char *argv[]) {
+    Matrix image;
+
+    if (argc < 2) {
+        printf("Missing image path.\n");
+        return;
+    }
+
+    try
+        (bitmap_load(argv[2], &image));
+
+
+    image_invert_color(255.f, &image);
+
+    try
+        (bitmap_save("out.bmp", &image));
+
+    matrix_free(&image);
 }
 
 void network_demo() {
@@ -142,28 +179,58 @@ void network_demo() {
     network_print_results(network,  dataset);
 
     dataset_free(&dataset);
+
+    network_print_clean(network);
+    network_save("net.hex", network);
     network_free(&network);
 }
 
-int demo(int argc, char *argv[]) {
-    char* c = argv[1];
+void segmentation_demo(int argc, char *argv[]) {
+    Matrix image;
 
-    if(argc < 2) {
+    if (argc < 3) {
+        printf("Missing image path.\n");
+        return;
+    }
+
+    try
+        (bitmap_load(argv[2], &image));
+
+    segment_morph_hist(image);
+
+    matrix_free(&image);
+}
+
+void network_load_demo() {
+    // create new network
+    Network network;
+
+    // load network
+    network_load("net.hex", &network);
+
+    // print network
+    network_print_clean(network);
+}
+
+int demo(int argc, char *argv[]) {
+    char *c = argv[1];
+
+    if (argc < 2) {
         printf("Please enter a valid command.\n");
         return 1;
     }
 
-    if(!strcmp(c, "sharpen")) {
+    if (!strcmp(c, "sharpen")) {
         sharpen_demo(argc, argv);
         return 0;
     }
 
-    if(!strcmp(c, "blur")) {
+    if (!strcmp(c, "blur")) {
         blur_demo(argc, argv);
         return 0;
     }
 
-    if(!strcmp(c, "rotate")) {
+    if (!strcmp(c, "rotate")) {
         rotate_demo(argc, argv);
         return 0;
     }
@@ -173,8 +240,28 @@ int demo(int argc, char *argv[]) {
         return 0;
     }
 
+    if(!strcmp(c, "contrast")) {
+        contrast_demo(argc, argv);
+        return 0;
+    }
+
+    if(!strcmp(c, "invert")) {
+        invert_demo(argc, argv);
+        return 0;
+    }
+
     if(!strcmp(c, "network")) {
         network_demo();
+        return 0;
+    }
+
+    if (!strcmp(c, "segmentation")) {
+        segmentation_demo(argc, argv);
+        return 0;
+    }
+
+    if(!strcmp(c, "network_load")) {
+        network_load_demo();
         return 0;
     }
 

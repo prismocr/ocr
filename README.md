@@ -47,5 +47,17 @@ make
 ./ocr [options]
 ```
 
+## Tests
+
+To run tests, first you have to clone Unity at the root of the repository:
+```
+git clone https://github.com/ThrowTheSwitch/Unity.git
+```
+
+Then to run test:
+```
+make test
+```
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

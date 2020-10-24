@@ -20,7 +20,7 @@ OBJS := $(patsubst %.c,%.o,$(notdir $(wildcard src/*.c)))
 #
 # Debug variables
 #
-DBGCFLAGS := -g -O0 -DDEBUG
+DBGCFLAGS := $(CFLAGS) -g -O0 -DDEBUG
 
 DBGDIR := $(BUILDDIR)/debug
 DBGOBJDIR := $(DBGDIR)/obj
@@ -29,14 +29,23 @@ DBGOBJS := $(addprefix $(DBGOBJDIR)/,$(OBJS))
 #
 # Release variables
 #
-RLSCFLAGS := -O3 -DNDEBUG
+RLSCFLAGS := $(CFLAGS) -O3 -DNDEBUG
 
 RLSDIR := $(BUILDDIR)/release
 RLSOBJDIR := $(RLSDIR)/obj
 RLSOBJS := $(addprefix $(RLSOBJDIR)/,$(OBJS))
 
+#
+# Test variables
+#
+TSTCFLAGS := $(CFLAGS) -g -O0 -DDEBUG
 
-.PHONY: all prep remake debug release clean mrproper format cppcheck
+TSTDIR := $(BUILDDIR)/test
+TSTOBJDIR := $(TSTDIR)/obj
+TSTEXEC := $(addprefix $(TSTDIR)/,$(basename $(notdir $(wildcard test/*.c))))
+TSTOBJS := $(addprefix $(TSTOBJDIR)/,$(addsuffix .o,$(notdir $(TSTEXEC))))
+
+.PHONY: all prep remake debug release test clean mrproper format cppcheck
 
 all: prep release
 
@@ -46,10 +55,10 @@ all: prep release
 debug: $(DBGDIR)/$(EXEC)
 
 $(DBGDIR)/$(EXEC): $(DBGOBJS)
-	$(CC) $^ -o $@ $(CPPFLAGS) $(CFLAGS) $(LDLIBS) $(DBGCFLAGS)
+	$(CC) $^ -o $@ $(CPPFLAGS) $(DBGCFLAGS) $(LDLIBS)
 
 $(DBGOBJDIR)/%.o: src/%.c
-	$(CC) -c $< -o $@ $(CPPFLAGS) $(CFLAGS) $(DBGCFLAGS)
+	$(CC) -c $< -o $@ $(CPPFLAGS) $(DBGCFLAGS) $(DBGCFLAGS)
 
 #
 # Release rules
@@ -57,16 +66,28 @@ $(DBGOBJDIR)/%.o: src/%.c
 release: $(RLSDIR)/$(EXEC)
 
 $(RLSDIR)/$(EXEC): $(RLSOBJS)
-	$(CC) $^ -o $@ $(CCPFLAGS) $(CFLAGS) $(LDLIBS) $(RLSCFLAGS)
+	$(CC) $^ -o $@ $(CCPFLAGS) $(RLSCFLAGS) $(LDLIBS)
 
 $(RLSOBJDIR)/%.o: src/%.c
-	$(CC) -c $< -o $@ $(CPPFLAGS) $(CFLAGS) $(RLSCFLAGS)
+	$(CC) -c $< -o $@ $(CPPFLAGS) $(RLSCFLAGS)
+
+#
+# Test rules
+#
+test: prep $(TSTEXEC)
+	$(foreach TEST,$(filter $(TSTDIR)/%,$^),./$(TEST) &&) echo "All test passed"
+
+$(TSTDIR)/%: $(TSTOBJDIR)/%.o $(filter-out $(DBGOBJDIR)/main.o,$(DBGOBJS)) Unity/src/unity.c
+	$(CC) $^ -o $@ $(CPPFLAGS) $(TSTCFLAGS) $(LDLIBS) -IUnity/src
+
+$(TSTOBJDIR)/%.o: test/%.c $(filter-out $(DBGOBJDIR)/main.o,$(DBGOBJS))
+	$(CC) -c $^ -o $@ $(CPPFLAGS) $(TSTCFLAGS) -IUnity/src
 
 #
 # Other rules
 #
 prep:
-	@mkdir -p $(DBGDIR) $(RLSDIR) $(DBGOBJDIR) $(RLSOBJDIR)
+	@mkdir -p $(DBGOBJDIR) $(RLSOBJDIR) $(TSTOBJDIR)
 
 remake: clean all
 
