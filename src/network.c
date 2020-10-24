@@ -121,7 +121,7 @@ void apply_grad(Network *network, size_t size_batch, float learning_rate) {
 }
 
 void init_cost(Layer *out_layer, float *target) {
-    float* output = out_layer->values;
+    float *output = out_layer->values;
     for (size_t i = 0; i < out_layer->nb_neurons; i++) {
         out_layer->deltas[i] = 2.f * (output[i] - target[i]); // derivative cost
         out_layer->deltas[i] *= sigmoid_prime(out_layer->z[i]);

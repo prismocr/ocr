@@ -80,7 +80,6 @@ void contrast_demo(int argc, char *argv[]) {
     try
         (bitmap_load(argv[2], &image));
 
-
     double delta = strtod(argv[3], NULL);
     image_contrast(&image, delta);
 
@@ -119,7 +118,6 @@ void invert_demo(int argc, char *argv[]) {
 
     try
         (bitmap_load(argv[2], &image));
-
 
     image_invert_color(255.f, &image);
 
@@ -176,7 +174,7 @@ void network_demo() {
     dataset.datas[3] = data11;
 
     network_sgd(&network, &dataset, 1000000, 4, 2.5f);
-    network_print_results(network,  dataset);
+    network_print_results(network, dataset);
 
     dataset_free(&dataset);
 
@@ -240,17 +238,17 @@ int demo(int argc, char *argv[]) {
         return 0;
     }
 
-    if(!strcmp(c, "contrast")) {
+    if (!strcmp(c, "contrast")) {
         contrast_demo(argc, argv);
         return 0;
     }
 
-    if(!strcmp(c, "invert")) {
+    if (!strcmp(c, "invert")) {
         invert_demo(argc, argv);
         return 0;
     }
 
-    if(!strcmp(c, "network")) {
+    if (!strcmp(c, "network")) {
         network_demo();
         return 0;
     }
@@ -260,7 +258,7 @@ int demo(int argc, char *argv[]) {
         return 0;
     }
 
-    if(!strcmp(c, "network_load")) {
+    if (!strcmp(c, "network_load")) {
         network_load_demo();
         return 0;
     }

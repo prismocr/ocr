@@ -15,7 +15,7 @@ Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer) {
     layer.values = (float *) calloc(nb_neurons, sizeof(float));
     initialize_biases_and_weights(&layer);
     initialize_deltas(&layer);
-    
+
     initialize_neurons(&layer);
 
     return layer;
