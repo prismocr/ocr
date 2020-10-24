@@ -120,7 +120,7 @@ void segment_morph_hist(Matrix image) {
     mll_free(&word_images);
 }
 
-/*
+/* LEO
  * Morphology based feature extraction method
  * Proposed by Wu, Hsieh and Chen:
  * https://www.cin.ufpe.br/~if751/projetos/artigos/Morphology-based%20text%20line%20extraction.pdf

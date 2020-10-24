@@ -27,6 +27,29 @@ void init_cost(Layer *out_layer, float *output, float *target);
 void apply_grad(Network *network, size_t size_batch, float learning_rate);
 
 void network_print(Network network);
+
+/**
+ * Prints only weights and biases
+ * 
+ * @param network to print
+ */
+void network_print_clean(Network network);
 void network_print_results(Network network, Dataset dataset);
+
+/**
+ * Saves a network in a file
+ * 
+ * @param path of the file
+ * @param network to save
+ */
+void network_save(const char *path, Network network);
+/**
+ * Loads a network which is in a file
+ * 
+ * @param path of the file
+ * @param network
+ * @return state (error)
+ */
+int network_load(const char *path, Network *out);
 
 #endif
