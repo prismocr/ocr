@@ -128,8 +128,6 @@ void segment_morph_hist(Matrix image) {
 void feature_extract_morph_based(Matrix *image) {
     Matrix kernel, closed;
 
-    matrix_free(&kernel);
-
     kernel = structuring_element(1, 21);
     matrix_copy(*image, &closed);
     closing(&closed, kernel);
