@@ -49,6 +49,7 @@ void initialize_layers(Network *network, size_t nb_layers, size_t *sizes) {
 
 float *network_feed_forward(Network *network, float *input) {
     Layer *in_layer = network->input_layer;
+
     vector_copy(in_layer->nb_neurons, input, in_layer->values);
     for (size_t i = 1; i < network->nb_layers; i++) {
         layer_front_pop(&(network->layers[i]));
@@ -68,7 +69,7 @@ void network_sgd(Network *network, Dataset *dataset, size_t epochs,
         batches = initialize_batches(dataset, batch_size);
         // Train the network on each batch
         for (size_t j = 0; j < nb_batches; j++) {
-            // Apply gradient descent on a whole batch
+            // Apply gradient escent on a whole batch
             batch_gd(network, &batches[j], learning_rate);
         }
     }
@@ -86,6 +87,9 @@ void batch_gd(Network *network, Dataset *batch, float learning_rate) {
 
 void network_backpropagation(Network *network, Data data) {
     // Forward Propagation
+    /*printf("size %ld\n",data.input.size);
+    vector_print(arr2vect(data.input.val,data.input.size));
+    printf("\n");*/
     network_feed_forward(network, data.input.val);
 
     // Backward Propagation
@@ -168,11 +172,11 @@ void network_print(Network network) {
 void network_print_results(Network network, Dataset dataset) {
     for (size_t i = 0; i < dataset.size; i++) {
         printf("Input data : ");
-        vector_printf("%.3f ", dataset.datas[i].input);
+        vector_printf("%.0f ", dataset.datas[i].input);
         printf("\tOutput data : ");
         float *output
           = network_feed_forward(&network, dataset.datas[i].input.val);
-        vector_printf("%.3f ",
+        vector_printf("%.0f ",
                       arr2vect(output, network.output_layer->nb_neurons));
         printf("\n");
     }
