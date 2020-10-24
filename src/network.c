@@ -6,7 +6,7 @@
 #include "data.h"
 #include "vector.h"
 
-#define UNUSED(x) (void)(x)
+#define UNUSED(x) (void) (x)
 
 Network network_new(size_t nb_layers, size_t *sizes) {
     Network network;
@@ -134,7 +134,7 @@ void init_cost(Layer *out_layer, float *output, float *target) {
 }
 /**
  * Prints only weights and biases
- * 
+ *
  * @param network to print
  */
 void network_print_clean(Network network) {
@@ -190,7 +190,7 @@ void network_print_results(Network network, Dataset dataset) {
 
 /**
  * Saves a network in a file
- * 
+ *
  * @param path of the file
  * @param network to save
  */
@@ -204,7 +204,7 @@ void network_save(const char *path, Network network) {
     }
     for (size_t i = 1; i < network.nb_layers; i++) {
         for (size_t j = 0; j < network.layers[i].nb_neurons; j++) {
-            for (size_t k = 0; k < network.layers[i-1].nb_neurons; k++) {
+            for (size_t k = 0; k < network.layers[i - 1].nb_neurons; k++) {
                 fwrite(&network.layers[i].neurons[j].weights_in[k], 1,
                        sizeof(float), f);
             }
@@ -216,7 +216,7 @@ void network_save(const char *path, Network network) {
 
 /**
  * Loads a network which is in a file
- * 
+ *
  * @param path of the file
  * @param network
  * @return state (error)
@@ -225,7 +225,7 @@ int network_load(const char *path, Network *out) {
     FILE *f;
     f = fopen(path, "rb");
     if (f == NULL) {
-        //set_last_errorf("Failed to open file: %s", strerror(errno));
+        // set_last_errorf("Failed to open file: %s", strerror(errno));
         return 1;
     }
 
@@ -238,12 +238,14 @@ int network_load(const char *path, Network *out) {
 
     for (size_t i = 1; i < network.nb_layers; i++) {
         for (size_t j = 0; j < network.layers[i].nb_neurons; j++) {
-            for (size_t k = 0; k < network.layers[i-1].nb_neurons; k++) {
-                size_t unused = fread(network.layers[i].neurons[j].weights_in + k, 1,
-                      sizeof(float), f);
+            for (size_t k = 0; k < network.layers[i - 1].nb_neurons; k++) {
+                size_t unused
+                  = fread(network.layers[i].neurons[j].weights_in + k, 1,
+                          sizeof(float), f);
                 UNUSED(unused);
             }
-            size_t unused = fread(network.layers[i].neurons[j].bias, 1, sizeof(float), f);
+            size_t unused
+              = fread(network.layers[i].neurons[j].bias, 1, sizeof(float), f);
             UNUSED(unused);
         }
     }

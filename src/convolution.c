@@ -7,7 +7,7 @@ static inline float calculate_values_convolution(size_t i, size_t j,
 
 /**
  * Uses a matrix to convolve an image
- * 
+ *
  * @param mat matrix, destination
  * @param convo_mat convolution matrix to apply, source
  */
