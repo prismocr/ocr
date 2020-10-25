@@ -172,11 +172,11 @@ void network_print(Network network) {
 void network_print_results(Network network, Dataset dataset) {
     for (size_t i = 0; i < dataset.size; i++) {
         printf("Input data : ");
-        vector_printf("%.3f ", dataset.datas[i].input);
+        vector_printf("%.0f ", dataset.datas[i].input);
         printf("\tOutput data : ");
         float *output
           = network_feed_forward(&network, dataset.datas[i].input.val);
-        vector_printf("%.3f ",
+        vector_printf("%.0f ",
                       arr2vect(output, network.output_layer->nb_neurons));
         printf("\n");
     }
