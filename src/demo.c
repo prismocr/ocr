@@ -72,7 +72,7 @@ void rotate_demo(int argc, char *argv[]) {
 void contrast_demo(int argc, char *argv[]) {
     Matrix image;
 
-    if (argc < 2) {
+    if (argc < 3) {
         printf("Missing image path.\n");
         return;
     }
@@ -111,7 +111,7 @@ void edge_detect_demo(int argc, char *argv[]) {
 void invert_demo(int argc, char *argv[]) {
     Matrix image;
 
-    if (argc < 2) {
+    if (argc < 3) {
         printf("Missing image path.\n");
         return;
     }
