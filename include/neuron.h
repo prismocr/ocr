@@ -10,10 +10,7 @@ struct Neuron {
     float *weights_in;
 };
 
-enum{
-    SIGMOID,
-    RELU
-};
+enum { SIGMOID, RELU };
 /**
  * Creates a new neuron
  *

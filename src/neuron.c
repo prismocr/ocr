@@ -17,8 +17,8 @@ float relu(float z) {
     return (z < 0) ? 0 : z;
 }
 
-float relu_prime(float z){
-	return (z > 0) ? 1 : 0;
+float relu_prime(float z) {
+    return (z > 0) ? 1 : 0;
 }
 
 float sigmoid(float z) {

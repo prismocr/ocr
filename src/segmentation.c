@@ -142,13 +142,18 @@ void segment_rlsa(Matrix image) {
     }
     matrix_free(&horizontal_morph_im);
 
+    char buff[200];
     for (size_t i = 0; i < regions.length; i++) {
+        sprintf(buff, "seg/region-%lu.bmp", i);
+        bitmap_save(buff, mll_get(i, regions));
         segment_morph_hist(*mll_get(i, regions));
     }
 
     mll_free(&regions);
 }
 
+static size_t line_count = 0;
+static size_t word_count = 0;
 /*
  * Text line segmentation based on morphology and histogram projection
  * http://www.cvc.uab.es/icdar2009/papers/3725a651.pdf
@@ -229,6 +234,9 @@ void segment_morph_hist(Matrix image) {
         Matrix cropped_word
           = image_crop(left, top, right - left, bot - top, *word);
         Matrix word_hist = histogram_x(cropped_word);
+
+        sprintf(buff, "seg/word-%lu.bmp", i);
+        // bitmap_save(buff, &cropped_word);
 
         size_t left_cropped_word = left;
         left = 0;
@@ -337,17 +345,55 @@ MatrixLinkedList get_word_images(Matrix image, Matrix hist) {
                   = image_crop(0, (top + prev_top) / 2 + 1, image.w,
                                (bot + i) / 2 - (top + prev_top) / 2 - 2, image);
 
+                // TOREMOVE
+                char buff[200];
+                sprintf(buff, "seg/line-%lu.bmp", line_count++);
+                bitmap_save(buff, &line);
+
                 extract_words(&line);
 
                 Matrix line_hist = histogram_x(line);
 
-                // Threshold based on average word height
-                // TODO tweak threshold
-                float height_thresh = matrix_average(line_hist) * 0.1f;
-                for (size_t j = 0; j < line_hist.h; j++) {
-                    line_hist.val[j][0] = line_hist.val[j][0] > height_thresh
-                                            ? line_hist.val[j][0]
-                                            : 0;
+                // TODO: tweak value
+                float height_thresh = matrix_average(line_hist) * 0.3f;
+                for (size_t i = 0; i < line_hist.h; i++) {
+                    line_hist.val[i][0] = line_hist.val[i][0] > height_thresh
+                                            ? line_hist.val[i][0]
+                                            : 0.f;
+                }
+
+                // Average space
+                size_t nb_spaces = 0;
+                size_t total_space = 0;
+                for (size_t j = 0, left = 0; j < line_hist.h; j++) {
+                    if (line_hist.val[j][0] != 0.f) {
+                        if (j >= left + 3) {
+                            nb_spaces++;
+                            total_space += j - left;
+                        }
+                        left = j;
+                    }
+                }
+                float average_space = (float) total_space / nb_spaces;
+
+                Matrix kernel = structuring_element(
+                  1,
+                  (size_t) average_space + (((size_t) average_space + 1) % 2));
+                dilate(&line, kernel);
+                matrix_free(&kernel);
+
+                kernel = structuring_element(1, 3);
+                erode(&line, kernel);
+                matrix_free(&kernel);
+
+                // TODO optimize this garbage
+                matrix_free(&line_hist);
+                line_hist = histogram_x(line);
+                height_thresh = matrix_average(line_hist) * 0.3f;
+                for (size_t i = 0; i < line_hist.h; i++) {
+                    line_hist.val[i][0] = line_hist.val[i][0] > height_thresh
+                                            ? line_hist.val[i][0]
+                                            : 0.f;
                 }
 
                 // Word recovery
@@ -372,6 +418,10 @@ MatrixLinkedList get_word_images(Matrix image, Matrix hist) {
                                 (bot + i) / 2 - (top + prev_top) / 2 - 2,
                                 image),
                               &word_images);
+
+                            sprintf(buff, "seg/word-%lu.bmp", word_count++);
+                            bitmap_save(buff, mll_get(word_images.length - 1,
+                                                      word_images));
 
                             prev_left = (right + j) / 2;
                             left = next_left;
@@ -400,6 +450,10 @@ void extract_words(Matrix *image) {
     image_threshold_otsu(image);
     image_invert_color(255.f, image);
 
+    kernel = structuring_element(image->h - (image->h + 1) % 2, 1);
+    dilate(image, kernel);
+    matrix_free(&kernel);
+    /*
     kernel = structuring_element(1, 5);
     opening(image, kernel);
     matrix_free(&kernel);
@@ -409,6 +463,7 @@ void extract_words(Matrix *image) {
     closing(image, kernel);
     closing(image, kernel);
     matrix_free(&kernel);
+    */
 }
 
 Matrix processed_histogram_y(Matrix image) {
@@ -481,5 +536,5 @@ float average_height(Matrix hist) {
         }
     }
 
-    return (float) sum_height / nlines;
+    return nlines == 0 ? 0 : (float) sum_height / nlines;
 }

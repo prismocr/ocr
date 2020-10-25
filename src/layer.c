@@ -5,13 +5,14 @@
 #include "neuron.h"
 #include "vector.h"
 
-Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer, int actFunc) {
+Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer,
+                int actFunc) {
     Layer layer;
 
     layer.nb_neurons = nb_neurons;
     layer.prev_layer = prev_layer;
     layer.next_layer = next_layer;
-    switch(actFunc){
+    switch (actFunc) {
         case SIGMOID:
             layer.actFunc = sigmoid;
             layer.actFuncPrime = sigmoid_prime;
@@ -21,7 +22,6 @@ Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer, int act
             layer.actFuncPrime = relu_prime;
             break;
     }
-    
 
     layer.values = (float *) calloc(nb_neurons, sizeof(float));
     initialize_biases_and_weights(&layer);

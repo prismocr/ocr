@@ -36,7 +36,8 @@ struct Layer {
  * @param derivative of activation function
  * @return layer created
  */
-Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer, int actFunc);
+Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer,
+                int actFunc);
 /**
  * Frees a layer
  *

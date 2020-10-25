@@ -31,7 +31,8 @@ void initialize_layers(Network *network, size_t nb_layers, size_t *sizes) {
     network->layers = (Layer *) malloc(nb_layers * sizeof(Layer));
 
     // Initializing Input Layer
-    network->layers[0] = layer_new(sizes[0], NULL, &network->layers[1], SIGMOID);
+    network->layers[0]
+      = layer_new(sizes[0], NULL, &network->layers[1], SIGMOID);
 
     // Initializing Hidden Layers
     Layer *prev_layer;
@@ -39,12 +40,13 @@ void initialize_layers(Network *network, size_t nb_layers, size_t *sizes) {
     for (size_t i = 1; i < nb_layers - 1; ++i) {
         prev_layer = &network->layers[i - 1];
         next_layer = &network->layers[i + 1];
-        network->layers[i] = layer_new(sizes[i], prev_layer, next_layer, SIGMOID);
+        network->layers[i]
+          = layer_new(sizes[i], prev_layer, next_layer, SIGMOID);
     }
 
     // Initializing Output Layer
-    network->layers[nb_layers - 1]
-      = layer_new(sizes[nb_layers - 1], &network->layers[nb_layers - 2], NULL, SIGMOID);
+    network->layers[nb_layers - 1] = layer_new(
+      sizes[nb_layers - 1], &network->layers[nb_layers - 2], NULL, SIGMOID);
 }
 
 float *network_feed_forward(Network *network, float *input) {
