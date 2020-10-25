@@ -5,18 +5,28 @@
 #include "neuron.h"
 #include "vector.h"
 
-Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer) {
+Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer, int actFunc) {
     Layer layer;
 
+    layer.nb_neurons = nb_neurons;
     layer.prev_layer = prev_layer;
     layer.next_layer = next_layer;
+    switch(actFunc){
+        case SIGMOID:
+            layer.actFunc = sigmoid;
+            layer.actFuncPrime = sigmoid_prime;
+            break;
+        case RELU:
+            layer.actFunc = relu;
+            layer.actFuncPrime = relu_prime;
+            break;
+    }
+    
 
     layer.values = (float *) calloc(nb_neurons, sizeof(float));
+    initialize_biases_and_weights(&layer);
+    initialize_deltas(&layer);
 
-    initialize_biases_and_weights(&layer, nb_neurons);
-    initialize_deltas(&layer, nb_neurons);
-
-    layer.nb_neurons = nb_neurons;
     initialize_neurons(&layer);
 
     return layer;
@@ -37,7 +47,8 @@ void layer_free(Layer *layer) {
     free(layer->values);
 }
 
-void initialize_biases_and_weights(Layer *layer, size_t nb_neurons) {
+void initialize_biases_and_weights(Layer *layer) {
+    size_t nb_neurons = layer->nb_neurons;
     if (layer->prev_layer == NULL) {
         layer->biases = NULL;
         layer->weights.val = NULL;
@@ -55,7 +66,8 @@ void initialize_biases_and_weights(Layer *layer, size_t nb_neurons) {
     }
 }
 
-void initialize_deltas(Layer *layer, size_t nb_neurons) {
+void initialize_deltas(Layer *layer) {
+    size_t nb_neurons = layer->nb_neurons;
     if (layer->prev_layer == NULL) {
         layer->deltas = NULL;
         layer->d_weights.val = NULL;
@@ -94,7 +106,7 @@ void layer_front_pop(Layer *layer) {
 
     // activation function
     for (size_t i = 0; i < layer->nb_neurons; i++) {
-        layer->values[i] = sigmoid(layer->z[i]);
+        layer->values[i] = layer->actFunc(layer->z[i]);
     }
 }
 
@@ -105,7 +117,7 @@ void layer_backpropagation(Layer *layer) {
     // Compute new deltas from previous ones
     matrix_cdt(next_layer->weights, next_layer->deltas, layer->deltas);
     for (size_t i = 0; i < nb_neurons; i++) {
-        layer->deltas[i] *= sigmoid_prime(layer->z[i]);
+        layer->deltas[i] *= layer->actFuncPrime(layer->z[i]);
     }
 
     // Apply cost to biases

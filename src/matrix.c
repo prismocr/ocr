@@ -166,7 +166,6 @@ void matrix_column_dot(Matrix mat_a, float *column, float *res) {
     }
 }
 
-// Dot product between a matrix @mat_a and a @column.Result is transposed.
 void matrix_cdt(Matrix mat_a, float *column, float *res) {
     // for each column of mat_a
     for (size_t i = 0; i < mat_a.w; i++) {
@@ -178,7 +177,6 @@ void matrix_cdt(Matrix mat_a, float *column, float *res) {
     }
 }
 
-// Dot product between a column @a and a line @b, stored into the matrix @mat.
 void matrix_dcl(size_t nb_lin, float *a, size_t nb_col, float *b, Matrix *mat) {
     for (size_t i = 0; i < nb_lin; i++) {
         for (size_t j = 0; j < nb_col; j++) {

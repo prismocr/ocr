@@ -31,7 +31,7 @@ void initialize_layers(Network *network, size_t nb_layers, size_t *sizes) {
     network->layers = (Layer *) malloc(nb_layers * sizeof(Layer));
 
     // Initializing Input Layer
-    network->layers[0] = layer_new(sizes[0], NULL, &network->layers[1]);
+    network->layers[0] = layer_new(sizes[0], NULL, &network->layers[1], SIGMOID);
 
     // Initializing Hidden Layers
     Layer *prev_layer;
@@ -39,16 +39,17 @@ void initialize_layers(Network *network, size_t nb_layers, size_t *sizes) {
     for (size_t i = 1; i < nb_layers - 1; ++i) {
         prev_layer = &network->layers[i - 1];
         next_layer = &network->layers[i + 1];
-        network->layers[i] = layer_new(sizes[i], prev_layer, next_layer);
+        network->layers[i] = layer_new(sizes[i], prev_layer, next_layer, SIGMOID);
     }
 
     // Initializing Output Layer
     network->layers[nb_layers - 1]
-      = layer_new(sizes[nb_layers - 1], &network->layers[nb_layers - 2], NULL);
+      = layer_new(sizes[nb_layers - 1], &network->layers[nb_layers - 2], NULL, SIGMOID);
 }
 
 float *network_feed_forward(Network *network, float *input) {
     Layer *in_layer = network->input_layer;
+
     vector_copy(in_layer->nb_neurons, input, in_layer->values);
     for (size_t i = 1; i < network->nb_layers; i++) {
         layer_front_pop(&(network->layers[i]));
@@ -57,7 +58,6 @@ float *network_feed_forward(Network *network, float *input) {
     return out_layer->values;
 }
 
-// Network stochastic gradient descent
 void network_sgd(Network *network, Dataset *dataset, size_t epochs,
                  size_t batch_size, float learning_rate) {
     Dataset *batches = NULL;
@@ -69,35 +69,34 @@ void network_sgd(Network *network, Dataset *dataset, size_t epochs,
         batches = initialize_batches(dataset, batch_size);
         // Train the network on each batch
         for (size_t j = 0; j < nb_batches; j++) {
-            // Apply gradient descent on a whole batch
-            batch_gd(network, &batches[j]);
-
-            // Update network's weights and biases
-            apply_grad(network, batches[j].size, learning_rate);
+            // Apply gradient escent on a whole batch
+            batch_gd(network, &batches[j], learning_rate);
         }
     }
 
-    network_print_results(*network, *dataset);
     free(batches);
 }
 
-// Apply gradient descent on a whole batch
-void batch_gd(Network *network, Dataset *batch) {
+void batch_gd(Network *network, Dataset *batch, float learning_rate) {
     for (size_t i = 0; i < batch->size; i++) {
         network_backpropagation(network, batch->datas[i]);
     }
+    // Update network's weights and biases
+    apply_grad(network, batch->size, learning_rate);
 }
 
-// Feed forward and backpropagate with a single @data
 void network_backpropagation(Network *network, Data data) {
     // Forward Propagation
-    float *output = network_feed_forward(network, data.input.val);
+    /*printf("size %ld\n",data.input.size);
+    vector_print(arr2vect(data.input.val,data.input.size));
+    printf("\n");*/
+    network_feed_forward(network, data.input.val);
 
     // Backward Propagation
     Layer *out_l = network->output_layer;
 
     // Apply backpropagation on the last layer
-    init_cost(out_l, output, data.target.val);
+    init_cost(out_l, data.target.val);
     vector_add(out_l->nb_neurons, out_l->deltas, out_l->d_biases);
     matrix_dcl(out_l->nb_neurons, out_l->deltas, out_l->prev_layer->nb_neurons,
                out_l->prev_layer->values, &out_l->d_weights);
@@ -108,7 +107,6 @@ void network_backpropagation(Network *network, Data data) {
     }
 }
 
-// Update network's weights and biases
 void apply_grad(Network *network, size_t size_batch, float learning_rate) {
     size_t i, j, k;
     for (i = 1; i < network->nb_layers; i++) {
@@ -126,11 +124,11 @@ void apply_grad(Network *network, size_t size_batch, float learning_rate) {
     }
 }
 
-// Initialize cost of last layer
-void init_cost(Layer *out_layer, float *output, float *target) {
+void init_cost(Layer *out_layer, float *target) {
+    float *output = out_layer->values;
     for (size_t i = 0; i < out_layer->nb_neurons; i++) {
-        out_layer->deltas[i] = 2.f * (output[i] - target[i]); // derivative cost
-        out_layer->deltas[i] *= sigmoid_prime(out_layer->z[i]);
+        out_layer->deltas[i] = (output[i] - target[i]); // derivative cost
+        out_layer->deltas[i] *= out_layer->actFuncPrime(out_layer->z[i]);
     }
 }
 void network_print_clean(Network network) {
@@ -174,11 +172,11 @@ void network_print(Network network) {
 void network_print_results(Network network, Dataset dataset) {
     for (size_t i = 0; i < dataset.size; i++) {
         printf("Input data : ");
-        vector_printf("%.3f ", dataset.datas[i].input);
+        vector_printf("%.0f ", dataset.datas[i].input);
         printf("\tOutput data : ");
         float *output
           = network_feed_forward(&network, dataset.datas[i].input.val);
-        vector_printf("%.3f ",
+        vector_printf("%.0f ",
                       arr2vect(output, network.output_layer->nb_neurons));
         printf("\n");
     }

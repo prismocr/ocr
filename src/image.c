@@ -141,6 +141,10 @@ void image_contrast(Matrix *image, float delta) {
     }
 }
 
+float deg_to_rad(float angle) {
+    return angle * PI / 180;
+}
+
 void image_rotate(Matrix *image, float angle) {
     size_t i, j;
 

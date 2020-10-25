@@ -2,6 +2,7 @@
 #define IMAGE_H
 
 #include "matrix.h"
+#define PI 3.14159265359
 
 /**
  * Apply a fixed value binary threshold to every pixel of an image.
@@ -53,10 +54,25 @@ void image_invert_color(float maxval, Matrix *image);
  */
 Matrix image_crop(size_t x, size_t y, size_t w, size_t h, Matrix image);
 
-// Change contrast level of an image
+/**
+ *  Adjust image contrast
+ *  @param image
+ *  @param delta
+*/
 void image_contrast(Matrix *image, float delta);
 
-// Rotate image by an arbitrary radian angle
+
+/**
+ *  Convert an angle in degrees to radians
+ *  @param angle
+*/
+float deg_to_rad(float angle);
+
+/**
+ *  Rotate image by an arbitrary radian angle 
+ *  @param image
+ *  @param angle
+*/ 
 void image_rotate(Matrix *image, float angle);
 
 /**

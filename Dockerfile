@@ -1,6 +1,4 @@
-FROM ubuntu AS builder
-
-RUN apt update && apt install -y make
+FROM gcc:10.2.0 AS builder
 
 WORKDIR /app
 COPY . /app
