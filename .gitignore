@@ -3,5 +3,8 @@ build
 *.swp
 *.o
 *.d
-./*.bmp
-./out.bmp
+Unity/
+# Only allow bmp in examples/
+*.bmp
+!examples/*.bmp
+

@@ -15,9 +15,9 @@ int vector_new(size_t size, Vector *vector) {
 }
 
 void vector_free(Vector *vector) {
-    if(vector->val){
+    if (vector->val) {
         free(vector->val);
-        vector->val=NULL;
+        vector->val = NULL;
     }
 }
 
@@ -74,7 +74,6 @@ Vector arr2vect(float *array, size_t size) {
     vector.val = array;
     return vector;
 }
-
 void vector_copy(size_t size, float *a, float *b) {
     memcpy(b, a, sizeof(float) * size);
 }
