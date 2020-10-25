@@ -2,6 +2,7 @@
 #define IMAGE_H
 
 #include "matrix.h"
+#define PI 3.14159265359
 
 /**
  * Apply a fixed value binary threshold to every pixel of an image.
@@ -57,6 +58,13 @@ Matrix image_crop(size_t x, size_t y, size_t w, size_t h, Matrix image);
  *  @param delta
 */
 void image_contrast(Matrix *image, float delta);
+
+
+/**
+ *  Convert an angle in degrees to radians
+ *  @param angle
+*/
+float deg_to_rad(float angle);
 
 /**
  *  Rotate image by an arbitrary radian angle 

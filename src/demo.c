@@ -61,7 +61,7 @@ void rotate_demo(int argc, char *argv[]) {
         (bitmap_load(argv[2], &image));
 
     double angle = strtod(argv[3], NULL);
-    image_rotate(&image, angle);
+    image_rotate(&image, deg_to_rad(angle));
 
     try
         (bitmap_save("out.bmp", &image));

@@ -1,4 +1,5 @@
 #include "matrix.h"
+#include "image.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,6 +81,10 @@ void image_contrast(Matrix *image, float delta) {
             image->val[i][j] = clamp(color / 255.f, 0.f, 255.f);
         }
     }
+}
+
+float deg_to_rad(float angle) {
+    return angle * PI / 180;
 }
 
 void image_rotate(Matrix *image, float angle) {
