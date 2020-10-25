@@ -3,6 +3,8 @@
 
 #include "matrix.h"
 
+void segment_rlsa(Matrix image);
+
 void segment_morph_hist(Matrix image);
 void feature_extract_morph_based(Matrix *image);
 

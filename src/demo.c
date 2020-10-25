@@ -209,7 +209,7 @@ int segmentation_demo(int argc, char *argv[]) {
 
     exit_on_error(bitmap_load(argv[2], &image));
 
-    segment_morph_hist(image);
+    segment_rlsa(image);
 
     matrix_free(&image);
     return 0;

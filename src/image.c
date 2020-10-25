@@ -47,9 +47,9 @@ int image_pixel_probabilities(Matrix image, float **pixel_probabilities) {
         }
     }
 
-    float nb_pixels = image.h * image.w;
+    float nb_pixels_inv = 1.f / (image.h * image.w);
     for (int i = 0; i < 256; i++) {
-        (*pixel_probabilities)[i] /= nb_pixels;
+        (*pixel_probabilities)[i] *= nb_pixels_inv;
     }
 
     return 0;
@@ -59,7 +59,8 @@ int image_threshold_otsu(Matrix *image) {
     float *pixel_probs = NULL;
     return_on_error(image_pixel_probabilities(*image, &pixel_probs))
 
-    float pixel_mean = 0.f;
+      float pixel_mean
+      = 0.f;
     for (int i = 0; i < 256; i++) {
         pixel_mean += i * pixel_probs[i];
     }
@@ -75,7 +76,8 @@ int image_threshold_otsu(Matrix *image) {
             float c1_mean = (pixel_mean - c0_esp) / c1_prob;
 
             float class_mean_diff = c0_mean - c1_mean;
-            float intra_class_variance = c0_prob * c1_prob * class_mean_diff * class_mean_diff;
+            float intra_class_variance
+              = c0_prob * c1_prob * class_mean_diff * class_mean_diff;
             if (intra_class_variance > max_intra_class_variance) {
                 max_intra_class_variance = intra_class_variance;
                 best_thresh = t;
