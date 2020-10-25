@@ -378,7 +378,7 @@ MatrixLinkedList get_word_images(Matrix image, Matrix hist) {
 
                 Matrix kernel = structuring_element(
                   1,
-                  (size_t) average_space + (((size_t) average_space + 1) % 2));
+                  (size_t) average_space - (((size_t) average_space + 1) % 2));
                 dilate(&line, kernel);
                 matrix_free(&kernel);
 
