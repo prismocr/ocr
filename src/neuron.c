@@ -13,12 +13,16 @@ Neuron neuron_new(float *value, float *bias, float *weights_in) {
     return neuron;
 }
 
-float relu(float x) {
-    return (x < 0) ? 0 : x;
+float relu(float z) {
+    return (z < 0) ? 0 : z;
 }
 
-float sigmoid(float x) {
-    return 1.f / (1 + expf(-x));
+float relu_prime(float z){
+	return (z > 0) ? 1 : 0;
+}
+
+float sigmoid(float z) {
+    return 1.f / (1 + expf(-z));
 }
 
 float sigmoid_prime(float z) {

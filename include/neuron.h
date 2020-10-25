@@ -10,6 +10,10 @@ struct Neuron {
     float *weights_in;
 };
 
+enum{
+    SIGMOID,
+    RELU
+};
 /**
  * Creates a new neuron
  *
@@ -23,17 +27,24 @@ Neuron neuron_new(float *value, float *bias, float *weights_in);
 /**
  * Relu activation function
  *
- * @param x
- * @result relu(x)
+ * @param z
+ * @result relu(z)
  */
-float relu(float x);
+float relu(float z);
+/**
+ * Derivative of relu
+ *
+ * @param z
+ * @result relu'(z)
+ */
+float relu_prime(float z);
 /**
  * Sigmoid activation function
  *
- * @param x
- * @result sigmoid(x)
+ * @param z
+ * @result sigmoid(z)
  */
-float sigmoid(float x);
+float sigmoid(float z);
 /**
  * Derivative of sigmoid
  *

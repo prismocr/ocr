@@ -31,7 +31,7 @@ void initialize_layers(Network *network, size_t nb_layers, size_t *sizes) {
     network->layers = (Layer *) malloc(nb_layers * sizeof(Layer));
 
     // Initializing Input Layer
-    network->layers[0] = layer_new(sizes[0], NULL, &network->layers[1]);
+    network->layers[0] = layer_new(sizes[0], NULL, &network->layers[1], SIGMOID);
 
     // Initializing Hidden Layers
     Layer *prev_layer;
@@ -39,12 +39,12 @@ void initialize_layers(Network *network, size_t nb_layers, size_t *sizes) {
     for (size_t i = 1; i < nb_layers - 1; ++i) {
         prev_layer = &network->layers[i - 1];
         next_layer = &network->layers[i + 1];
-        network->layers[i] = layer_new(sizes[i], prev_layer, next_layer);
+        network->layers[i] = layer_new(sizes[i], prev_layer, next_layer, SIGMOID);
     }
 
     // Initializing Output Layer
     network->layers[nb_layers - 1]
-      = layer_new(sizes[nb_layers - 1], &network->layers[nb_layers - 2], NULL);
+      = layer_new(sizes[nb_layers - 1], &network->layers[nb_layers - 2], NULL, SIGMOID);
 }
 
 float *network_feed_forward(Network *network, float *input) {
@@ -127,8 +127,8 @@ void apply_grad(Network *network, size_t size_batch, float learning_rate) {
 void init_cost(Layer *out_layer, float *target) {
     float *output = out_layer->values;
     for (size_t i = 0; i < out_layer->nb_neurons; i++) {
-        out_layer->deltas[i] = 2.f * (output[i] - target[i]); // derivative cost
-        out_layer->deltas[i] *= sigmoid_prime(out_layer->z[i]);
+        out_layer->deltas[i] = (output[i] - target[i]); // derivative cost
+        out_layer->deltas[i] *= out_layer->actFuncPrime(out_layer->z[i]);
     }
 }
 void network_print_clean(Network network) {

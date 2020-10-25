@@ -5,6 +5,7 @@
 #include "neuron.h"
 #include "matrix.h"
 
+typedef float (*f2f)(float z);
 typedef struct Layer Layer;
 struct Layer {
     size_t nb_neurons;
@@ -19,6 +20,8 @@ struct Layer {
     float *d_biases;
     Matrix d_weights;
 
+    f2f actFunc;
+    f2f actFuncPrime;
     Layer *prev_layer;
     Layer *next_layer;
 };
@@ -29,9 +32,11 @@ struct Layer {
  * @param number of neurons within the layer
  * @param previous layer for linking
  * @param next layer for linking
+ * @param activation function
+ * @param derivative of activation function
  * @return layer created
  */
-Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer);
+Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer, int actFunc);
 /**
  * Frees a layer
  *

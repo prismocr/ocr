@@ -72,7 +72,7 @@ void rotate_demo(int argc, char *argv[]) {
 void contrast_demo(int argc, char *argv[]) {
     Matrix image;
 
-    if (argc < 2) {
+    if (argc < 3) {
         printf("Missing image path.\n");
         return;
     }
@@ -111,7 +111,7 @@ void edge_detect_demo(int argc, char *argv[]) {
 void invert_demo(int argc, char *argv[]) {
     Matrix image;
 
-    if (argc < 2) {
+    if (argc < 3) {
         printf("Missing image path.\n");
         return;
     }
@@ -226,7 +226,7 @@ void network_demo(int argc, char *argv[]) {
 
         size_t sizes_static[] = {2, 2, 1};
         network = network_new(nb_layers, sizes_static);
-        network_sgd(&network, &dataset, 100000, 2, 0.3f);
+        network_sgd(&network, &dataset, 100000, 4, 1.f);
     }
     else if(!strcmp("add", argv[2])){
         // --- Create dataset---
