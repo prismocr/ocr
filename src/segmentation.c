@@ -85,7 +85,11 @@ void segment_rlsa(Matrix image) {
     matrix_free(&vertical_morph_im);
 
     kernel = structuring_element(1, 31);
-    closing(&horizontal_morph_im, kernel);
+    dilate(&horizontal_morph_im, kernel);
+    matrix_free(&kernel);
+
+    kernel = structuring_element(1, 11);
+    erode(&horizontal_morph_im, kernel);
     matrix_free(&kernel);
 
     kernel = structuring_element(11, 1);
@@ -145,7 +149,6 @@ void segment_rlsa(Matrix image) {
     mll_free(&regions);
 }
 
-static int count = 0;
 /*
  * Text line segmentation based on morphology and histogram projection
  * http://www.cvc.uab.es/icdar2009/papers/3725a651.pdf
@@ -169,18 +172,21 @@ void segment_morph_hist(Matrix image) {
     char buff[200];
     size_t c = 0;
     for (size_t i = 0; i < word_images.length; i++) {
-        sprintf(buff, "seg/word-%d.bmp", count++);
-        bitmap_save(buff, mll_get(i, word_images));
+        Matrix word_copy;
+        matrix_copy(*mll_get(i, word_images), &word_copy);
+        Matrix *word = &word_copy;
+        image_threshold_otsu(word);
+        image_invert_color(255.f, word);
 
-        Matrix *word = mll_get(i, word_images);
-        // TODO test other operations
-        //Matrix kernel = structuring_element(3, 3);
-        //dilate(word, kernel);
-        //matrix_free(&kernel);
-        image_threshold_inv(120.f, 255.f, word);
+        Matrix kernel = structuring_element(5, 1);
+        opening(word, kernel);
+        matrix_free(&kernel);
 
-        sprintf(buff, "seg/word-%d.bmp", count++);
-        bitmap_save(buff, word);
+        /*
+        kernel = structuring_element(1, 3);
+        closing(word, kernel);
+        matrix_free(&kernel);
+        */
 
         size_t top, bot;
         top = word->h;
@@ -224,28 +230,28 @@ void segment_morph_hist(Matrix image) {
           = image_crop(left, top, right - left, bot - top, *word);
         Matrix word_hist = histogram_x(cropped_word);
 
-        sprintf(buff, "seg/word-%d.bmp", count++);
-        bitmap_save(buff, &cropped_word);
-
+        size_t left_cropped_word = left;
         left = 0;
         size_t j;
         for (j = 0; j < word_hist.h; j++) {
             if (word_hist.val[j][0] == 0.f) {
-                if (j > left + 3) {
-                    Matrix caracter = image_crop(left, 0, j - left - 2,
-                                                 cropped_word.h, cropped_word);
+                if (j >= left + 3) {
+                    Matrix caracter
+                      = image_crop(left_cropped_word + left, 0, j - left - 2,
+                                   cropped_word.h, *mll_get(i, word_images));
                     sprintf(buff, "seg/car-%lu.bmp", c++);
-                    //bitmap_save(buff, &caracter);
+                    bitmap_save(buff, &caracter);
                     matrix_free(&caracter);
                 }
                 left = j;
             }
         }
-        if (j > left + 3) {
+        if (j >= left + 3) {
             Matrix caracter
-              = image_crop(left, 0, j - left - 2, cropped_word.h, cropped_word);
+              = image_crop(left_cropped_word + left, 0, j - left - 2,
+                           cropped_word.h, *mll_get(i, word_images));
             sprintf(buff, "seg/car-%lu.bmp", c++);
-            //bitmap_save(buff, &caracter);
+            bitmap_save(buff, &caracter);
             matrix_free(&caracter);
         }
 
