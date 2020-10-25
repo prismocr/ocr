@@ -3,16 +3,33 @@
 
 #include "matrix.h"
 
-// Apply treshold to an image
+/**
+ *  Apply theshold on an image.
+ *  @param thresh
+ *  @param maxval
+ *  @param image 
+ * 
+*/
 void image_threshold(float thresh, float maxval, Matrix *image);
 
-// Invert images colors
+/**
+ *  Invert colors of an image 
+ *  @param image
+*/
 void image_invert_color(Matrix *image);
 
-// Change contrast level of an image
+/**
+ *  Adjust image contrast
+ *  @param image
+ *  @param delta
+*/
 void image_contrast(Matrix *image, float delta);
 
-// Rotate image by an arbitrary radian angle
+/**
+ *  Rotate image by an arbitrary radian angle 
+ *  @param image
+ *  @param angle
+*/ 
 void image_rotate(Matrix *image, float angle);
 
 /**
