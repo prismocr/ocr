@@ -1,6 +1,6 @@
-#include "bitmap.h"
-#include "error.h"
-#include "matrix.h"
+#include "utils/bitmap.h"
+#include "utils/error.h"
+#include "utils/matrix.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>

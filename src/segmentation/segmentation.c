@@ -1,11 +1,11 @@
-#include "segmentation.h"
-#include "image.h"
-#include "matrix.h"
-#include "morphology.h"
-#include "linked_list.h"
+#include "segmentation/segmentation.h"
+#include "imgproc/image.h"
+#include "utils/matrix.h"
+#include "imgproc/morphology.h"
+#include "utils/linked_list.h"
 
 // TODO remove these headers
-#include "bitmap.h"
+#include "utils/bitmap.h"
 #include <stdio.h>
 
 struct word {

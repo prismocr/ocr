@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
-#include "matrix.h"
-#include "linked_list.h"
+#include "utils/matrix.h"
+#include "utils/linked_list.h"
 
 void mll_new(MatrixLinkedList *list) {
     *list = (MatrixLinkedList){0, NULL};

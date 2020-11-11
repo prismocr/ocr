@@ -1,7 +1,7 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include "matrix.h"
+#include "utils/matrix.h"
 #define PI 3.14159265359
 
 /**

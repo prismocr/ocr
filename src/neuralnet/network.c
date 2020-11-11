@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <assert.h>
 #include <errno.h>
-#include "network.h"
-#include "layer.h"
-#include "neuron.h"
-#include "data.h"
-#include "vector.h"
+#include "neuralnet/network.h"
+#include "neuralnet/layer.h"
+#include "neuralnet/neuron.h"
+#include "neuralnet/data.h"
+#include "utils/vector.h"
 
 #define UNUSED(x) (void) (x)
 

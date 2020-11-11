@@ -3,13 +3,13 @@
 #include <time.h>
 #include <string.h>
 #include "demo.h"
-#include "segmentation.h"
-#include "bitmap.h"
-#include "image.h"
-#include "error.h"
-#include "matrix.h"
-#include "network.h"
-#include "layer.h"
+#include "segmentation/segmentation.h"
+#include "utils/bitmap.h"
+#include "imgproc/image.h"
+#include "utils/error.h"
+#include "utils/matrix.h"
+#include "neuralnet/network.h"
+#include "neuralnet/layer.h"
 
 void sharpen_demo(int argc, char *argv[]) {
     Matrix image;

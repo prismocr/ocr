@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
-#include "neuron.h"
-#include "layer.h"
+#include "neuralnet/neuron.h"
+#include "neuralnet/layer.h"
 
 Neuron neuron_new(float *value, float *bias, float *weights_in) {
     Neuron neuron;

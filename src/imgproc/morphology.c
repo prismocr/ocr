@@ -1,5 +1,5 @@
-#include "morphology.h"
-#include "matrix.h"
+#include "imgproc/morphology.h"
+#include "utils/matrix.h"
 #include <assert.h>
 #include <float.h>
 

@@ -4,10 +4,10 @@
 #include <math.h>
 #include <string.h>
 #include <errno.h>
-#include "image.h"
-#include "matrix.h"
-#include "convolution.h"
-#include "error.h"
+#include "imgproc/image.h"
+#include "utils/matrix.h"
+#include "imgproc/convolution.h"
+#include "utils/error.h"
 
 static inline float clamp(float value, float min, float max);
 

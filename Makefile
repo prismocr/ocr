@@ -15,7 +15,8 @@ LDLIBS := -lm
 BUILDDIR := build
 EXEC := ocr
 
-OBJS := $(patsubst %.c,%.o,$(notdir $(wildcard src/*.c)))
+SRC_SUBDIRS := $(sort $(patsubst src/%,%,$(dir $(wildcard src/*) $(wildcard src/**/*.c))))
+OBJS := $(patsubst src/%.c,%.o,$(wildcard src/*.c) $(wildcard src/**/*.c))
 
 #
 # Debug variables
@@ -24,6 +25,7 @@ DBGCFLAGS := $(CFLAGS) -g -O0 -DDEBUG
 
 DBGDIR := $(BUILDDIR)/debug
 DBGOBJDIR := $(DBGDIR)/obj
+DBGOBJSUBDIRS := $(addprefix $(DBGOBJDIR)/,$(SRC_SUBDIRS))
 DBGOBJS := $(addprefix $(DBGOBJDIR)/,$(OBJS))
 
 #
@@ -33,6 +35,7 @@ RLSCFLAGS := $(CFLAGS) -O3 -DNDEBUG
 
 RLSDIR := $(BUILDDIR)/release
 RLSOBJDIR := $(RLSDIR)/obj
+RLSOBJSUBDIRS := $(addprefix $(RLSOBJDIR)/,$(SRC_SUBDIRS))
 RLSOBJS := $(addprefix $(RLSOBJDIR)/,$(OBJS))
 
 #
@@ -87,7 +90,7 @@ $(TSTOBJDIR)/%.o: test/%.c $(filter-out $(DBGOBJDIR)/main.o,$(DBGOBJS))
 # Other rules
 #
 prep:
-	@mkdir -p $(DBGOBJDIR) $(RLSOBJDIR) $(TSTOBJDIR)
+	@mkdir -p $(DBGOBJDIR) $(RLSOBJDIR) $(TSTOBJDIR) $(DBGOBJSUBDIRS) $(RLSOBJSUBDIRS)
 
 remake: clean all
 

@@ -1,7 +1,7 @@
 #ifndef MORPHOLOGY_H
 #define MORPHOLOGY_H
 
-#include "matrix.h"
+#include "utils/matrix.h"
 #include <stddef.h>
 
 Matrix structuring_element(size_t m, size_t n);

@@ -2,8 +2,8 @@
 #define LAYER_H
 
 #include <stdlib.h>
-#include "neuron.h"
-#include "matrix.h"
+#include "neuralnet/neuron.h"
+#include "utils/matrix.h"
 
 typedef float (*f2f)(float z);
 typedef struct Layer Layer;

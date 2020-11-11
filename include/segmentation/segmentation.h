@@ -1,7 +1,7 @@
 #ifndef SEGMENTATION_H
 #define SEGMENTATION_H
 
-#include "matrix.h"
+#include "utils/matrix.h"
 
 void segment_rlsa(Matrix image);
 
