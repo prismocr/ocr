@@ -10,6 +10,7 @@
 #include "utils/error.h"
 
 static inline float clamp(float value, float min, float max);
+static int image_pixel_probabilities(Matrix image, float **pixel_probabilities);
 
 void image_threshold(float thresh, float maxval, Matrix *image) {
     size_t i, j;
@@ -29,30 +30,6 @@ void image_threshold_inv(float thresh, float maxval, Matrix *image) {
             image->val[i][j] = image->val[i][j] > thresh ? 0.f : maxval;
         }
     }
-}
-
-// TODO move that
-int image_pixel_probabilities(Matrix image, float **pixel_probabilities) {
-    *pixel_probabilities = (float *) calloc(256, sizeof(float));
-    if (*pixel_probabilities == NULL) {
-        set_last_errorf(
-          "Failed to allocated memory for pixel probabilities: %s",
-          strerror(errno));
-        return 1;
-    }
-
-    for (size_t i = 0; i < image.h; i++) {
-        for (size_t j = 0; j < image.w; j++) {
-            (*pixel_probabilities)[(int) clamp(image.val[i][j], 0.f, 255.f)]++;
-        }
-    }
-
-    float nb_pixels_inv = 1.f / (image.h * image.w);
-    for (int i = 0; i < 256; i++) {
-        (*pixel_probabilities)[i] *= nb_pixels_inv;
-    }
-
-    return 0;
 }
 
 int image_threshold_otsu(Matrix *image) {
@@ -139,6 +116,32 @@ void image_contrast(Matrix *image, float delta) {
             image->val[i][j] = clamp(color / 255.f, 0.f, 255.f);
         }
     }
+}
+
+Vector image_histogram_x(Matrix image) {
+    Vector hist;
+
+    vector_new(image.w, &hist);
+    for (size_t i = 0; i < image.h; i++) {
+        for (size_t j = 0; j < image.w; j++) {
+            hist.val[j] += image.val[i][j];
+        }
+    }
+
+    return hist;
+}
+
+Vector image_histogram_y(Matrix image) {
+    Vector hist;
+
+    vector_new(image.h, &hist);
+    for (size_t i = 0; i < image.h; i++) {
+        for (size_t j = 0; j < image.w; j++) {
+            hist.val[i] += image.val[i][j];
+        }
+    }
+
+    return hist;
 }
 
 void edge_detect(Matrix *image) {
@@ -228,4 +231,27 @@ float anti_aliasing_point(Matrix *image, size_t x, size_t y) {
     float d =  clamp(image->val[x][y-1], 0.f, 255.f);
 
     return (a+b+c+d)/4;
+}
+static int image_pixel_probabilities(Matrix image,
+                                     float **pixel_probabilities) {
+    *pixel_probabilities = (float *) calloc(256, sizeof(float));
+    if (*pixel_probabilities == NULL) {
+        set_last_errorf(
+          "Failed to allocated memory for pixel probabilities: %s",
+          strerror(errno));
+        return 1;
+    }
+
+    for (size_t i = 0; i < image.h; i++) {
+        for (size_t j = 0; j < image.w; j++) {
+            (*pixel_probabilities)[(int) clamp(image.val[i][j], 0.f, 255.f)]++;
+        }
+    }
+
+    float nb_pixels_inv = 1.f / (image.h * image.w);
+    for (int i = 0; i < 256; i++) {
+        (*pixel_probabilities)[i] *= nb_pixels_inv;
+    }
+
+    return 0;
 }
