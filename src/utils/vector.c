@@ -87,4 +87,3 @@ float vector_average(Vector vec) {
 
     return sum / vec.size;
 }
-

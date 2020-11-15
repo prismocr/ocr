@@ -10,6 +10,7 @@
 #include "utils/error.h"
 
 static inline float clamp(float value, float min, float max);
+static int image_pixel_probabilities(Matrix image, float **pixel_probabilities);
 
 void image_threshold(float thresh, float maxval, Matrix *image) {
     size_t i, j;
@@ -29,30 +30,6 @@ void image_threshold_inv(float thresh, float maxval, Matrix *image) {
             image->val[i][j] = image->val[i][j] > thresh ? 0.f : maxval;
         }
     }
-}
-
-// TODO move that
-int image_pixel_probabilities(Matrix image, float **pixel_probabilities) {
-    *pixel_probabilities = (float *) calloc(256, sizeof(float));
-    if (*pixel_probabilities == NULL) {
-        set_last_errorf(
-          "Failed to allocated memory for pixel probabilities: %s",
-          strerror(errno));
-        return 1;
-    }
-
-    for (size_t i = 0; i < image.h; i++) {
-        for (size_t j = 0; j < image.w; j++) {
-            (*pixel_probabilities)[(int) clamp(image.val[i][j], 0.f, 255.f)]++;
-        }
-    }
-
-    float nb_pixels_inv = 1.f / (image.h * image.w);
-    for (int i = 0; i < 256; i++) {
-        (*pixel_probabilities)[i] *= nb_pixels_inv;
-    }
-
-    return 0;
 }
 
 int image_threshold_otsu(Matrix *image) {
@@ -271,4 +248,28 @@ static inline float clamp(float value, float min, float max) {
         return max;
 
     return value;
+}
+
+static int image_pixel_probabilities(Matrix image,
+                                     float **pixel_probabilities) {
+    *pixel_probabilities = (float *) calloc(256, sizeof(float));
+    if (*pixel_probabilities == NULL) {
+        set_last_errorf(
+          "Failed to allocated memory for pixel probabilities: %s",
+          strerror(errno));
+        return 1;
+    }
+
+    for (size_t i = 0; i < image.h; i++) {
+        for (size_t j = 0; j < image.w; j++) {
+            (*pixel_probabilities)[(int) clamp(image.val[i][j], 0.f, 255.f)]++;
+        }
+    }
+
+    float nb_pixels_inv = 1.f / (image.h * image.w);
+    for (int i = 0; i < 256; i++) {
+        (*pixel_probabilities)[i] *= nb_pixels_inv;
+    }
+
+    return 0;
 }

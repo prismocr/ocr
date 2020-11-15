@@ -357,8 +357,8 @@ MatrixLinkedList get_word_images(Matrix image, Vector hist) {
                 float height_thresh = vector_average(line_hist) * 0.3f;
                 for (size_t i = 0; i < line_hist.size; i++) {
                     line_hist.val[i] = line_hist.val[i] > height_thresh
-                                            ? line_hist.val[i]
-                                            : 0.f;
+                                         ? line_hist.val[i]
+                                         : 0.f;
                 }
 
                 // Average space
@@ -391,8 +391,8 @@ MatrixLinkedList get_word_images(Matrix image, Vector hist) {
                 height_thresh = vector_average(line_hist) * 0.3f;
                 for (size_t i = 0; i < line_hist.size; i++) {
                     line_hist.val[i] = line_hist.val[i] > height_thresh
-                                            ? line_hist.val[i]
-                                            : 0.f;
+                                         ? line_hist.val[i]
+                                         : 0.f;
                 }
 
                 // Word recovery
@@ -471,8 +471,7 @@ Vector processed_histogram_y(Matrix image) {
     // Threshold based on average line length
     float length_thresh = vector_average(hist_y) * 0.2f; // TODO: tweak value
     for (size_t i = 0; i < hist_y.size; i++) {
-        hist_y.val[i]
-          = hist_y.val[i] > length_thresh ? hist_y.val[i] : 0;
+        hist_y.val[i] = hist_y.val[i] > length_thresh ? hist_y.val[i] : 0;
     }
 
     // Threshold based on line height
@@ -511,4 +510,3 @@ float average_height(Vector hist) {
 
     return nlines == 0 ? 0 : (float) sum_height / nlines;
 }
-
