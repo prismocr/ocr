@@ -141,36 +141,6 @@ void image_contrast(Matrix *image, float delta) {
     }
 }
 
-float deg_to_rad(float angle) {
-    return angle * PI / 180;
-}
-
-void image_rotate(Matrix *image, float angle) {
-    size_t i, j;
-
-    size_t w = image->w;
-    size_t h = image->h;
-
-    float midx = w / 2;
-    float midy = h / 2;
-
-    Matrix dest;
-    matrix_new(h, w, &dest);
-
-    for (j = 0; j < h; j++) {
-        for (i = 0; i < w; i++) {
-            size_t x = (i - midx) * cos(angle) + (j - midy) * sin(angle) + midx;
-            size_t y = (j - midx) * cos(angle) + (midx - i) * sin(angle) + midy;
-
-            if (x < w && y < h) {
-                dest.val[x][y] = image->val[i][j];
-            }
-        }
-    }
-
-    *image = dest;
-}
-
 void edge_detect(Matrix *image) {
     float convo_mat[3][3] = {{-1., -1., -1.}, {-1., 8., -1.}, {-1., -1., -1.}};
 
