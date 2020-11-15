@@ -315,13 +315,11 @@ int auto_rotate(int argc, char *argv[]) {
     image_auto_rotate(&image, 0.01f);
 
     exit_on_error(bitmap_save("out.bmp", &image));
-    
+
     matrix_free(&image);
 
     return 0;
 }
-
-
 
 int demo(int argc, char *argv[]) {
     char *c = argv[1];

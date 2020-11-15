@@ -10,7 +10,7 @@ float deg_to_rad(float angle) {
 }
 
 float rad_to_deg(float angle) {
-    return angle/PI * 180;
+    return angle / PI * 180;
 }
 
 void image_rotate(Matrix *image, float angle) {
@@ -20,8 +20,8 @@ void image_rotate(Matrix *image, float angle) {
     matrix_new(h, w, &dest);
 
     // Initialize rotated image matrice
-    for(int y = 0; y < h; y++) {
-        for(int x = 0; x < w; x++) {
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
             dest.val[y][x] = -1;
         }
     }
@@ -34,11 +34,11 @@ void image_rotate(Matrix *image, float angle) {
     rot.val[1][0] = sin(angle);
     rot.val[1][1] = cos(angle);
 
-    float midx = w/2;
-    float midy = h/2;
+    float midx = w / 2;
+    float midy = h / 2;
 
-    for(int y = 0; y < h; y++) {
-        for(int x = 0; x < w; x++) {
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
             float c = image->val[y][x];
 
             Matrix col;
@@ -55,7 +55,7 @@ void image_rotate(Matrix *image, float angle) {
             float posY = r.val[1][0] + midy + 1;
 
             // Rotate
-            if(posX < w && posY < h && posX >= 0 && posY >= 0) {
+            if (posX < w && posY < h && posX >= 0 && posY >= 0) {
                 dest.val[(int) posY][(int) posX] = c;
             }
 
@@ -64,14 +64,14 @@ void image_rotate(Matrix *image, float angle) {
         }
     }
 
-    for(int y = 0; y < h; y++) {
-        for(int x = 0; x < w; x++) {
-            if(dest.val[y][x] == -1) {
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            if (dest.val[y][x] == -1) {
                 dest.val[y][x] = anti_aliasing_point(&dest, y, x);
             }
         }
     }
-    
+
     matrix_free(&rot);
     matrix_free(image);
     *image = dest;
@@ -79,30 +79,32 @@ void image_rotate(Matrix *image, float angle) {
 
 float image_detect_skew(Matrix *image, float precision) {
     // Compute diagonal
-    size_t diag = (size_t) sqrt(image->h*image->h + image->w * image->w);
+    size_t diag = (size_t) sqrt(image->h * image->h + image->w * image->w);
 
     // Initialize Hough Transform accumulator
     Matrix accumulator;
-    matrix_new(PI*(1/precision), diag, &accumulator);
+    matrix_new(PI * (1 / precision), diag, &accumulator);
 
     float t_max = 0;
     float vote_max = 0;
 
-    for(size_t y = 0; y < image->h; y++) {
-        for(size_t x = 0; x < image->w; x++) {
+    for (size_t y = 0; y < image->h; y++) {
+        for (size_t x = 0; x < image->w; x++) {
             float c = image->val[y][x];
-            if(c != 0) continue;
+            if (c != 0)
+                continue;
 
             // Iterate from -PI/2 to PI/2
-            float t = -PI/2;
-            while(t <= PI/2) {
+            float t = -PI / 2;
+            while (t <= PI / 2) {
                 int d = (int) (y * cos(t) + x * sin(t));
-                if(d >= 0) {
-                    int teta = (int) (t*(1/precision) + (PI/2)*(1/precision));
+                if (d >= 0) {
+                    int teta = (int) (t * (1 / precision)
+                                      + (PI / 2) * (1 / precision));
                     accumulator.val[teta][d]++;
 
                     // Compute most voted value
-                    if(accumulator.val[teta][d] > vote_max) {
+                    if (accumulator.val[teta][d] > vote_max) {
                         vote_max = accumulator.val[teta][d];
                         t_max = t;
                     }
