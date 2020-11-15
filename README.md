@@ -56,7 +56,8 @@ Possible options :
 * network [xor/add]
 * segmentation [image_path]
 * network_load
-
+* skew_detect [image_path]
+* auto_rotate [image_path]
 
 ## Tests
 
