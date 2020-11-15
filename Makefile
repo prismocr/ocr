@@ -78,6 +78,7 @@ $(RLSOBJDIR)/%.o: src/%.c
 # Test rules
 #
 test: prep $(TSTEXEC)
+	@if [ ! -d "Unity" ]; then git clone https://github.com/ThrowTheSwitch/Unity.git; fi;
 	$(foreach TEST,$(filter $(TSTDIR)/%,$^),./$(TEST) &&) echo "All test passed"
 
 $(TSTDIR)/%: $(TSTOBJDIR)/%.o $(filter-out $(DBGOBJDIR)/main.o,$(DBGOBJS)) Unity/src/unity.c
