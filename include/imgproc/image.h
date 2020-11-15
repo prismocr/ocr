@@ -88,4 +88,13 @@ void gauss(Matrix *mat);
  */
 void wide_gauss(Matrix *mat);
 
+/**
+ * Computes new pixel with anti-aliasing filter
+ *
+ * @param image
+ * @param x
+ * @param y
+ */
+float anti_aliasing_point(Matrix *mat, size_t x, size_t y);
+
 #endif // IMAGE_H

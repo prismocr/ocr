@@ -216,3 +216,16 @@ static inline float clamp(float value, float min, float max) {
 
     return value;
 }
+
+
+
+float anti_aliasing_point(Matrix *image, size_t x, size_t y) {
+    if(x <= 0 || x >= image->h-1 || y <= 0 || y >= image->w-1) return 0;
+    
+    float a = clamp(image->val[x-1][y], 0.f, 255.f);
+    float b =  clamp(image->val[x+1][y], 0.f, 255.f);
+    float c =  clamp(image->val[x][y+1], 0.f, 255.f);
+    float d =  clamp(image->val[x][y-1], 0.f, 255.f);
+
+    return (a+b+c+d)/4;
+}

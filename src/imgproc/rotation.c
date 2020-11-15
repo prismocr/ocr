@@ -14,34 +14,72 @@ float rad_to_deg(float angle) {
 }
 
 void image_rotate(Matrix *image, float angle) {
-    size_t i, j;
-
-    size_t w = image->w;
-    size_t h = image->h;
-
-    float midx = w / 2;
-    float midy = h / 2;
-
+    int w = image->w;
+    int h = image->h;
     Matrix dest;
     matrix_new(h, w, &dest);
 
-    for (j = 0; j < h; j++) {
-        for (i = 0; i < w; i++) {
-            size_t x = (i - midx) * cos(angle) + (j - midy) * sin(angle) + midx;
-            size_t y = (j - midx) * cos(angle) + (midx - i) * sin(angle) + midy;
-
-            if (x < w && y < h) {
-                dest.val[x][y] = image->val[i][j];
-            }
+    // Initialize rotated image matrice
+    for(int y = 0; y < h; y++) {
+        for(int x = 0; x < w; x++) {
+            dest.val[y][x] = -1;
         }
     }
 
+    // Initialize rotation matrice
+    Matrix rot;
+    matrix_new(2, 2, &rot);
+    rot.val[0][0] = cos(angle);
+    rot.val[0][1] = -sin(angle);
+    rot.val[1][0] = sin(angle);
+    rot.val[1][1] = cos(angle);
+
+    float midx = w/2;
+    float midy = h/2;
+
+    for(int y = 0; y < h; y++) {
+        for(int x = 0; x < w; x++) {
+            float c = image->val[y][x];
+
+            Matrix col;
+            matrix_new(2, 1, &col);
+            col.val[0][0] = x - midx;
+            col.val[1][0] = y - midy;
+
+            // Compute matrice rotation
+            Matrix r;
+            matrix_dot(rot, col, &r);
+
+            // Compute new position
+            float posX = r.val[0][0] + midx + 1;
+            float posY = r.val[1][0] + midy + 1;
+
+            // Rotate
+            if(posX < w && posY < h && posX >= 0 && posY >= 0) {
+                dest.val[(int) posY][(int) posX] = c;
+            }
+
+            matrix_free(&col);
+            matrix_free(&r);
+        }
+    }
+
+    for(int y = 0; y < h; y++) {
+        for(int x = 0; x < w; x++) {
+            if(dest.val[y][x] == -1) {
+                dest.val[y][x] = anti_aliasing_point(&dest, y, x);
+            }
+        }
+    }
+    
+    matrix_free(&rot);
+    matrix_free(image);
     *image = dest;
 }
 
 float image_detect_skew(Matrix *image, float precision) {
     // Compute diagonal
-    size_t diag = (size_t) sqrt(image->h*image->h* + image->w * image->w);
+    size_t diag = (size_t) sqrt(image->h*image->h + image->w * image->w);
 
     // Initialize Hough Transform accumulator
     Matrix accumulator;
