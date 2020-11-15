@@ -130,7 +130,7 @@ void init_cost(Layer *out_layer, float *target) {
     float *output = out_layer->values;
     for (size_t i = 0; i < out_layer->nb_neurons; i++) {
         out_layer->deltas[i] = (output[i] - target[i]); // derivative cost
-        out_layer->deltas[i] *= out_layer->actFuncPrime(out_layer->z[i]);
+        out_layer->deltas[i] *= out_layer->act_func_prime(out_layer->z[i]);
     }
 }
 void network_print_clean(Network network) {

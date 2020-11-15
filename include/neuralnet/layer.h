@@ -5,8 +5,9 @@
 #include "neuralnet/neuron.h"
 #include "utils/matrix.h"
 
-typedef float (*f2f)(float z);
 typedef struct Layer Layer;
+typedef void (*l2v)(Layer *z);
+typedef float (*f2f)(float z);
 struct Layer {
     size_t nb_neurons;
     struct Neuron *neurons;
@@ -20,8 +21,8 @@ struct Layer {
     float *d_biases;
     Matrix d_weights;
 
-    f2f actFunc;
-    f2f actFuncPrime;
+    l2v layer_act_func;
+    f2f act_func_prime;
     Layer *prev_layer;
     Layer *next_layer;
 };
@@ -37,7 +38,7 @@ struct Layer {
  * @return layer created
  */
 Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer,
-                int actFunc);
+                int act_func);
 /**
  * Frees a layer
  *
@@ -74,6 +75,11 @@ void initialize_neurons(Layer *layer);
  */
 float *get_weights_in(Layer layer, size_t index);
 
+void layer_sigmoid(Layer *layer);
+
+void layer_relu(Layer *layer);
+
+void layer_softmax(Layer *layer);
 /**
  * Feeds a layer with activation values
  *

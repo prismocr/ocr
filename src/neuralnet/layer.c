@@ -1,26 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "neuralnet/layer.h"
 #include "neuralnet/neuron.h"
 #include "utils/vector.h"
 
 Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer,
-                int actFunc) {
+                int act_func) {
     Layer layer;
 
     layer.nb_neurons = nb_neurons;
     layer.prev_layer = prev_layer;
     layer.next_layer = next_layer;
-    switch (actFunc) {
+    switch (act_func) {
         case SIGMOID:
-            layer.actFunc = sigmoid;
-            layer.actFuncPrime = sigmoid_prime;
+            layer.layer_act_func = layer_sigmoid;
+            layer.act_func_prime = sigmoid_prime;
             break;
         case RELU:
-            layer.actFunc = relu;
-            layer.actFuncPrime = relu_prime;
+            layer.layer_act_func = layer_relu;
+            layer.act_func_prime = relu_prime;
             break;
+        case SOFTMAX:
+            layer.layer_act_func = layer_softmax;
+            layer.act_func_prime = sigmoid_prime;
     }
 
     layer.values = (float *) calloc(nb_neurons, sizeof(float));
@@ -95,6 +99,42 @@ float *get_weights_in(Layer layer, size_t index) {
     return (layer.prev_layer) ? layer.weights.val[index] : NULL;
 }
 
+void layer_sigmoid(Layer *layer){
+    for (size_t i = 0; i < layer->nb_neurons; i++) {
+        layer->values[i] = sigmoid(layer->z[i]);
+    }
+}
+
+void layer_relu(Layer *layer){
+    for (size_t i = 0; i < layer->nb_neurons; i++) {
+        layer->values[i] = relu(layer->z[i]);
+    }
+}
+
+void layer_softmax(Layer *layer){
+
+    size_t i;
+    float max, sum, constant, value;
+
+    max = layer->values[0];
+    for (i = 0; i < layer->nb_neurons; i++) {
+        value = layer->values[i];
+        if (value > max) {
+            max = value;
+        }
+    }
+
+    sum = 0.f;
+    for (i = 0; i < layer->nb_neurons; i++) {
+        sum += exp(layer->values[i] - max);
+    }
+
+    constant = max + log(sum);
+    for (i = 0; i < layer->nb_neurons; i++) {
+        layer->values[i] = exp(layer->values[i] - constant);
+    }
+}
+
 void layer_feed(Layer *layer, float *values) {
     memcpy(layer->values, values, sizeof(float) * layer->nb_neurons);
 }
@@ -105,9 +145,7 @@ void layer_front_pop(Layer *layer) {
     vector_add(layer->nb_neurons, layer->biases, layer->z);
 
     // activation function
-    for (size_t i = 0; i < layer->nb_neurons; i++) {
-        layer->values[i] = layer->actFunc(layer->z[i]);
-    }
+    layer->layer_act_func(layer);
 }
 
 void layer_backpropagation(Layer *layer) {
@@ -117,7 +155,7 @@ void layer_backpropagation(Layer *layer) {
     // Compute new deltas from previous ones
     matrix_cdt(next_layer->weights, next_layer->deltas, layer->deltas);
     for (size_t i = 0; i < nb_neurons; i++) {
-        layer->deltas[i] *= layer->actFuncPrime(layer->z[i]);
+        layer->deltas[i] *= layer->act_func_prime(layer->z[i]);
     }
 
     // Apply cost to biases
