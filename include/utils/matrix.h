@@ -43,12 +43,14 @@ void matrix_free(Matrix *mat);
  * @param matrix to print
  */
 void matrix_print(Matrix mat);
+
 /**
  * Prints each element of the matrix with the given format
  *
  * @param matrix to print
  */
 void matrix_printf(const char *elem_fmt, Matrix mat);
+
 /**
  * Fill matrix @mat with random value between @min and @max
  *
@@ -87,6 +89,7 @@ float matrix_average(Matrix mat);
  * @param reference to save the result in
  */
 void matrix_dot(Matrix mat_a, Matrix mat_b, Matrix *res);
+
 /**
  * Apply a dot product between a matrix and an array (considered as a column)
  *
@@ -95,6 +98,7 @@ void matrix_dot(Matrix mat_a, Matrix mat_b, Matrix *res);
  * @param the array to save the result in
  */
 void matrix_column_dot(Matrix mat_a, float *column, float *res);
+
 /**
  * Apply a dot product between a matrix and an array (considered as a column)
  * Uses the matrix as if it was transposed
@@ -105,6 +109,7 @@ void matrix_column_dot(Matrix mat_a, float *column, float *res);
  * @param the array to save the result in
  */
 void matrix_cdt(Matrix mat_a, float *column, float *res);
+
 /**
  * Apply a dot product between a column and a line, resulting in a matrix
  * The result does not overwrite the content of @res, it adds to it

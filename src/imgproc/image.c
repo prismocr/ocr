@@ -171,6 +171,32 @@ void image_rotate(Matrix *image, float angle) {
     *image = dest;
 }
 
+Vector image_histogram_x(Matrix image) {
+    Vector hist;
+
+    vector_new(image.w, &hist);
+    for (size_t i = 0; i < image.h; i++) {
+        for (size_t j = 0; j < image.w; j++) {
+            hist.val[j] += image.val[i][j];
+        }
+    }
+
+    return hist;
+}
+
+Vector image_histogram_y(Matrix image) {
+    Vector hist;
+
+    vector_new(image.h, &hist);
+    for (size_t i = 0; i < image.h; i++) {
+        for (size_t j = 0; j < image.w; j++) {
+            hist.val[i] += image.val[i][j];
+        }
+    }
+
+    return hist;
+}
+
 void edge_detect(Matrix *image) {
     float convo_mat[3][3] = {{-1., -1., -1.}, {-1., 8., -1.}, {-1., -1., -1.}};
 

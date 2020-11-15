@@ -1,6 +1,7 @@
 #include "segmentation/segmentation.h"
 #include "imgproc/image.h"
 #include "utils/matrix.h"
+#include "utils/vector.h"
 #include "imgproc/morphology.h"
 #include "utils/linked_list.h"
 
@@ -14,11 +15,9 @@ struct word {
     Matrix *images;
 };
 
-static MatrixLinkedList get_word_images(Matrix image, Matrix hist);
-static Matrix processed_histogram_y(Matrix image);
-static Matrix histogram_y(Matrix image);
-static Matrix histogram_x(Matrix image);
-static float average_height(Matrix hist);
+static MatrixLinkedList get_word_images(Matrix image, Vector hist);
+static Vector processed_histogram_y(Matrix image);
+static float average_height(Vector hist);
 static void extract_words(Matrix *image);
 
 // TODO Do iterative form of the algo to avoid stack overflow
@@ -168,11 +167,11 @@ void segment_morph_hist(Matrix image) {
 
     feature_extract_morph_based(&image_copy);
 
-    Matrix hist_y = processed_histogram_y(image_copy);
+    Vector hist_y = processed_histogram_y(image_copy);
     matrix_free(&image_copy);
 
     MatrixLinkedList word_images = get_word_images(image, hist_y);
-    matrix_free(&hist_y);
+    vector_free(&hist_y);
 
     char buff[200];
     size_t c = 0;
@@ -233,7 +232,7 @@ void segment_morph_hist(Matrix image) {
         // TODO also do crop before
         Matrix cropped_word
           = image_crop(left, top, right - left, bot - top, *word);
-        Matrix word_hist = histogram_x(cropped_word);
+        Vector word_hist = image_histogram_x(cropped_word);
 
         sprintf(buff, "seg/word-%lu.bmp", i);
         // bitmap_save(buff, &cropped_word);
@@ -241,8 +240,8 @@ void segment_morph_hist(Matrix image) {
         size_t left_cropped_word = left;
         left = 0;
         size_t j;
-        for (j = 0; j < word_hist.h; j++) {
-            if (word_hist.val[j][0] == 0.f) {
+        for (j = 0; j < word_hist.size; j++) {
+            if (word_hist.val[j] == 0.f) {
                 if (j >= left + 3) {
                     Matrix caracter
                       = image_crop(left_cropped_word + left, 0, j - left - 2,
@@ -263,7 +262,7 @@ void segment_morph_hist(Matrix image) {
             matrix_free(&caracter);
         }
 
-        matrix_free(&word_hist);
+        vector_free(&word_hist);
         matrix_free(&cropped_word);
     }
 
@@ -325,7 +324,7 @@ void morphological_preproc(Matrix *image) {
     matrix_free(&kernel);
 }
 
-MatrixLinkedList get_word_images(Matrix image, Matrix hist) {
+MatrixLinkedList get_word_images(Matrix image, Vector hist) {
     MatrixLinkedList word_images;
     mll_new(&word_images);
 
@@ -333,11 +332,11 @@ MatrixLinkedList get_word_images(Matrix image, Matrix hist) {
     size_t top = 0;
     size_t prev_top = 0;
     size_t next_top = 0;
-    for (size_t i = 0; i < hist.h; i++) {
-        if (hist.val[i][0] == 0.f) {
+    for (size_t i = 0; i < hist.size; i++) {
+        if (hist.val[i] == 0.f) {
             size_t bot = i;
             if (bot > top + 3) {
-                while (i < hist.h && hist.val[i][0] == 0.f) {
+                while (i < hist.size && hist.val[i] == 0.f) {
                     next_top = i++;
                 }
 
@@ -352,21 +351,21 @@ MatrixLinkedList get_word_images(Matrix image, Matrix hist) {
 
                 extract_words(&line);
 
-                Matrix line_hist = histogram_x(line);
+                Vector line_hist = image_histogram_x(line);
 
                 // TODO: tweak value
-                float height_thresh = matrix_average(line_hist) * 0.3f;
-                for (size_t i = 0; i < line_hist.h; i++) {
-                    line_hist.val[i][0] = line_hist.val[i][0] > height_thresh
-                                            ? line_hist.val[i][0]
+                float height_thresh = vector_average(line_hist) * 0.3f;
+                for (size_t i = 0; i < line_hist.size; i++) {
+                    line_hist.val[i] = line_hist.val[i] > height_thresh
+                                            ? line_hist.val[i]
                                             : 0.f;
                 }
 
                 // Average space
                 size_t nb_spaces = 0;
                 size_t total_space = 0;
-                for (size_t j = 0, left = 0; j < line_hist.h; j++) {
-                    if (line_hist.val[j][0] != 0.f) {
+                for (size_t j = 0, left = 0; j < line_hist.size; j++) {
+                    if (line_hist.val[j] != 0.f) {
                         if (j >= left + 3) {
                             nb_spaces++;
                             total_space += j - left;
@@ -387,12 +386,12 @@ MatrixLinkedList get_word_images(Matrix image, Matrix hist) {
                 matrix_free(&kernel);
 
                 // TODO optimize this garbage
-                matrix_free(&line_hist);
-                line_hist = histogram_x(line);
-                height_thresh = matrix_average(line_hist) * 0.3f;
-                for (size_t i = 0; i < line_hist.h; i++) {
-                    line_hist.val[i][0] = line_hist.val[i][0] > height_thresh
-                                            ? line_hist.val[i][0]
+                vector_free(&line_hist);
+                line_hist = image_histogram_x(line);
+                height_thresh = vector_average(line_hist) * 0.3f;
+                for (size_t i = 0; i < line_hist.size; i++) {
+                    line_hist.val[i] = line_hist.val[i] > height_thresh
+                                            ? line_hist.val[i]
                                             : 0.f;
                 }
 
@@ -400,12 +399,12 @@ MatrixLinkedList get_word_images(Matrix image, Matrix hist) {
                 size_t left = 0;
                 size_t prev_left = 0;
                 size_t next_left = 0;
-                for (size_t j = 0; j < line_hist.h; j++) {
-                    if (line_hist.val[j][0] == 0.f) {
+                for (size_t j = 0; j < line_hist.size; j++) {
+                    if (line_hist.val[j] == 0.f) {
                         size_t right = j;
                         if (j > left + 3) {
-                            while (j < line_hist.h
-                                   && line_hist.val[j][0] == 0.f) {
+                            while (j < line_hist.size
+                                   && line_hist.val[j] == 0.f) {
                                 next_left = j++;
                             }
 
@@ -431,7 +430,7 @@ MatrixLinkedList get_word_images(Matrix image, Matrix hist) {
                     }
                 }
 
-                matrix_free(&line_hist);
+                vector_free(&line_hist);
                 matrix_free(&line);
                 prev_top = (bot + i) / 2;
                 top = next_top;
@@ -466,25 +465,25 @@ void extract_words(Matrix *image) {
     */
 }
 
-Matrix processed_histogram_y(Matrix image) {
-    Matrix hist_y = histogram_y(image);
+Vector processed_histogram_y(Matrix image) {
+    Vector hist_y = image_histogram_y(image);
 
     // Threshold based on average line length
-    float length_thresh = matrix_average(hist_y) * 0.2f; // TODO: tweak value
-    for (size_t i = 0; i < hist_y.h; i++) {
-        hist_y.val[i][0]
-          = hist_y.val[i][0] > length_thresh ? hist_y.val[i][0] : 0;
+    float length_thresh = vector_average(hist_y) * 0.2f; // TODO: tweak value
+    for (size_t i = 0; i < hist_y.size; i++) {
+        hist_y.val[i]
+          = hist_y.val[i] > length_thresh ? hist_y.val[i] : 0;
     }
 
     // Threshold based on line height
     float height_thresh = average_height(hist_y) * 0.2f; // TODO: tweak value
     size_t top = 0;
-    for (size_t i = 0; i < hist_y.h; i++) {
-        if (hist_y.val[i][0] == 0.f) {
+    for (size_t i = 0; i < hist_y.size; i++) {
+        if (hist_y.val[i] == 0.f) {
             if (i - top < height_thresh + 2) {
                 // Sets lines below height_thresh to 0
                 for (; top < i; top++) {
-                    hist_y.val[top][0] = 0.f;
+                    hist_y.val[top] = 0.f;
                 }
             }
             top = i;
@@ -494,40 +493,14 @@ Matrix processed_histogram_y(Matrix image) {
     return hist_y;
 }
 
-static Matrix histogram_y(Matrix image) {
-    Matrix hist;
-
-    matrix_new(image.h, 1, &hist);
-    for (size_t i = 0; i < image.h; i++) {
-        for (size_t j = 0; j < image.w; j++) {
-            hist.val[i][0] += image.val[i][j];
-        }
-    }
-
-    return hist;
-}
-
-static Matrix histogram_x(Matrix image) {
-    Matrix hist;
-
-    matrix_new(image.w, 1, &hist);
-    for (size_t i = 0; i < image.h; i++) {
-        for (size_t j = 0; j < image.w; j++) {
-            hist.val[j][0] += image.val[i][j];
-        }
-    }
-
-    return hist;
-}
-
-float average_height(Matrix hist) {
+float average_height(Vector hist) {
     size_t nlines, sum_height, top;
 
     sum_height = 0;
     nlines = 0;
     top = 0;
-    for (size_t i = 0; i < hist.h; i++) {
-        if (hist.val[i][0] == 0.f) {
+    for (size_t i = 0; i < hist.size; i++) {
+        if (hist.val[i] == 0.f) {
             if (i > top + 3) { // + 3 because line is at least 1px
                 sum_height += i - top - 2;
                 nlines++;
@@ -538,3 +511,4 @@ float average_height(Matrix hist) {
 
     return nlines == 0 ? 0 : (float) sum_height / nlines;
 }
+

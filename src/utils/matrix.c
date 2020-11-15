@@ -131,7 +131,7 @@ float matrix_average(Matrix mat) {
         }
     }
 
-    return sum / (mat.h + mat.w);
+    return sum / (mat.h * mat.w);
 }
 
 void matrix_dot(Matrix mat_a, Matrix mat_b, Matrix *res) {
