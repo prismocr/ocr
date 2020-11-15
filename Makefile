@@ -100,9 +100,9 @@ clean:
 mrproper:
 	$(RM) -r $(BUILDDIR)
 
-format: src/*.c include/*.h
+format: src/*.c src/**/*.c include/*.h
 	@clang-format --style=file -i $^
 
-cppcheck: src/*.c
+cppcheck: src/*.c src/**/*.c
 	@cppcheck --enable=all -q --std=c99 -Iinclude/ $^
 
