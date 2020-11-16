@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Run tests
 
 on:
   push:
@@ -8,11 +8,11 @@ on:
 
 jobs:
 
-  build:
+  tests:
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
+    - name: Run tests
       run: docker build . --file ./docker/Dockerfile.test --tag prismocr/test:$(date +%s)
