@@ -1,6 +1,8 @@
 #include <unity.h>
 #include "utils/linked_list.h"
 #include "utils/matrix.h"
+#include "utils/bitmap.h"
+#include "imgproc/rotation.h"
 
 MatrixLinkedList testee;
 
@@ -62,6 +64,33 @@ void big_test() {
     }
 }
 
+void detect_skew() {
+    Matrix image;
+
+    TEST_ASSERT_EQUAL_INT(0, bitmap_load("./examples/text_skew_17.bmp", &image));
+    float angle = image_detect_skew(&image, 0.01f);
+    // rad_to_deg(angle);
+    TEST_ASSERT_EQUAL_FLOAT(17.f, roundf(rad_to_deg(angle)));
+
+    TEST_ASSERT_EQUAL_INT(0, bitmap_load("./examples/text_skew_60.bmp", &image));
+    angle = image_detect_skew(&image, 0.01f);
+    // rad_to_deg(angle);
+    TEST_ASSERT_EQUAL_FLOAT(-60.f, roundf(rad_to_deg(angle)));
+
+    TEST_ASSERT_EQUAL_INT(0, bitmap_load("./examples/text.bmp", &image));
+    angle = image_detect_skew(&image, 0.01f);
+    // rad_to_deg(angle);
+    TEST_ASSERT_EQUAL_FLOAT(0.f, roundf(rad_to_deg(angle)));
+
+    TEST_ASSERT_EQUAL_INT(0, bitmap_load("./examples/text_skew.bmp", &image));
+    angle = image_detect_skew(&image, 0.01f);
+    // rad_to_deg(angle);
+    TEST_ASSERT_EQUAL_FLOAT(4.f, roundf(rad_to_deg(angle)));
+
+    matrix_free(&image);
+}
+
+
 int main() {
     UNITY_BEGIN();
 
@@ -69,6 +98,7 @@ int main() {
     RUN_TEST(when_insert_at_the_end_should_be_present);
     RUN_TEST(when_delete_first_should_shift);
     RUN_TEST(big_test);
+    RUN_TEST(detect_skew);
 
     return UNITY_END();
 }
