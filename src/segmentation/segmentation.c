@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "segmentation/segmentation.h"
 #include "imgproc/image.h"
 #include "utils/matrix.h"
@@ -9,150 +10,34 @@
 #include "utils/bitmap.h"
 #include <stdio.h>
 
-struct word {
-    size_t length;
-    char *letters;
-    Matrix *images;
-};
-
-static MatrixLinkedList get_word_images(Matrix image, Vector hist);
 static Vector processed_histogram_y(Matrix image);
 static float average_height(Vector hist);
-static void extract_words(Matrix *image);
 
-// TODO Do iterative form of the algo to avoid stack overflow
-// I use pointer to matrix here to have lighter stackframes
-// 4-conn recursive grass fire algorithm
-void rec_grass_fire(size_t i, size_t j, Matrix *image, float class) {
-    image->val[i][j] = class;
-
-    // North
-    if (i > 0 && image->val[i - 1][j] == 255.f) {
-        rec_grass_fire(i - 1, j, image, class);
+int segment(Matrix image, Page *page) {
+    if (page_new(image.w, image.h, &page)) {
+        return 1;
     }
 
-    // South
-    if (i < image->h - 1 && image->val[i + 1][j] == 255.f) {
-        rec_grass_fire(i + 1, j, image, class);
+    if (segment_regions_rlsa(image, &page->regions)) {
+        return 1;
     }
-
-    // West
-    if (j > 0 && image->val[i][j - 1] == 255.f) {
-        rec_grass_fire(i, j - 1, image, class);
-    }
-
-    // East
-    if (j < image->h - 1 && image->val[i][j + 1] == 255.f) {
-        rec_grass_fire(i, j + 1, image, class);
-    }
-}
-
-void segment_rlsa(Matrix image) {
-    // TODO: pass image to don't apply otsu on every lines
-    Matrix image_copy;
-    matrix_copy(image, &image_copy);
-    image_threshold_otsu(&image_copy);
-    image_invert_color(255.f, &image_copy);
-
-    Matrix horizontal_morph_im;
-    matrix_copy(image_copy, &horizontal_morph_im);
-
-    Matrix kernel = structuring_element(1, 101);
-    dilate(&horizontal_morph_im, kernel);
-    erode(&horizontal_morph_im, kernel);
-    matrix_free(&kernel);
-
-    Matrix vertical_morph_im;
-    matrix_copy(image_copy, &vertical_morph_im);
-    matrix_free(&image_copy);
-
-    kernel = structuring_element(201, 1);
-    dilate(&vertical_morph_im, kernel);
-    erode(&vertical_morph_im, kernel);
-    matrix_free(&kernel);
-
-    for (size_t i = 0; i < image.h; i++) {
-        for (size_t j = 0; j < image.w; j++) {
-            horizontal_morph_im.val[i][j]
-              = vertical_morph_im.val[i][j] * horizontal_morph_im.val[i][j]
-                    >= 255.f
-                  ? 255.f
-                  : 0.f;
-        }
-    }
-
-    matrix_free(&vertical_morph_im);
-
-    kernel = structuring_element(1, 31);
-    dilate(&horizontal_morph_im, kernel);
-    matrix_free(&kernel);
-
-    kernel = structuring_element(1, 11);
-    erode(&horizontal_morph_im, kernel);
-    matrix_free(&kernel);
-
-    kernel = structuring_element(11, 1);
-    dilate(&horizontal_morph_im, kernel);
-    matrix_free(&kernel);
-
-    float class = 256.f;
-    for (size_t i = 0; i < horizontal_morph_im.h; i++) {
-        for (size_t j = 0; j < horizontal_morph_im.w; j++) {
-            if (horizontal_morph_im.val[i][j] == 255.f) {
-                rec_grass_fire(i, j, &horizontal_morph_im, class ++);
-            }
-        }
-    }
-
-    // consider bounding box as roi
-    MatrixLinkedList regions;
-    mll_new(&regions);
-    for (float c = 256.f; c < class; c++) {
-        size_t top, bot, left, right;
-        top = image.h;
-        bot = 0;
-        left = image.w;
-        right = 0;
-
-        for (size_t i = 0; i < horizontal_morph_im.h; i++) {
-            for (size_t j = 0; j < horizontal_morph_im.w; j++) {
-                if (horizontal_morph_im.val[i][j] == c) {
-                    if (i < top) {
-                        top = i;
-                    }
-                    if (i > bot) {
-                        bot = i;
-                    }
-                    if (j < left) {
-                        left = j;
-                    }
-                    if (j > right) {
-                        right = j;
-                    }
-                }
-            }
-        }
-
-        if (right > left && bot > top) {
-            mll_insert(regions.length,
-                       image_crop(left, top, right - left, bot - top, image),
-                       &regions);
-        }
-    }
-    matrix_free(&horizontal_morph_im);
 
     char buff[200];
-    for (size_t i = 0; i < regions.length; i++) {
+    size_t i = 0;
+    Region *region = page->regions;
+    while (region != NULL) {
+        Matrix region_image = image_crop(region->x, region->y, region->w, region->h, image);
         sprintf(buff, "seg/region-%lu.bmp", i);
-        bitmap_save(buff, mll_get(i, regions));
-        segment_morph_hist(*mll_get(i, regions));
+        bitmap_save(buff, &region_image);
+        segment_morph_hist(region_image);
+
+        region = region->next;
+        i++;
     }
 
-    mll_free(&regions);
+    return 0;
 }
 
-static size_t line_count = 0;
-static size_t word_count = 0;
 /*
  * Text line segmentation based on morphology and histogram projection
  * http://www.cvc.uab.es/icdar2009/papers/3725a651.pdf
@@ -170,7 +55,7 @@ void segment_morph_hist(Matrix image) {
     Vector hist_y = processed_histogram_y(image_copy);
     matrix_free(&image_copy);
 
-    MatrixLinkedList word_images = get_word_images(image, hist_y);
+    MatrixLinkedList word_images = segment_words(image, hist_y);
     vector_free(&hist_y);
 
     char buff[200];
@@ -322,147 +207,6 @@ void morphological_preproc(Matrix *image) {
     closing(image, kernel);
 
     matrix_free(&kernel);
-}
-
-MatrixLinkedList get_word_images(Matrix image, Vector hist) {
-    MatrixLinkedList word_images;
-    mll_new(&word_images);
-
-    // Perform line recovery
-    size_t top = 0;
-    size_t prev_top = 0;
-    size_t next_top = 0;
-    for (size_t i = 0; i < hist.size; i++) {
-        if (hist.val[i] == 0.f) {
-            size_t bot = i;
-            if (bot > top + 3) {
-                while (i < hist.size && hist.val[i] == 0.f) {
-                    next_top = i++;
-                }
-
-                Matrix line
-                  = image_crop(0, (top + prev_top) / 2 + 1, image.w,
-                               (bot + i) / 2 - (top + prev_top) / 2 - 2, image);
-
-                // TOREMOVE
-                char buff[200];
-                sprintf(buff, "seg/line-%lu.bmp", line_count++);
-                bitmap_save(buff, &line);
-
-                extract_words(&line);
-
-                Vector line_hist = image_histogram_x(line);
-
-                // TODO: tweak value
-                float height_thresh = vector_average(line_hist) * 0.3f;
-                for (size_t i = 0; i < line_hist.size; i++) {
-                    line_hist.val[i] = line_hist.val[i] > height_thresh
-                                         ? line_hist.val[i]
-                                         : 0.f;
-                }
-
-                // Average space
-                size_t nb_spaces = 0;
-                size_t total_space = 0;
-                for (size_t j = 0, left = 0; j < line_hist.size; j++) {
-                    if (line_hist.val[j] != 0.f) {
-                        if (j >= left + 3) {
-                            nb_spaces++;
-                            total_space += j - left;
-                        }
-                        left = j;
-                    }
-                }
-                float average_space = (float) total_space / nb_spaces;
-
-                Matrix kernel = structuring_element(
-                  1,
-                  (size_t) average_space - (((size_t) average_space + 1) % 2));
-                dilate(&line, kernel);
-                matrix_free(&kernel);
-
-                kernel = structuring_element(1, 3);
-                erode(&line, kernel);
-                matrix_free(&kernel);
-
-                // TODO optimize this garbage
-                vector_free(&line_hist);
-                line_hist = image_histogram_x(line);
-                height_thresh = vector_average(line_hist) * 0.3f;
-                for (size_t i = 0; i < line_hist.size; i++) {
-                    line_hist.val[i] = line_hist.val[i] > height_thresh
-                                         ? line_hist.val[i]
-                                         : 0.f;
-                }
-
-                // Word recovery
-                size_t left = 0;
-                size_t prev_left = 0;
-                size_t next_left = 0;
-                for (size_t j = 0; j < line_hist.size; j++) {
-                    if (line_hist.val[j] == 0.f) {
-                        size_t right = j;
-                        if (j > left + 3) {
-                            while (j < line_hist.size
-                                   && line_hist.val[j] == 0.f) {
-                                next_left = j++;
-                            }
-
-                            mll_insert(
-                              word_images.length,
-                              image_crop(
-                                (left + prev_left) / 2 + 1,
-                                (top + prev_top) / 2 + 1,
-                                (right + j) / 2 - (left + prev_left) / 2 - 2,
-                                (bot + i) / 2 - (top + prev_top) / 2 - 2,
-                                image),
-                              &word_images);
-
-                            sprintf(buff, "seg/word-%lu.bmp", word_count++);
-                            bitmap_save(buff, mll_get(word_images.length - 1,
-                                                      word_images));
-
-                            prev_left = (right + j) / 2;
-                            left = next_left;
-                        } else {
-                            left = right;
-                        }
-                    }
-                }
-
-                vector_free(&line_hist);
-                matrix_free(&line);
-                prev_top = (bot + i) / 2;
-                top = next_top;
-            } else {
-                top = bot;
-            }
-        }
-    }
-
-    return word_images;
-}
-
-void extract_words(Matrix *image) {
-    Matrix kernel;
-
-    image_threshold_otsu(image);
-    image_invert_color(255.f, image);
-
-    kernel = structuring_element(image->h - (image->h + 1) % 2, 1);
-    dilate(image, kernel);
-    matrix_free(&kernel);
-    /*
-    kernel = structuring_element(1, 5);
-    opening(image, kernel);
-    matrix_free(&kernel);
-
-    // eleminate short horizontal lines
-    kernel = structuring_element(5, 1);
-    closing(image, kernel);
-    closing(image, kernel);
-    matrix_free(&kernel);
-    */
 }
 
 Vector processed_histogram_y(Matrix image) {
