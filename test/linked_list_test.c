@@ -67,12 +67,14 @@ void big_test() {
 void detect_skew() {
     Matrix image;
 
-    TEST_ASSERT_EQUAL_INT(0, bitmap_load("./examples/text_skew_17.bmp", &image));
+    TEST_ASSERT_EQUAL_INT(0,
+                          bitmap_load("./examples/text_skew_17.bmp", &image));
     float angle = image_detect_skew(&image, 0.01f);
     // rad_to_deg(angle);
     TEST_ASSERT_EQUAL_FLOAT(17.f, roundf(rad_to_deg(angle)));
 
-    TEST_ASSERT_EQUAL_INT(0, bitmap_load("./examples/text_skew_60.bmp", &image));
+    TEST_ASSERT_EQUAL_INT(0,
+                          bitmap_load("./examples/text_skew_60.bmp", &image));
     angle = image_detect_skew(&image, 0.01f);
     // rad_to_deg(angle);
     TEST_ASSERT_EQUAL_FLOAT(-60.f, roundf(rad_to_deg(angle)));
@@ -90,7 +92,6 @@ void detect_skew() {
     matrix_free(&image);
 }
 
-
 int main() {
     UNITY_BEGIN();
 
@@ -102,4 +103,3 @@ int main() {
 
     return UNITY_END();
 }
-
