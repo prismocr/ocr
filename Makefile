@@ -78,6 +78,7 @@ $(RLSOBJDIR)/%.o: src/%.c
 # Test rules
 #
 test: prep $(TSTEXEC)
+	@if [ ! -d "Unity" ]; then git clone https://github.com/ThrowTheSwitch/Unity.git; fi;
 	$(foreach TEST,$(filter $(TSTDIR)/%,$^),./$(TEST) &&) echo "All test passed"
 
 $(TSTDIR)/%: $(TSTOBJDIR)/%.o $(filter-out $(DBGOBJDIR)/main.o,$(DBGOBJS)) Unity/src/unity.c
@@ -100,7 +101,7 @@ clean:
 mrproper:
 	$(RM) -r $(BUILDDIR)
 
-format: src/*.c src/**/*.c include/*.h
+format: src/*.c src/**/*.c include/*.h test/*.c
 	@clang-format --style=file -i $^
 
 cppcheck: src/*.c src/**/*.c
