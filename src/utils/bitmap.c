@@ -30,22 +30,14 @@
  * 0x32   4    Number of important colors used
  */
 
-float bgr_to_gray(unsigned char color[3]) {
-    return color[0] * 0.07f + color[1] * 0.71f + color[2] * 0.21f;
-}
-
-unsigned int read_word(FILE *f) {
-    return fgetc(f) | fgetc(f) << 8;
-}
-
-unsigned int read_dword(FILE *f) {
-    return fgetc(f) | fgetc(f) << 8 | fgetc(f) << 16 | fgetc(f) << 24;
-}
+static float bgr_to_gray(unsigned char color[3]);
+static unsigned int read_word(FILE *f);
+static unsigned int read_dword(FILE *f);
 
 int bitmap_load(const char *path, Matrix *image) {
     int i, j;
     unsigned int pixel_data_offset, padding, w, h;
-    FILE *f;
+    FILE *f = NULL;
 
     f = fopen(path, "rb");
     if (f == NULL) {
@@ -54,11 +46,13 @@ int bitmap_load(const char *path, Matrix *image) {
     }
     if (fgetc(f) != 'B' || fgetc(f) != 'M') {
         set_last_error("Invalid image format");
+        fclose(f);
         return 1;
     }
 
     if (fseek(f, 0xa, SEEK_SET)) {
         set_last_error("Failed to seek in file");
+        fclose(f);
         return 1;
     }
     pixel_data_offset = read_dword(f);
@@ -70,22 +64,25 @@ int bitmap_load(const char *path, Matrix *image) {
     w = read_dword(f);
     h = read_dword(f);
     if (matrix_new(h, w, image)) {
+        fclose(f);
         return 1;
     }
-    // TODO check allocation fail
     padding = (4 - (image->w * 3) % 4) % 4;
 
     if (fseek(f, 0x1c, SEEK_SET)) {
         set_last_error("Failed to seek in file");
+        fclose(f);
         return 1;
     }
     if (read_word(f) != 24) {
         set_last_error("Unsupported bit depth");
+        fclose(f);
         return 1;
     }
 
     if (fseek(f, pixel_data_offset, SEEK_SET)) {
         set_last_error("Failed to seek in file");
+        fclose(f);
         return 1;
     }
 
@@ -142,6 +139,7 @@ int bitmap_save(const char *path, Matrix *image) {
     };
     if (fwrite(bmp_header, 1, sizeof(bmp_header), f) != sizeof(bmp_header)) {
         set_last_errorf("Failed to write BMP header: %s", strerror(errno));
+        fclose(f);
         return 1;
     }
 
@@ -190,6 +188,7 @@ int bitmap_save(const char *path, Matrix *image) {
     };
     if (fwrite(dib_header, 1, sizeof(dib_header), f) != sizeof(dib_header)) {
         set_last_errorf("Failed to write DIB header: %s", strerror(errno));
+        fclose(f);
         return 1;
     }
 
@@ -211,4 +210,16 @@ int bitmap_save(const char *path, Matrix *image) {
     }
 
     return 0;
+}
+
+static float bgr_to_gray(unsigned char color[3]) {
+    return color[0] * 0.07f + color[1] * 0.71f + color[2] * 0.21f;
+}
+
+static unsigned int read_word(FILE *f) {
+    return fgetc(f) | fgetc(f) << 8;
+}
+
+static unsigned int read_dword(FILE *f) {
+    return fgetc(f) | fgetc(f) << 8 | fgetc(f) << 16 | fgetc(f) << 24;
 }
