@@ -105,5 +105,6 @@ format: src/*.c src/**/*.c include/*.h test/*.c
 	@clang-format --style=file -i $^
 
 cppcheck: src/*.c src/**/*.c
-	@cppcheck --enable=all -q --std=c99 -Iinclude/ $^
+	@cppcheck --enable=warning,style,performance,portability,information,\
+	missingInclude -q --std=c99 -Iinclude/ $^
 
