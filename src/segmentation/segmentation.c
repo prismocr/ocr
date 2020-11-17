@@ -27,12 +27,13 @@ int segment(Matrix image, Page *page) {
     Region *region = page->regions;
     while (region != NULL) {
         Matrix region_image = image_crop(region->x, region->y, region->w, region->h, image);
-        sprintf(buff, "seg/region-%lu.bmp", i);
+        sprintf(buff, "seg/region-%zu.bmp", i);
         bitmap_save(buff, &region_image);
         segment_morph_hist(region_image);
 
         region = region->next;
         i++;
+        matrix_free(&region_image);
     }
 
     return 0;
@@ -119,7 +120,7 @@ void segment_morph_hist(Matrix image) {
           = image_crop(left, top, right - left, bot - top, *word);
         Vector word_hist = image_histogram_x(cropped_word);
 
-        sprintf(buff, "seg/word-%lu.bmp", i);
+        sprintf(buff, "seg/word-%zu.bmp", i);
         // bitmap_save(buff, &cropped_word);
 
         size_t left_cropped_word = left;
@@ -131,7 +132,7 @@ void segment_morph_hist(Matrix image) {
                     Matrix caracter
                       = image_crop(left_cropped_word + left, 0, j - left - 2,
                                    cropped_word.h, *mll_get(i, word_images));
-                    sprintf(buff, "seg/car-%lu.bmp", c++);
+                    sprintf(buff, "seg/car-%zu.bmp", c++);
                     bitmap_save(buff, &caracter);
                     matrix_free(&caracter);
                 }
@@ -142,7 +143,7 @@ void segment_morph_hist(Matrix image) {
             Matrix caracter
               = image_crop(left_cropped_word + left, 0, j - left - 2,
                            cropped_word.h, *mll_get(i, word_images));
-            sprintf(buff, "seg/car-%lu.bmp", c++);
+            sprintf(buff, "seg/car-%zu.bmp", c++);
             bitmap_save(buff, &caracter);
             matrix_free(&caracter);
         }

@@ -36,7 +36,7 @@ MatrixLinkedList segment_words(Matrix image, Vector hist) {
 
                 // TOREMOVE
                 char buff[200];
-                sprintf(buff, "seg/line-%lu.bmp", line_count++);
+                sprintf(buff, "seg/line-%zu.bmp", line_count++);
                 bitmap_save(buff, &line);
 
                 extract_words(&line);
@@ -108,7 +108,7 @@ MatrixLinkedList segment_words(Matrix image, Vector hist) {
                                 image),
                               &word_images);
 
-                            sprintf(buff, "seg/word-%lu.bmp", word_count++);
+                            sprintf(buff, "seg/word-%zu.bmp", word_count++);
                             bitmap_save(buff, mll_get(word_images.length - 1,
                                                       word_images));
 
