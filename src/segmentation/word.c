@@ -45,9 +45,9 @@ MatrixLinkedList segment_words(Matrix image, Vector hist) {
 
                 // TODO: tweak value
                 float height_thresh = vector_average(line_hist) * 0.3f;
-                for (size_t i = 0; i < line_hist.size; i++) {
-                    line_hist.val[i] = line_hist.val[i] > height_thresh
-                                         ? line_hist.val[i]
+                for (size_t j = 0; j < line_hist.size; j++) {
+                    line_hist.val[j] = line_hist.val[j] > height_thresh
+                                         ? line_hist.val[j]
                                          : 0.f;
                 }
 
@@ -79,9 +79,9 @@ MatrixLinkedList segment_words(Matrix image, Vector hist) {
                 vector_free(&line_hist);
                 line_hist = image_histogram_x(line);
                 height_thresh = vector_average(line_hist) * 0.3f;
-                for (size_t i = 0; i < line_hist.size; i++) {
-                    line_hist.val[i] = line_hist.val[i] > height_thresh
-                                         ? line_hist.val[i]
+                for (size_t j = 0; j < line_hist.size; j++) {
+                    line_hist.val[j] = line_hist.val[j] > height_thresh
+                                         ? line_hist.val[j]
                                          : 0.f;
                 }
 
