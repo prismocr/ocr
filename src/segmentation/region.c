@@ -130,7 +130,8 @@ int segment_regions_rlsa(Matrix image, Region **regions) {
 
         if (right > left && bot > top) {
             Region *current_region = NULL;
-            if (region_new(left, top, right - left, bot - top, &current_region)) {
+            if (region_new(left, top, right - left, bot - top,
+                           &current_region)) {
                 return 1;
             }
 

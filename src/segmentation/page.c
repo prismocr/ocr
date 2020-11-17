@@ -10,7 +10,8 @@ int page_new(size_t w, size_t h, Page **page) {
 
     *page = (Page *) malloc(sizeof(Page));
     if (*page == NULL) {
-        set_last_errorf("Failled to allocate memory for page: %s", strerror(errno));
+        set_last_errorf("Failled to allocate memory for page: %s",
+                        strerror(errno));
         return 1;
     }
     (*page)->w = w;
@@ -28,4 +29,3 @@ void page_free(Page *page) {
     free(page);
     page = NULL;
 }
-
