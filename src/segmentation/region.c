@@ -35,11 +35,11 @@ int region_new(size_t x, size_t y, size_t w, size_t h, Region **region) {
     return 0;
 }
 
-void region_free(Region *region) {
+void region_free(Region **region) {
     // TODO: free lines
 
-    free(region);
-    region = NULL;
+    free(*region);
+    *region = NULL;
 }
 
 int segment_regions_rlsa(Matrix image, Region **regions) {
@@ -143,7 +143,7 @@ int segment_regions_rlsa(Matrix image, Region **regions) {
             prev_region = current_region;
         }
     }
-    *regions = first_region->next;
+    *regions = first_region;
 
     matrix_free(&horizontal_morph_im);
 

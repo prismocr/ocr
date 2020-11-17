@@ -11,6 +11,7 @@ struct word {
     char *letters;
 
     Matrix *images;
+    Word *next; // next word in the line
 };
 
 typedef struct line Line;
@@ -19,6 +20,7 @@ struct line {
     size_t w, h;
 
     Word *words;
+    Line *next; // next line in the region
 };
 
 typedef struct region Region;
@@ -38,8 +40,11 @@ struct page {
     Page *next;
 };
 
+int line_new(size_t x, size_t y, size_t w, size_t h, Line **line);
+void line_free(Line **line);
+
 int region_new(size_t x, size_t y, size_t w, size_t h, Region **region);
-void region_free(Region *region);
+void region_free(Region **region);
 
 int page_new(size_t w, size_t h, Page **page);
 void page_free(Page *page);
@@ -50,12 +55,17 @@ void page_free(Page *page);
 int segment(Matrix image, Page *page);
 
 /**
+ * Segment into text region using run the smooth length algorithm.
  *
+ * @param
+ * @param
  */
 int segment_regions_rlsa(Matrix image, Region **regions);
 
+int segment_lines(Matrix image, Line **lines);
+
 // Should return list of words
-MatrixLinkedList segment_words(Matrix image, Vector hist);
+MatrixLinkedList segment_words(Matrix line);
 
 void segment_morph_hist(Matrix image);
 void feature_extract_morph_based(Matrix *image);

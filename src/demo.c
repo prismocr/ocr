@@ -283,6 +283,7 @@ int segmentation_demo(int argc, char *argv[]) {
     Page *page = NULL;
     segment(image, page);
 
+    //page_free(page);
     matrix_free(&image);
     return 0;
 }

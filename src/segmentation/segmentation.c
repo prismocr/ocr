@@ -2,16 +2,12 @@
 #include "segmentation/segmentation.h"
 #include "imgproc/image.h"
 #include "utils/matrix.h"
-#include "utils/vector.h"
 #include "imgproc/morphology.h"
 #include "utils/linked_list.h"
 
 // TODO remove these headers
 #include "utils/bitmap.h"
 #include <stdio.h>
-
-static Vector processed_histogram_y(Matrix image);
-static float average_height(Vector hist);
 
 int segment(Matrix image, Page *page) {
     if (page_new(image.w, image.h, &page)) {
@@ -30,7 +26,23 @@ int segment(Matrix image, Page *page) {
           = image_crop(region->x, region->y, region->w, region->h, image);
         sprintf(buff, "seg/region-%zu.bmp", i);
         bitmap_save(buff, &region_image);
-        segment_morph_hist(region_image);
+
+        segment_lines(region_image, &region->lines);
+
+        size_t j = 0;
+        Line *line = region->lines;
+        while (line != NULL) {
+            Matrix line_image
+              = image_crop(
+                  region->x + line->x, region->y + line->y,
+                  line->w, line->h, image);
+            sprintf(buff, "seg/line-%zu-%zu.bmp", i, j);
+            bitmap_save(buff, &line_image);
+
+            line = line->next;
+            j++;
+            matrix_free(&line_image);
+        }
 
         region = region->next;
         i++;
@@ -40,25 +52,12 @@ int segment(Matrix image, Page *page) {
     return 0;
 }
 
-/*
- * Text line segmentation based on morphology and histogram projection
- * http://www.cvc.uab.es/icdar2009/papers/3725a651.pdf
- */
 void segment_morph_hist(Matrix image) {
-    Matrix image_copy;
-    matrix_copy(image, &image_copy);
 
-    // Matrix kernel = structuring_element(3, 3);
-    // smooth(&image_copy, kernel);
-    // matrix_free(&kernel);
-
-    feature_extract_morph_based(&image_copy);
-
-    Vector hist_y = processed_histogram_y(image_copy);
-    matrix_free(&image_copy);
-
-    MatrixLinkedList word_images = segment_words(image, hist_y);
-    vector_free(&hist_y);
+    //MatrixLinkedList word_images = segment_words(image, hist_y);
+    Line *lines = NULL;
+    segment_lines(image, &lines);
+    MatrixLinkedList word_images = {0};
 
     char buff[200];
     size_t c = 0;
@@ -156,29 +155,6 @@ void segment_morph_hist(Matrix image) {
     mll_free(&word_images);
 }
 
-/*
- * Morphology based feature extraction method
- * Proposed by Wu, Hsieh and Chen:
- * https://www.cin.ufpe.br/~if751/projetos/artigos/Morphology-based%20text%20line%20extraction.pdf
- */
-void feature_extract_morph_based(Matrix *image) {
-    Matrix kernel, closed;
-
-    kernel = structuring_element(1, 21);
-    matrix_copy(*image, &closed);
-    closing(&closed, kernel);
-    opening(image, kernel);
-    matrix_free(&kernel);
-
-    difference(image, closed);
-    matrix_free(&closed);
-
-    kernel = structuring_element(5, 5);
-    closing(image, kernel);
-    matrix_free(&kernel);
-
-    image_threshold(10.f, 255.f, image);
-}
 
 /*
  * Water flow algorithm for text line segmentation
@@ -211,48 +187,3 @@ void morphological_preproc(Matrix *image) {
     matrix_free(&kernel);
 }
 
-Vector processed_histogram_y(Matrix image) {
-    Vector hist_y = image_histogram_y(image);
-
-    // Threshold based on average line length
-    float length_thresh = vector_average(hist_y) * 0.2f; // TODO: tweak value
-    for (size_t i = 0; i < hist_y.size; i++) {
-        hist_y.val[i] = hist_y.val[i] > length_thresh ? hist_y.val[i] : 0;
-    }
-
-    // Threshold based on line height
-    float height_thresh = average_height(hist_y) * 0.2f; // TODO: tweak value
-    size_t top = 0;
-    for (size_t i = 0; i < hist_y.size; i++) {
-        if (hist_y.val[i] == 0.f) {
-            if (i - top < height_thresh + 2) {
-                // Sets lines below height_thresh to 0
-                for (; top < i; top++) {
-                    hist_y.val[top] = 0.f;
-                }
-            }
-            top = i;
-        }
-    }
-
-    return hist_y;
-}
-
-float average_height(Vector hist) {
-    size_t nlines, sum_height, top;
-
-    sum_height = 0;
-    nlines = 0;
-    top = 0;
-    for (size_t i = 0; i < hist.size; i++) {
-        if (hist.val[i] == 0.f) {
-            if (i > top + 3) { // + 3 because line is at least 1px
-                sum_height += i - top - 2;
-                nlines++;
-            }
-            top = i;
-        }
-    }
-
-    return nlines == 0 ? 0 : (float) sum_height / nlines;
-}
