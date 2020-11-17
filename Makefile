@@ -50,12 +50,12 @@ TSTOBJS := $(addprefix $(TSTOBJDIR)/,$(addsuffix .o,$(notdir $(TSTEXEC))))
 
 .PHONY: all prep remake debug release test clean mrproper format cppcheck
 
-all: prep release
+all: release
 
 #
 # Debug rules
 #
-debug: $(DBGDIR)/$(EXEC)
+debug: prep $(DBGDIR)/$(EXEC)
 
 $(DBGDIR)/$(EXEC): $(DBGOBJS)
 	$(CC) $^ -o $@ $(CPPFLAGS) $(DBGCFLAGS) $(LDLIBS)
@@ -66,7 +66,7 @@ $(DBGOBJDIR)/%.o: src/%.c
 #
 # Release rules
 #
-release: $(RLSDIR)/$(EXEC)
+release: prep $(RLSDIR)/$(EXEC)
 
 $(RLSDIR)/$(EXEC): $(RLSOBJS)
 	$(CC) $^ -o $@ $(CCPFLAGS) $(RLSCFLAGS) $(LDLIBS)
