@@ -198,8 +198,8 @@ void network_demo(int argc, char *argv[]) {
     data111.input = vect111;
     data111.target = vect11;
 
-    Dataset dataset;
-    Network network;
+    Dataset dataset = {0};
+    Network network = {0};
     // create dim array to feed to network_new()
     size_t nb_layers = 3;
 
