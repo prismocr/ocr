@@ -13,9 +13,16 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run tests
       run: docker build . --file ./docker/Dockerfile.test --tag prismocr/test:$(date +%s)
-  clang:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: clang-format lint
         uses: DoozyX/clang-format-lint-action@v0.11
+  check:
+    runs-on: ubuntu-latest
+    name: Code checking
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker build . --file ./docker/Dockerfile.check --tag prismocr/check:$(date +%s)
+
