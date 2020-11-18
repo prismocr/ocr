@@ -16,7 +16,7 @@ jobs:
       run: docker build . --file ./docker/Dockerfile.test --tag prismocr/test:$(date +%s)
   lint:
     runs-on: ubuntu-latest
-    name: Lint
+    name: Coding style
     steps:
       - uses: actions/checkout@v2
       - name: clang-format lint

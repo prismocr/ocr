@@ -1,9 +1,14 @@
+#include <stdlib.h>
+#include <assert.h>
+#include <string.h>
+#include <errno.h>
 #include "segmentation/segmentation.h"
 #include "utils/matrix.h"
 #include "utils/vector.h"
 #include "utils/linked_list.h"
 #include "imgproc/image.h"
 #include "imgproc/morphology.h"
+#include "utils/error.h"
 
 // TODO remove these headers
 #include "utils/bitmap.h"
@@ -11,31 +16,53 @@
 
 static void extract_words(Matrix *image);
 
-static size_t word_count = 0;
+int word_new(size_t x, size_t y, size_t w, size_t h, Word **word) {
+    assert(*word == NULL);
 
-MatrixLinkedList segment_words(Matrix line) {
-    MatrixLinkedList word_images;
-    char buff[200];
-    mll_new(&word_images);
+    *word = (Word *) malloc(sizeof(Word));
+    if (*word == NULL) {
+        set_last_errorf("Failed to allocate memory for word: %s",
+                        strerror(errno));
+        return 1;
+    }
 
+    (*word)->x = x;
+    (*word)->y = y;
+    (*word)->w = w;
+    (*word)->h = h;
+
+    (*word)->length = 0;
+    (*word)->letters = NULL;
+    (*word)->images = NULL;
+    (*word)->next = NULL;
+
+    return 0;
+}
+
+void word_free(Word **word) {
+    // TODO: free images ?
+
+    free(*word);
+    *word = NULL;
+}
+
+int segment_words(Matrix line, Word **words) {
     // TODO: rename this function
     extract_words(&line);
 
-    Vector line_hist = image_histogram_x(line);
+    Vector hist = image_histogram_x(line);
 
     // TODO: tweak value
-    float height_thresh = vector_average(line_hist) * 0.3f;
-    for (size_t j = 0; j < line_hist.size; j++) {
-        line_hist.val[j] = line_hist.val[j] > height_thresh
-                             ? line_hist.val[j]
-                             : 0.f;
+    float height_thresh = vector_average(hist) * 0.3f;
+    for (size_t j = 0; j < hist.size; j++) {
+        hist.val[j] = hist.val[j] > height_thresh ? hist.val[j] : 0.f;
     }
 
     // Average space
     size_t nb_spaces = 0;
     size_t total_space = 0;
-    for (size_t j = 0, left = 0; j < line_hist.size; j++) {
-        if (line_hist.val[j] != 0.f) {
+    for (size_t j = 0, left = 0; j < hist.size; j++) {
+        if (hist.val[j] != 0.f) {
             if (j >= left + 3) {
                 nb_spaces++;
                 total_space += j - left;
@@ -45,7 +72,8 @@ MatrixLinkedList segment_words(Matrix line) {
     }
     float average_space = (float) total_space / nb_spaces;
 
-    Matrix kernel = structuring_element(1, (size_t) average_space - (((size_t) average_space + 1) % 2));
+    Matrix kernel = structuring_element(
+      1, (size_t) average_space - (((size_t) average_space + 1) % 2));
     dilate(&line, kernel);
     matrix_free(&kernel);
 
@@ -54,41 +82,40 @@ MatrixLinkedList segment_words(Matrix line) {
     matrix_free(&kernel);
 
     // TODO optimize this garbage
-    vector_free(&line_hist);
-    line_hist = image_histogram_x(line);
-    height_thresh = vector_average(line_hist) * 0.3f;
-    for (size_t j = 0; j < line_hist.size; j++) {
-        line_hist.val[j] = line_hist.val[j] > height_thresh
-                             ? line_hist.val[j]
-                             : 0.f;
+    vector_free(&hist);
+    hist = image_histogram_x(line);
+    height_thresh = vector_average(hist) * 0.3f;
+    for (size_t j = 0; j < hist.size; j++) {
+        hist.val[j] = hist.val[j] > height_thresh ? hist.val[j] : 0.f;
     }
 
     // Word recovery
     size_t left = 0;
     size_t prev_left = 0;
     size_t next_left = 0;
-    for (size_t j = 0; j < line_hist.size; j++) {
-        if (line_hist.val[j] == 0.f) {
+    Word *first_word = NULL;
+    Word *prev_word = NULL;
+    for (size_t j = 0; j < hist.size; j++) {
+        if (hist.val[j] == 0.f) {
             size_t right = j;
             if (j > left + 3) {
-                while (j < line_hist.size
-                       && line_hist.val[j] == 0.f) {
+                while (j < hist.size && hist.val[j] == 0.f) {
                     next_left = j++;
                 }
 
-                mll_insert(
-                  word_images.length,
-                  image_crop(
-                    (left + prev_left) / 2 + 1,
-                    0,
-                    (right + j) / 2 - (left + prev_left) / 2 - 2,
-                    line.h,
-                    line),
-                  &word_images);
+                Word *current_word = NULL;
+                if (word_new((left + prev_left) / 2 + 1, 0,
+                             (right + j) / 2 - (left + prev_left) / 2 - 2,
+                             line.h, &current_word)) {
+                    return 1;
+                }
 
-                sprintf(buff, "seg/word-%zu.bmp", word_count++);
-                bitmap_save(buff, mll_get(word_images.length - 1,
-                                          word_images));
+                if (first_word == NULL) {
+                    first_word = current_word;
+                } else { // prev_word is not NULL
+                    prev_word->next = current_word;
+                }
+                prev_word = current_word;
 
                 prev_left = (right + j) / 2;
                 left = next_left;
@@ -97,8 +124,11 @@ MatrixLinkedList segment_words(Matrix line) {
             }
         }
     }
+    *words = first_word;
 
-    return word_images;
+    vector_free(&hist);
+
+    return 0;
 }
 
 static void extract_words(Matrix *image) {
@@ -108,8 +138,12 @@ static void extract_words(Matrix *image) {
     image_invert_color(255.f, image);
 
     kernel = structuring_element(image->h - (image->h + 1) % 2, 1);
-    dilate(image, kernel);
+
+    // WARN double free if you uncomment that
+    // dilate(image, kernel);
+
     matrix_free(&kernel);
+
     /*
     kernel = structuring_element(1, 5);
     opening(image, kernel);

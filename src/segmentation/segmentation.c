@@ -33,11 +33,26 @@ int segment(Matrix image, Page *page) {
         Line *line = region->lines;
         while (line != NULL) {
             Matrix line_image
-              = image_crop(
-                  region->x + line->x, region->y + line->y,
-                  line->w, line->h, image);
+              = image_crop(region->x + line->x, region->y + line->y, line->w,
+                           line->h, image);
             sprintf(buff, "seg/line-%zu-%zu.bmp", i, j);
             bitmap_save(buff, &line_image);
+
+            segment_words(line_image, &line->words);
+
+            size_t k = 0;
+            Word *word = line->words;
+            while (word != NULL) {
+                Matrix word_image = image_crop(region->x + line->x + word->x,
+                                               region->y + line->y + word->y,
+                                               word->w, word->h, image);
+                sprintf(buff, "seg/word-%zu-%zu-%zu.bmp", i, j, k);
+                bitmap_save(buff, &word_image);
+
+                word = word->next;
+                k++;
+                matrix_free(&word_image);
+            }
 
             line = line->next;
             j++;
@@ -53,8 +68,7 @@ int segment(Matrix image, Page *page) {
 }
 
 void segment_morph_hist(Matrix image) {
-
-    //MatrixLinkedList word_images = segment_words(image, hist_y);
+    // MatrixLinkedList word_images = segment_words(image, hist_y);
     Line *lines = NULL;
     segment_lines(image, &lines);
     MatrixLinkedList word_images = {0};
@@ -155,7 +169,6 @@ void segment_morph_hist(Matrix image) {
     mll_free(&word_images);
 }
 
-
 /*
  * Water flow algorithm for text line segmentation
  * https://www.researchgate.net/publication/216584186_A_New_Approach_to_Water_Flow_Algorithm_for_Text_Line_Segmentation
@@ -186,4 +199,3 @@ void morphological_preproc(Matrix *image) {
 
     matrix_free(&kernel);
 }
-

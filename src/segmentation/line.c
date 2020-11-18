@@ -48,7 +48,6 @@ void line_free(Line **line) {
  * http://www.cvc.uab.es/icdar2009/papers/3725a651.pdf
  */
 int segment_lines(Matrix region, Line **lines) {
-
     // Matrix kernel = structuring_element(3, 3);
     // smooth(&image_copy, kernel);
     // matrix_free(&kernel);
@@ -72,9 +71,9 @@ int segment_lines(Matrix region, Line **lines) {
                 }
 
                 Line *current_line = NULL;
-                if (line_new(0, (top + prev_top) / 2 + 1,
-                        region.w, (bot + i) / 2 - (top + prev_top) / 2 - 2,
-                        &current_line)) {
+                if (line_new(0, (top + prev_top) / 2 + 1, region.w,
+                             (bot + i) / 2 - (top + prev_top) / 2 - 2,
+                             &current_line)) {
                     return 1;
                 }
 
