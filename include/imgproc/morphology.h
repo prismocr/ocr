@@ -20,7 +20,7 @@ Matrix structuring_element(size_t m, size_t n);
  * @param image to smooth.
  * @param structuring element used for smoothing.
  */
-void smooth(Matrix *image, Matrix kernel);
+int smooth(Matrix *image, Matrix kernel);
 
 /**
  * Dilates an image by a given structuring element.
@@ -28,7 +28,7 @@ void smooth(Matrix *image, Matrix kernel);
  * param image to dilate.
  * param structuring element used for dilatation.
  */
-void dilate(Matrix *image, Matrix kernel);
+int dilate(Matrix *image, Matrix kernel);
 
 /**
  * Erodes an image by a given structuring element.
@@ -36,7 +36,7 @@ void dilate(Matrix *image, Matrix kernel);
  * param image to erode.
  * param structuring element used for erosion.
  */
-void erode(Matrix *image, Matrix kernel);
+int erode(Matrix *image, Matrix kernel);
 
 /**
  * Opens an image by a given structuring element.

@@ -9,7 +9,7 @@
 
 CC := gcc
 CPPFLAGS := -MMD -Iinclude/
-CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic -static
+CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic
 LDLIBS := -lm
 
 BUILDDIR := build
@@ -21,7 +21,7 @@ OBJS := $(patsubst src/%.c,%.o,$(wildcard src/*.c) $(wildcard src/**/*.c))
 #
 # Debug variables
 #
-DBGCFLAGS := $(CFLAGS) -g -O0 -DDEBUG
+DBGCFLAGS := $(CFLAGS) -g -O0 -DDEBUG #-fsanitize=address
 
 DBGDIR := $(BUILDDIR)/debug
 DBGOBJDIR := $(DBGDIR)/obj
@@ -31,7 +31,7 @@ DBGOBJS := $(addprefix $(DBGOBJDIR)/,$(OBJS))
 #
 # Release variables
 #
-RLSCFLAGS := $(CFLAGS) -O3 -DNDEBUG
+RLSCFLAGS := $(CFLAGS) -O3 -DNDEBUG -static
 
 RLSDIR := $(BUILDDIR)/release
 RLSOBJDIR := $(RLSDIR)/obj

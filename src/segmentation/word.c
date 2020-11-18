@@ -139,8 +139,7 @@ static void extract_words(Matrix *image) {
 
     kernel = structuring_element(image->h - (image->h + 1) % 2, 1);
 
-    // WARN double free if you uncomment that
-    // dilate(image, kernel);
+    dilate(image, kernel);
 
     matrix_free(&kernel);
 

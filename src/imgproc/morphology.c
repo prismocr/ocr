@@ -25,21 +25,27 @@ Matrix structuring_element(size_t m, size_t n) {
     return se;
 }
 
-void smooth(Matrix *image, Matrix kernel) {
-    assert(kernel.h > 0 && kernel.w > 0 && kernel.h % 2 == 1
-           && kernel.w % 2 == 1);
+int smooth(Matrix *image, Matrix kernel) {
+    assert(kernel.h > 0
+        && kernel.w > 0
+        && kernel.h % 2 == 1
+        && kernel.w % 2 == 1);
     size_t i, j;
-    Matrix smoothed;
+    Matrix image_copy;
 
-    matrix_new(image->h, image->w, &smoothed);
+    if (matrix_copy(*image, &image_copy)) {
+        return 1;
+    }
+
     for (i = 0; i < image->h; i++) {
         for (j = 0; j < image->w; j++) {
-            smoothed.val[i][j] = smooth_pixel(i, j, image, kernel);
+            image->val[i][j] = smooth_pixel(i, j, &image_copy, kernel);
         }
     }
 
-    matrix_free(image);
-    *image = smoothed;
+    matrix_free(&image_copy);
+
+    return 0;
 }
 
 static inline float smooth_pixel(size_t y, size_t x, Matrix *image,
@@ -62,21 +68,27 @@ static inline float smooth_pixel(size_t y, size_t x, Matrix *image,
     return pixel / (kernel.h * kernel.w);
 }
 
-void dilate(Matrix *image, Matrix kernel) {
-    assert(kernel.h > 0 && kernel.w > 0 && kernel.h % 2 == 1
-           && kernel.w % 2 == 1);
+int dilate(Matrix *image, Matrix kernel) {
+    assert(kernel.h > 0
+        && kernel.w > 0
+        && kernel.h % 2 == 1
+        && kernel.w % 2 == 1);
     size_t i, j;
-    Matrix dilated;
+    Matrix image_copy;
 
-    matrix_new(image->h, image->w, &dilated);
+    if (matrix_copy(*image, &image_copy)) {
+        return 1;
+    }
+
     for (i = 0; i < image->h; i++) {
         for (j = 0; j < image->w; j++) {
-            dilated.val[i][j] = dilate_pixel(i, j, image, kernel);
+            image->val[i][j] = dilate_pixel(i, j, &image_copy, kernel);
         }
     }
 
-    matrix_free(image);
-    *image = dilated;
+    matrix_free(&image_copy);
+
+    return 0;
 }
 
 static inline float dilate_pixel(size_t y, size_t x, Matrix *image,
@@ -102,21 +114,25 @@ static inline float dilate_pixel(size_t y, size_t x, Matrix *image,
     return max;
 }
 
-void erode(Matrix *image, Matrix kernel) {
+int erode(Matrix *image, Matrix kernel) {
     assert(kernel.h > 0 && kernel.w > 0 && kernel.h % 2 == 1
            && kernel.w % 2 == 1);
     size_t i, j;
-    Matrix eroded;
+    Matrix image_copy;
 
-    matrix_new(image->h, image->w, &eroded);
+    if (matrix_copy(*image, &image_copy)) {
+        return 1;
+    }
+
     for (i = 0; i < image->h; i++) {
         for (j = 0; j < image->w; j++) {
-            eroded.val[i][j] = erode_pixel(i, j, image, kernel);
+            image->val[i][j] = erode_pixel(i, j, &image_copy, kernel);
         }
     }
 
-    matrix_free(image);
-    *image = eroded;
+    matrix_free(&image_copy);
+
+    return 0;
 }
 
 static inline float erode_pixel(size_t y, size_t x, Matrix *image,
