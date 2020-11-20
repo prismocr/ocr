@@ -6,17 +6,16 @@
 
 GtkWidget *input;
 
-int start_gui(int argc, char *argv[])
-{
-    GtkBuilder      *builder; 
-    GtkWidget       *window;
+int start_gui(int argc, char *argv[]) {
+    GtkBuilder *builder;
+    GtkWidget *window;
 
     gtk_init(&argc, &argv);
     builder = gtk_builder_new();
-    gtk_builder_add_from_file (builder, "layout/main.glade", NULL);
+    gtk_builder_add_from_file(builder, "layout/main.glade", NULL);
     window = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));
     gtk_builder_connect_signals(builder, NULL);
-    
+
     // get pointers to the two labels
     GTK_WIDGET(gtk_builder_get_object(builder, "mybutton"));
     input = GTK_WIDGET(gtk_builder_get_object(builder, "file_input"));
@@ -29,17 +28,16 @@ int start_gui(int argc, char *argv[])
     GdkScreen *screen = gdk_screen_get_default();
 
     gtk_style_context_add_provider_for_screen(screen,
-                GTK_STYLE_PROVIDER(cssProvider),
-                GTK_STYLE_PROVIDER_PRIORITY_USER);
+                                              GTK_STYLE_PROVIDER(cssProvider),
+                                              GTK_STYLE_PROVIDER_PRIORITY_USER);
     // css_set(cssProvider, window);
-    gtk_widget_show(window);                
+    gtk_widget_show(window);
     gtk_main();
 
     return 0;
 }
 
-void on_mybutton_clicked()
-{
+void on_mybutton_clicked() {
     printf("hello\n");
 }
 
@@ -50,7 +48,7 @@ void on_file(GtkFileChooser *filechooserbutton1) {
 
     Matrix image;
     // Remove "file://"
-    char* path = str + 7;
+    char *path = str + 7;
     printf("%s\n", path);
     exit_on_error(bitmap_load(path, &image));
     image_auto_rotate(&image, 0.01f);
@@ -63,7 +61,6 @@ void on_file(GtkFileChooser *filechooserbutton1) {
 }
 
 // called when window is closed
-void on_window_main_destroy()
-{
+void on_window_main_destroy() {
     gtk_main_quit();
 }
