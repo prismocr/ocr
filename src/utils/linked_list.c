@@ -47,7 +47,7 @@ void mll_insert(size_t i, Matrix mat, MatrixLinkedList *list) {
     list->length++;
 
     MatrixNode *new_node = (MatrixNode *) malloc(sizeof(MatrixNode));
-    new_node->val = mat;
+    matrix_copy(mat, &new_node->val);
 
     MatrixNode *prev = list->first;
     if (i == 0 || prev == NULL) {
@@ -83,6 +83,7 @@ void mll_delete(size_t i, MatrixLinkedList *list) {
     }
 
     prev->next = current->next;
+    matrix_free(&current->val);
     free(current);
 }
 

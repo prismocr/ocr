@@ -9,10 +9,7 @@
 #include "imgproc/image.h"
 #include "imgproc/morphology.h"
 #include "utils/error.h"
-
-// TODO remove these headers
-#include "utils/bitmap.h"
-#include <stdio.h>
+#include "utils/linked_list.h"
 
 static void extract_words(Matrix *image);
 
@@ -33,7 +30,9 @@ int word_new(size_t x, size_t y, size_t w, size_t h, Word **word) {
 
     (*word)->length = 0;
     (*word)->letters = NULL;
-    (*word)->images = NULL;
+
+    mll_new(&(*word)->images);
+
     (*word)->next = NULL;
 
     return 0;
@@ -46,7 +45,7 @@ void word_free(Word **word) {
     *word = NULL;
 }
 
-int segment_words(Matrix line, Word **words) {
+int word_segment(Matrix line, Word **words) {
     // TODO: rename this function
     extract_words(&line);
 

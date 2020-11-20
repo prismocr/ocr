@@ -13,7 +13,7 @@ struct word {
     size_t length;
     char *letters;
 
-    Matrix *images;
+    MatrixLinkedList images;
     Word *next; // next word in the line
 };
 
@@ -56,25 +56,40 @@ int page_new(size_t w, size_t h, Page **page);
 void page_free(Page *page);
 
 /**
- * Segment an image.
+ * Segment an image of page into its page representation.
+ *
+ * @param image to segment.
+ * @param resulting page representation.
  */
 int segment(Matrix image, Page *page);
 
 /**
- * Segment into text region using run the smooth length algorithm.
+ * Segment a page into text regions using run the smooth length algorithm.
  *
- * @param
- * @param
+ * @param page to segment.
+ * @param resulting regions.
  */
-int segment_regions_rlsa(Matrix image, Region **regions);
+int region_segment_rlsa(Matrix page, Region **regions);
 
 /**
- * Segment a text region into lines.
+ * Segment a text region into lines based on morphology and histogram
+ * projection.
+ * More details in the following paper:
+ * http://www.cvc.uab.es/icdar2009/papers/3725a651.pdf
  *
  * @param image of the text region.
  * @param resulting segmented lines.
  */
-int segment_lines(Matrix region, Line **lines);
+int line_segment_morph_hist(Matrix region, Line **lines);
+
+/**
+ * Segment a text region into lines using the water flow algorithm.
+ * More details in the following paper:
+ * https://www.researchgate.net/publication/216584186_A_New_Approach_to_Water_Flow_Algorithm_for_Text_Line_Segmentation
+ *
+ * @param image of the text region.
+ */
+int line_segment_water_flow(Matrix region);
 
 /**
  * Segment a text line into words.
@@ -82,12 +97,15 @@ int segment_lines(Matrix region, Line **lines);
  * @param image of the text line.
  * @param resulting segmented words.
  */
-int segment_words(Matrix line, Word **words);
+int word_segment(Matrix line, Word **words);
 
-void segment_morph_hist(Matrix image);
-void feature_extract_morph_based(Matrix *image);
-
-void segment_water_flow(Matrix image);
-void morphological_preproc(Matrix *image);
+/**
+ * Segment a word image into characters images.
+ *
+ * @param image of the word.
+ * @param resulting characters images.
+ */
+int character_segment(Matrix word, MatrixLinkedList *characters);
 
 #endif // SEGMENTATION_H
+

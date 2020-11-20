@@ -9,10 +9,6 @@
 #include "utils/vector.h"
 #include "utils/error.h"
 
-// TODO remove these headers
-#include "utils/bitmap.h"
-#include <stdio.h>
-
 static Vector processed_histogram_y(Matrix image);
 static float average_height(Vector hist);
 
@@ -44,10 +40,13 @@ void line_free(Line **line) {
 }
 
 /*
- * Text line segmentation based on morphology and histogram projection
- * http://www.cvc.uab.es/icdar2009/papers/3725a651.pdf
+ * Morphology based feature extraction method
+ * Proposed by Wu, Hsieh and Chen:
+ * https://www.cin.ufpe.br/~if751/projetos/artigos/Morphology-based%20text%20line%20extraction.pdf
  */
-int segment_lines(Matrix region, Line **lines) {
+static void feature_extract_morph_based(Matrix *image);
+
+int line_segment_morph_hist(Matrix region, Line **lines) {
     // Matrix kernel = structuring_element(3, 3);
     // smooth(&image_copy, kernel);
     // matrix_free(&kernel);
@@ -98,12 +97,7 @@ int segment_lines(Matrix region, Line **lines) {
     return 0;
 }
 
-/*
- * Morphology based feature extraction method
- * Proposed by Wu, Hsieh and Chen:
- * https://www.cin.ufpe.br/~if751/projetos/artigos/Morphology-based%20text%20line%20extraction.pdf
- */
-void feature_extract_morph_based(Matrix *image) {
+static void feature_extract_morph_based(Matrix *image) {
     Matrix kernel, closed;
 
     kernel = structuring_element(1, 21);
@@ -166,4 +160,34 @@ float average_height(Vector hist) {
     }
 
     return nlines == 0 ? 0 : (float) sum_height / nlines;
+}
+
+/*
+ * Morphological preprocessing for water flow segmentation
+ */
+static void morphological_preproc(Matrix *image);
+
+int line_segment_water_flow(Matrix region) {
+    Matrix image_copy;
+
+    matrix_copy(region, &image_copy);
+    morphological_preproc(&image_copy);
+
+    // TODO: Implement end of the paper
+
+    return 0;
+}
+
+static void morphological_preproc(Matrix *image) {
+    Matrix kernel;
+
+    // TODO: Apply otsu binarization before
+
+    kernel = structuring_element(3, 3);
+    erode(image, kernel);
+    dilate(image, kernel);
+    dilate(image, kernel);
+    closing(image, kernel);
+
+    matrix_free(&kernel);
 }

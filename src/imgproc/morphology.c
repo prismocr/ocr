@@ -26,10 +26,8 @@ Matrix structuring_element(size_t m, size_t n) {
 }
 
 int smooth(Matrix *image, Matrix kernel) {
-    assert(kernel.h > 0
-        && kernel.w > 0
-        && kernel.h % 2 == 1
-        && kernel.w % 2 == 1);
+    assert(kernel.h > 0 && kernel.w > 0 && kernel.h % 2 == 1
+           && kernel.w % 2 == 1);
     size_t i, j;
     Matrix image_copy;
 
@@ -69,10 +67,8 @@ static inline float smooth_pixel(size_t y, size_t x, Matrix *image,
 }
 
 int dilate(Matrix *image, Matrix kernel) {
-    assert(kernel.h > 0
-        && kernel.w > 0
-        && kernel.h % 2 == 1
-        && kernel.w % 2 == 1);
+    assert(kernel.h > 0 && kernel.w > 0 && kernel.h % 2 == 1
+           && kernel.w % 2 == 1);
     size_t i, j;
     Matrix image_copy;
 

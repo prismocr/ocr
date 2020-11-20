@@ -9,10 +9,6 @@
 #include "utils/linked_list.h"
 #include "utils/error.h"
 
-// TODO remove these headers
-#include "utils/bitmap.h"
-#include <stdio.h>
-
 static void rec_grass_fire(size_t i, size_t j, Matrix *image, float class);
 
 int region_new(size_t x, size_t y, size_t w, size_t h, Region **region) {
@@ -42,10 +38,10 @@ void region_free(Region **region) {
     *region = NULL;
 }
 
-int segment_regions_rlsa(Matrix image, Region **regions) {
+int region_segment_rlsa(Matrix page, Region **regions) {
     // TODO: pass image to don't apply otsu on every lines
     Matrix image_copy;
-    matrix_copy(image, &image_copy);
+    matrix_copy(page, &image_copy);
     image_threshold_otsu(&image_copy);
     image_invert_color(255.f, &image_copy);
 
@@ -66,8 +62,8 @@ int segment_regions_rlsa(Matrix image, Region **regions) {
     erode(&vertical_morph_im, kernel);
     matrix_free(&kernel);
 
-    for (size_t i = 0; i < image.h; i++) {
-        for (size_t j = 0; j < image.w; j++) {
+    for (size_t i = 0; i < page.h; i++) {
+        for (size_t j = 0; j < page.w; j++) {
             horizontal_morph_im.val[i][j]
               = vertical_morph_im.val[i][j] * horizontal_morph_im.val[i][j]
                     >= 255.f
@@ -99,14 +95,14 @@ int segment_regions_rlsa(Matrix image, Region **regions) {
         }
     }
 
-    // consider bounding box as roi
+    // consider bounding box as region of interest
     Region *first_region = NULL;
     Region *prev_region = NULL;
     for (float c = 256.f; c < class; c++) {
         size_t top, bot, left, right;
-        top = image.h;
+        top = page.h;
         bot = 0;
-        left = image.w;
+        left = page.w;
         right = 0;
 
         for (size_t i = 0; i < horizontal_morph_im.h; i++) {
