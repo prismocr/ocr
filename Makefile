@@ -9,8 +9,8 @@
 
 CC := gcc
 CPPFLAGS := -MMD -Iinclude/
-CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic -static
-LDLIBS := -lm
+CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic $$(pkg-config --cflags gtk+-3.0) 
+LDLIBS := -lm $$(pkg-config --libs gtk+-3.0) -export-dynamic -rdynamic
 
 BUILDDIR := build
 EXEC := ocr
