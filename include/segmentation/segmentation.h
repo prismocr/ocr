@@ -108,4 +108,3 @@ int word_segment(Matrix line, Word **words);
 int character_segment(Matrix word, MatrixLinkedList *characters);
 
 #endif // SEGMENTATION_H
-

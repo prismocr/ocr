@@ -245,6 +245,7 @@ void save_pages_equal_to_file() {
     TEST_ASSERT_EQUAL_INT(compareFile(f1, f2), 1);
     fclose(f1);
     fclose(f2);
+    remove("tmppages.txt");
 }
 
 int main() {
