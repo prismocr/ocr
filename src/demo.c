@@ -11,6 +11,7 @@
 #include "utils/matrix.h"
 #include "neuralnet/network.h"
 #include "neuralnet/layer.h"
+#include "neuralnet/output.h"
 
 void sharpen_demo(int argc, char *argv[]) {
     Matrix image;
@@ -323,6 +324,182 @@ int auto_rotate(int argc, char *argv[]) {
     return 0;
 }
 
+void process_word_demo(int argc, char *argv[]) {
+    if (argc < 5) {
+        printf("Missing images paths.\n");
+        return;
+    }
+    Word w;
+    w.x = 0;
+    w.y = 0;
+    w.length = 3;
+    char letters[3];
+    w.letters = letters;
+
+    Matrix image1;
+    Matrix image2;
+    Matrix image3;
+
+    exit_on_error(bitmap_load(argv[2], &image1));
+    exit_on_error(bitmap_load(argv[3], &image2));
+    exit_on_error(bitmap_load(argv[4], &image3));
+
+    MatrixLinkedList mll;
+    mll.length = 3;
+
+    MatrixNode mn1;
+    MatrixNode mn2;
+    MatrixNode mn3;
+
+    mll.first = &mn1;
+
+    mn1.val = image1;
+    mn2.val = image1;
+    mn3.val = image1;
+
+    mn1.next = &mn2;
+    mn2.next = &mn3;
+    mn2.next = NULL;
+
+    w.images = mll;
+    w.next = NULL;
+
+    process_word(&w);
+
+    for (size_t i = 0; i < w.length; i++) {
+        printf("%c ", w.letters[i]);
+    }
+    printf("\n");
+
+    return;
+}
+
+void save_pages_demo() { //(int argc, char *argv[]) {
+
+    // if (argc < 3) {
+    //    printf("Missing image path.\n");
+    //    return;
+    //}
+
+    // PAGE 1
+    Page p1;
+    Region r11;
+    Line l111;
+    Word w1111;
+    Word w1112;
+    Word w1113;
+
+    Line l112;
+    Word w1121;
+
+    Line l113;
+    Word w1131;
+
+    Region r12;
+    Line l121;
+    Word w1211;
+
+    w1111.length = 3;
+    w1112.length = 4;
+    w1113.length = 7;
+    w1121.length = 6;
+    w1131.length = 3;
+    w1211.length = 2;
+
+    w1111.letters = "hey";
+    w1112.letters = "haha";
+    w1113.letters = "bonjour";
+    w1121.letters = "coucou";
+    w1131.letters = "ah!";
+    w1211.letters = "hi";
+
+    w1111.next = &w1112;
+    w1112.next = &w1113;
+    w1113.next = NULL;
+    w1121.next = NULL;
+    w1131.next = NULL;
+    w1211.next = NULL;
+
+    l111.next = &l112;
+    l112.next = &l113;
+    l113.next = NULL;
+    l121.next = NULL;
+
+    r11.next = &r12;
+    r12.next = NULL;
+
+    p1.regions = &r11;
+
+    r11.lines = &l111;
+    r12.lines = &l121;
+
+    l111.words = &w1111;
+    l112.words = &w1121;
+    l113.words = &w1131;
+    l121.words = &w1211;
+
+    // PAGE 2
+    Page p2;
+    Region r21;
+    Line l211;
+    Word w2111;
+    Word w2112;
+    Word w2113;
+
+    Line l212;
+    Word w2121;
+
+    Line l213;
+    Word w2131;
+
+    Region r22;
+    Line l221;
+    Word w2211;
+
+    w2111.length = 3;
+    w2112.length = 4;
+    w2113.length = 7;
+    w2121.length = 6;
+    w2131.length = 3;
+    w2211.length = 2;
+
+    w2111.letters = "boo";
+    w2112.letters = "adam";
+    w2113.letters = "yolebro";
+    w2121.letters = "cucucu";
+    w2131.letters = "euh";
+    w2211.letters = ":D";
+
+    w2111.next = &w2112;
+    w2112.next = &w2113;
+    w2113.next = NULL;
+    w2121.next = NULL;
+    w2131.next = NULL;
+    w2211.next = NULL;
+
+    l211.next = &l212;
+    l212.next = &l213;
+    l213.next = NULL;
+    l221.next = NULL;
+
+    r21.next = &r22;
+    r22.next = NULL;
+
+    p2.regions = &r21;
+
+    r21.lines = &l211;
+    r22.lines = &l221;
+
+    l211.words = &w2111;
+    l212.words = &w2121;
+    l213.words = &w2131;
+    l221.words = &w2211;
+
+    p1.next = &p2;
+    p2.next = NULL;
+    output_save_default(&p1, "testpages.txt");
+}
+
 int demo(int argc, char *argv[]) {
     char *c = argv[1];
 
@@ -385,6 +562,16 @@ int demo(int argc, char *argv[]) {
 
     if (!strcmp(c, "auto_rotate")) {
         return auto_rotate(argc, argv);
+    }
+
+    if (!strcmp(c, "process")) {
+        process_word_demo(argc, argv);
+        return 0;
+    }
+    if (!strcmp(c, "save_pages")) {
+        // save_pages_demo(argc, argv);
+        save_pages_demo();
+        return 0;
     }
 
     printf("what?\n");
