@@ -32,7 +32,10 @@ int region_new(size_t x, size_t y, size_t w, size_t h, Region **region) {
 }
 
 void region_free(Region **region) {
-    // TODO: free lines
+    for (Line *l = (*region)->lines; l != NULL; l = l->next) {
+        line_free(&l);
+    }
+    (*region)->lines = NULL;
 
     free(*region);
     *region = NULL;

@@ -53,7 +53,7 @@ int region_new(size_t x, size_t y, size_t w, size_t h, Region **region);
 void region_free(Region **region);
 
 int page_new(size_t w, size_t h, Page **page);
-void page_free(Page *page);
+void page_free(Page **page);
 
 /**
  * Segment an image of page into its page representation.
@@ -108,4 +108,3 @@ int word_segment(Matrix line, Word **words);
 int character_segment(Matrix word, MatrixLinkedList *characters);
 
 #endif // SEGMENTATION_H
-

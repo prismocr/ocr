@@ -33,7 +33,10 @@ int line_new(size_t x, size_t y, size_t w, size_t h, Line **line) {
 }
 
 void line_free(Line **line) {
-    // TODO: free words
+    for (Word *w = (*line)->words; w != NULL; w = w->next) {
+        word_free(&w);
+    }
+    (*line)->words = NULL;
 
     free(*line);
     *line = NULL;

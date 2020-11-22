@@ -22,10 +22,13 @@ int page_new(size_t w, size_t h, Page **page) {
     return 0;
 }
 
-void page_free(Page *page) {
-    // TODO: free regions
-    page->regions = NULL;
+void page_free(Page **page) {
+    for (Region *r = (*page)->regions; r != NULL; r = r->next) {
+        region_free(&r);
+    }
 
-    free(page);
-    page = NULL;
+    (*page)->regions = NULL;
+
+    free(*page);
+    *page = NULL;
 }
