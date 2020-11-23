@@ -374,13 +374,7 @@ void process_word_demo(int argc, char *argv[]) {
     return;
 }
 
-void save_pages_demo() { //(int argc, char *argv[]) {
-
-    // if (argc < 3) {
-    //    printf("Missing image path.\n");
-    //    return;
-    //}
-
+void save_pages_demo() {
     // PAGE 1
     Page p1;
     Region r11;
@@ -500,6 +494,179 @@ void save_pages_demo() { //(int argc, char *argv[]) {
     output_save_default(&p1, "testpages.txt");
 }
 
+/*
+void generate_word(Word *w) {
+    w->length = 2;
+    w->letters = "aa";
+}
+void generate_line(Line *l){
+    Word w1;
+    Word w2;
+    generate_word(&w1);
+    generate_word(&w2);
+    l->words = &w1;
+    w1.next = &w2;
+    w2.next = NULL;
+}
+
+void generate_region(Region *r) {
+    Line l1;
+    Line l2;
+    generate_line(&l1);
+    generate_line(&l2);
+    r->lines = &l1;
+    l1.next = &l2;
+    l2.next = NULL;
+    r->next = NULL;
+}
+*/
+
+void output_save_multi_column_demo() {
+    // PAGE 1
+    Page p;
+    Region r1;
+    Line l1;
+    Line l2;
+    Line l3;
+    Line l4;
+
+    Word w1;
+    Word w2;
+    Word w3;
+    Word w4;
+    Word w5;
+    Word w6;
+    Word w7;
+    Word w8;
+    Word w9;
+
+    w1.length = 1;
+    w2.length = 2;
+    w3.length = 3;
+    w4.length = 4;
+    w5.length = 5;
+    w6.length = 6;
+    w7.length = 7;
+    w8.length = 8;
+    w9.length = 9;
+
+    w1.letters = "1";
+    w2.letters = "22";
+    w3.letters = "333";
+    w4.letters = "4444";
+    w5.letters = "55555";
+    w6.letters = "666666";
+    w7.letters = "7777777";
+    w8.letters = "88888888";
+    w9.letters = "999999999";
+
+    w1.next = &w2;
+    w2.next = NULL;
+
+    w3.next = &w4;
+    w4.next = NULL;
+
+    w5.next = NULL;
+
+    w6.next = &w7;
+    w7.next = &w8;
+    w8.next = &w9;
+    w9.next = NULL;
+
+    l1.words = &w1;
+    l2.words = &w3;
+    l3.words = &w5;
+    l4.words = &w6;
+
+    l1.next = &l2;
+    l2.next = NULL;
+    l2.next = &l3;
+    l3.next = &l4;
+    l4.next = NULL;
+
+    r1.lines = &l1;
+    r1.next = NULL;
+
+    Region r2;
+    Line l11;
+    Line l12;
+    Line l13;
+    Line l14;
+
+    Word w11;
+    Word w12;
+    Word w13;
+    Word w14;
+    Word w15;
+    Word w16;
+    Word w17;
+    Word w18;
+    Word w19;
+
+    w11.length = 1;
+    w12.length = 2;
+    w13.length = 3;
+    w14.length = 4;
+    w15.length = 5;
+    w16.length = 6;
+    w17.length = 7;
+    w18.length = 8;
+    w19.length = 9;
+
+    w11.letters = "a";
+    w12.letters = "bb";
+    w13.letters = "ccc";
+    w14.letters = "dddd";
+    w15.letters = "eeeee";
+    w16.letters = "ffffff";
+    w17.letters = "ggggggg";
+    w18.letters = "hhhhhhhh";
+    w19.letters = "iiiiiiiii";
+
+    w11.next = &w12;
+    w12.next = NULL;
+
+    w13.next = &w14;
+    w14.next = NULL;
+
+    w15.next = NULL;
+
+    w16.next = &w17;
+    w17.next = &w18;
+    w18.next = &w19;
+    w19.next = NULL;
+
+    l11.words = &w11;
+    l12.words = &w13;
+    l13.words = &w15;
+    l14.words = &w16;
+
+    l11.next = &l12;
+    l12.next = NULL;
+    l12.next = &l13;
+    l13.next = &l14;
+    l14.next = NULL;
+
+    r2.lines = &l11;
+    r1.next = &r2;
+    r2.next = NULL;
+
+    p.regions = &r1;
+    p.next = NULL;
+
+    r1.x = 0;
+    r1.y = 0;
+    r1.w = 50;
+    r1.h = 50;
+
+    r2.x = 100;
+    r2.y = 0;
+    r2.w = 50;
+    r2.h = 50;
+
+    output_save_multi_column(&p, "testpagesregions.txt");
+}
+
 int demo(int argc, char *argv[]) {
     char *c = argv[1];
 
@@ -571,6 +738,11 @@ int demo(int argc, char *argv[]) {
     if (!strcmp(c, "save_pages")) {
         // save_pages_demo(argc, argv);
         save_pages_demo();
+        return 0;
+    }
+    if (!strcmp(c, "save_pages_m")) {
+        // save_pages_demo(argc, argv);
+        output_save_multi_column_demo();
         return 0;
     }
 
