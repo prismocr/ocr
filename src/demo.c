@@ -494,33 +494,6 @@ void save_pages_demo() {
     output_save_default(&p1, "testpages.txt");
 }
 
-/*
-void generate_word(Word *w) {
-    w->length = 2;
-    w->letters = "aa";
-}
-void generate_line(Line *l){
-    Word w1;
-    Word w2;
-    generate_word(&w1);
-    generate_word(&w2);
-    l->words = &w1;
-    w1.next = &w2;
-    w2.next = NULL;
-}
-
-void generate_region(Region *r) {
-    Line l1;
-    Line l2;
-    generate_line(&l1);
-    generate_line(&l2);
-    r->lines = &l1;
-    l1.next = &l2;
-    l2.next = NULL;
-    r->next = NULL;
-}
-*/
-
 void output_save_multi_column_demo() {
     // PAGE 1
     Page p;
@@ -538,7 +511,6 @@ void output_save_multi_column_demo() {
     Word w6;
     Word w7;
     Word w8;
-    Word w9;
 
     w1.length = 1;
     w2.length = 2;
@@ -548,7 +520,6 @@ void output_save_multi_column_demo() {
     w6.length = 6;
     w7.length = 7;
     w8.length = 8;
-    w9.length = 9;
 
     w1.letters = "1";
     w2.letters = "22";
@@ -558,7 +529,6 @@ void output_save_multi_column_demo() {
     w6.letters = "666666";
     w7.letters = "7777777";
     w8.letters = "88888888";
-    w9.letters = "999999999";
 
     w1.next = &w2;
     w2.next = NULL;
@@ -566,17 +536,16 @@ void output_save_multi_column_demo() {
     w3.next = &w4;
     w4.next = NULL;
 
-    w5.next = NULL;
+    w5.next = &w6;
+    w6.next = NULL;
 
-    w6.next = &w7;
     w7.next = &w8;
-    w8.next = &w9;
-    w9.next = NULL;
+    w8.next = NULL;
 
     l1.words = &w1;
     l2.words = &w3;
     l3.words = &w5;
-    l4.words = &w6;
+    l4.words = &w7;
 
     l1.next = &l2;
     l2.next = NULL;
@@ -601,7 +570,6 @@ void output_save_multi_column_demo() {
     Word w16;
     Word w17;
     Word w18;
-    Word w19;
 
     w11.length = 1;
     w12.length = 2;
@@ -611,17 +579,15 @@ void output_save_multi_column_demo() {
     w16.length = 6;
     w17.length = 7;
     w18.length = 8;
-    w19.length = 9;
 
-    w11.letters = "a";
-    w12.letters = "bb";
-    w13.letters = "ccc";
-    w14.letters = "dddd";
-    w15.letters = "eeeee";
-    w16.letters = "ffffff";
-    w17.letters = "ggggggg";
-    w18.letters = "hhhhhhhh";
-    w19.letters = "iiiiiiiii";
+    w11.letters = "A";
+    w12.letters = "BB";
+    w13.letters = "CCC";
+    w14.letters = "DDDD";
+    w15.letters = "EEEEE";
+    w16.letters = "FFFFFF";
+    w17.letters = "GGGGGGG";
+    w18.letters = "HHHHHHHH";
 
     w11.next = &w12;
     w12.next = NULL;
@@ -629,17 +595,16 @@ void output_save_multi_column_demo() {
     w13.next = &w14;
     w14.next = NULL;
 
-    w15.next = NULL;
+    w15.next = &w16;
+    w16.next = NULL;
 
-    w16.next = &w17;
     w17.next = &w18;
-    w18.next = &w19;
-    w19.next = NULL;
+    w18.next = NULL;
 
     l11.words = &w11;
     l12.words = &w13;
     l13.words = &w15;
-    l14.words = &w16;
+    l14.words = &w17;
 
     l11.next = &l12;
     l12.next = NULL;
@@ -656,13 +621,68 @@ void output_save_multi_column_demo() {
 
     r1.x = 0;
     r1.y = 0;
-    r1.w = 50;
-    r1.h = 50;
+    r1.w = 40 * (7 + 8);
+    r1.h = 40 * 4;
 
     r2.x = 100;
     r2.y = 0;
-    r2.w = 50;
-    r2.h = 50;
+    r2.w = 40 * (7 + 8);
+    r2.h = 40 * 4;
+
+    l1.w = 40 * (7 + 8);
+    l2.w = 40 * (7 + 8);
+    l3.w = 40 * (7 + 8);
+    l4.w = 40 * (7 + 8);
+
+    l11.w = 40 * (7 + 8);
+    l12.w = 40 * (7 + 8);
+    l13.w = 40 * (7 + 8);
+    l14.w = 40 * (7 + 8);
+
+    l1.x = 0;
+    l2.x = 0;
+    l3.x = 0;
+    l4.x = 0;
+
+    l11.x = 40 * (7 + 8) + 100;
+    l12.x = 40 * (7 + 8) + 100;
+    l13.x = 40 * (7 + 8) + 100;
+    l14.x = 40 * (7 + 8) + 100;
+
+    l1.y = 40 * 0;
+    l2.y = 40 * 1;
+    l3.y = 40 * 2;
+    l4.y = 40 * 3;
+
+    l11.y = 40 * 0;
+    l12.y = 40 * 1;
+    l13.y = 40 * 2;
+    l14.y = 40 * 3;
+
+    l1.h = 40;
+    l2.h = 40;
+    l3.h = 40;
+    l4.h = 40;
+
+    l11.h = 40;
+    l12.h = 40;
+    l13.h = 40;
+    l14.h = 40;
+
+    r1.x = 0;
+    r1.y = 0;
+
+    r2.x = 40 * (7 + 8) + 100;
+    r2.y = 0;
+
+    r1.w = 40 * (7 + 8);
+    r1.h = 40 * 4;
+
+    r2.w = 40 * (7 + 8);
+    r2.h = 40 * 4;
+
+    p.w = 100 + 2 * (40 * (7 + 8));
+    p.h = 40 * 4;
 
     output_save_multi_column(&p, "testpagesregions.txt");
 }
