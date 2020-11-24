@@ -2,9 +2,9 @@
 #include "neuralnet/output.h"
 
 // TODO: allocate pages on the heap in setup and free page in teardown
-void setUp() { }
+void setUp() {}
 
-void tearDown() { }
+void tearDown() {}
 
 int compareFile(FILE *f1, FILE *f2) {
     char ch1, ch2;

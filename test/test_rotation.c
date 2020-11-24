@@ -5,7 +5,7 @@
 
 Matrix image;
 
-void setUp() { }
+void setUp() {}
 
 void tearDown() {
     matrix_free(&image);
@@ -42,4 +42,3 @@ int main() {
 
     return UNITY_END();
 }
-

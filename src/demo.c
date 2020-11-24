@@ -374,13 +374,7 @@ void process_word_demo(int argc, char *argv[]) {
     return;
 }
 
-void save_pages_demo() { //(int argc, char *argv[]) {
-
-    // if (argc < 3) {
-    //    printf("Missing image path.\n");
-    //    return;
-    //}
-
+void save_pages_demo() {
     // PAGE 1
     Page p1;
     Region r11;
@@ -500,6 +494,199 @@ void save_pages_demo() { //(int argc, char *argv[]) {
     output_save_default(&p1, "testpages.txt");
 }
 
+void output_save_multi_column_demo() {
+    // PAGE 1
+    Page p;
+    Region r1;
+    Line l1;
+    Line l2;
+    Line l3;
+    Line l4;
+
+    Word w1;
+    Word w2;
+    Word w3;
+    Word w4;
+    Word w5;
+    Word w6;
+    Word w7;
+    Word w8;
+
+    w1.length = 1;
+    w2.length = 2;
+    w3.length = 3;
+    w4.length = 4;
+    w5.length = 5;
+    w6.length = 6;
+    w7.length = 7;
+    w8.length = 8;
+
+    w1.letters = "1";
+    w2.letters = "22";
+    w3.letters = "333";
+    w4.letters = "4444";
+    w5.letters = "55555";
+    w6.letters = "666666";
+    w7.letters = "7777777";
+    w8.letters = "88888888";
+
+    w1.next = &w2;
+    w2.next = NULL;
+
+    w3.next = &w4;
+    w4.next = NULL;
+
+    w5.next = &w6;
+    w6.next = NULL;
+
+    w7.next = &w8;
+    w8.next = NULL;
+
+    l1.words = &w1;
+    l2.words = &w3;
+    l3.words = &w5;
+    l4.words = &w7;
+
+    l1.next = &l2;
+    l2.next = NULL;
+    l2.next = &l3;
+    l3.next = &l4;
+    l4.next = NULL;
+
+    r1.lines = &l1;
+    r1.next = NULL;
+
+    Region r2;
+    Line l11;
+    Line l12;
+    Line l13;
+    Line l14;
+
+    Word w11;
+    Word w12;
+    Word w13;
+    Word w14;
+    Word w15;
+    Word w16;
+    Word w17;
+    Word w18;
+
+    w11.length = 1;
+    w12.length = 2;
+    w13.length = 3;
+    w14.length = 4;
+    w15.length = 5;
+    w16.length = 6;
+    w17.length = 7;
+    w18.length = 8;
+
+    w11.letters = "A";
+    w12.letters = "BB";
+    w13.letters = "CCC";
+    w14.letters = "DDDD";
+    w15.letters = "EEEEE";
+    w16.letters = "FFFFFF";
+    w17.letters = "GGGGGGG";
+    w18.letters = "HHHHHHHH";
+
+    w11.next = &w12;
+    w12.next = NULL;
+
+    w13.next = &w14;
+    w14.next = NULL;
+
+    w15.next = &w16;
+    w16.next = NULL;
+
+    w17.next = &w18;
+    w18.next = NULL;
+
+    l11.words = &w11;
+    l12.words = &w13;
+    l13.words = &w15;
+    l14.words = &w17;
+
+    l11.next = &l12;
+    l12.next = NULL;
+    l12.next = &l13;
+    l13.next = &l14;
+    l14.next = NULL;
+
+    r2.lines = &l11;
+    r1.next = &r2;
+    r2.next = NULL;
+
+    p.regions = &r1;
+    p.next = NULL;
+
+    r1.x = 0;
+    r1.y = 0;
+    r1.w = 40 * (7 + 8);
+    r1.h = 40 * 4;
+
+    r2.x = 100;
+    r2.y = 0;
+    r2.w = 40 * (7 + 8);
+    r2.h = 40 * 4;
+
+    l1.w = 40 * (7 + 8);
+    l2.w = 40 * (7 + 8);
+    l3.w = 40 * (7 + 8);
+    l4.w = 40 * (7 + 8);
+
+    l11.w = 40 * (7 + 8);
+    l12.w = 40 * (7 + 8);
+    l13.w = 40 * (7 + 8);
+    l14.w = 40 * (7 + 8);
+
+    l1.x = 0;
+    l2.x = 0;
+    l3.x = 0;
+    l4.x = 0;
+
+    l11.x = 40 * (7 + 8) + 100;
+    l12.x = 40 * (7 + 8) + 100;
+    l13.x = 40 * (7 + 8) + 100;
+    l14.x = 40 * (7 + 8) + 100;
+
+    l1.y = 40 * 0;
+    l2.y = 40 * 1;
+    l3.y = 40 * 2;
+    l4.y = 40 * 3;
+
+    l11.y = 40 * 0;
+    l12.y = 40 * 1;
+    l13.y = 40 * 2;
+    l14.y = 40 * 3;
+
+    l1.h = 40;
+    l2.h = 40;
+    l3.h = 40;
+    l4.h = 40;
+
+    l11.h = 40;
+    l12.h = 40;
+    l13.h = 40;
+    l14.h = 40;
+
+    r1.x = 0;
+    r1.y = 0;
+
+    r2.x = 40 * (7 + 8) + 100;
+    r2.y = 0;
+
+    r1.w = 40 * (7 + 8);
+    r1.h = 40 * 4;
+
+    r2.w = 40 * (7 + 8);
+    r2.h = 40 * 4;
+
+    p.w = 100 + 2 * (40 * (7 + 8));
+    p.h = 40 * 4;
+
+    output_save_multi_column(&p, "testpagesregions.txt");
+}
+
 int demo(int argc, char *argv[]) {
     char *c = argv[1];
 
@@ -571,6 +758,11 @@ int demo(int argc, char *argv[]) {
     if (!strcmp(c, "save_pages")) {
         // save_pages_demo(argc, argv);
         save_pages_demo();
+        return 0;
+    }
+    if (!strcmp(c, "save_pages_m")) {
+        // save_pages_demo(argc, argv);
+        output_save_multi_column_demo();
         return 0;
     }
 

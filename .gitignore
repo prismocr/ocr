@@ -3,8 +3,10 @@ build
 *.swp
 *.o
 *.d
+*.txt
 Unity/
 # Only allow bmp in examples/
 *.bmp
 !examples/*.bmp
+.vscode
 
