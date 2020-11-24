@@ -8,4 +8,5 @@ Unity/
 # Only allow bmp in examples/
 *.bmp
 !examples/*.bmp
+.vscode
 
