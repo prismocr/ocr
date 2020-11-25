@@ -33,8 +33,14 @@ int line_new(size_t x, size_t y, size_t w, size_t h, Line **line) {
 }
 
 void line_free(Line **line) {
-    for (Word *w = (*line)->words; w != NULL; w = w->next) {
+    assert(*line != NULL);
+
+    Word *w = (*line)->words;
+    Word *next = NULL;
+    while (w != NULL) {
+        next = w->next;
         word_free(&w);
+        w = next;
     }
     (*line)->words = NULL;
 

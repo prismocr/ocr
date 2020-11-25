@@ -282,7 +282,7 @@ int segmentation_demo(int argc, char *argv[]) {
     exit_on_error(bitmap_load(argv[2], &image));
 
     Page *page = NULL;
-    segment(image, page);
+    segment(image, &page);
 
     page_free(&page);
     matrix_free(&image);

@@ -23,8 +23,14 @@ int page_new(size_t w, size_t h, Page **page) {
 }
 
 void page_free(Page **page) {
-    for (Region *r = (*page)->regions; r != NULL; r = r->next) {
+    assert(*page != NULL);
+
+    Region *r = (*page)->regions;
+    Region *next = NULL;
+    while (r != NULL) {
+        next = r->next;
         region_free(&r);
+        r = next;
     }
 
     (*page)->regions = NULL;
@@ -32,3 +38,4 @@ void page_free(Page **page) {
     free(*page);
     *page = NULL;
 }
+
