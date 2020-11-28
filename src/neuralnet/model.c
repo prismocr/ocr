@@ -3,7 +3,7 @@
 #include "neuralnet/model.h"
 
 void model_new(N_cfg *cfg, Model *model) {
-    assert(cfg->batch_size > 0 && eta > 0 && epochs > 0);
+    assert(cfg->batch_size > 0 && cfg->eta > 0.f && cfg->epochs > 0);
     model->cfg = cfg;
 
     // size_t test_data_size = (long) NB_TEST_FONTS * OUTPUT_SIZE
