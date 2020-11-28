@@ -9,4 +9,5 @@ Unity/
 *.bmp
 !examples/*.bmp
 .vscode
-
+*.csv
+*.hex

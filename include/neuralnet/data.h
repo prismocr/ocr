@@ -16,7 +16,7 @@ struct Dataset {
 };
 
 /**
- * Creatse new empty Dataset of size @size
+ * Creates a new empty Dataset of size @size
  *
  * @param dataset to save the new dataset in
  * @param size of the new dataset
@@ -59,4 +59,9 @@ void data_swap(Data *a, Data *b);
  */
 Dataset *initialize_batches(Dataset *dataset, size_t batch_size);
 
+char output_to_char(float *output);
+void dataset_double_capacity(Dataset *dataset);
+void data_init_input(char *image_path, Vector *input);
+void data_init_target(char character, Vector *output);
+void generate_dataset(char directory_path[], Dataset *dataset);
 #endif

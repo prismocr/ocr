@@ -1,26 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "neuralnet/layer.h"
 #include "neuralnet/neuron.h"
 #include "utils/vector.h"
 
 Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer,
-                int actFunc) {
+                int act_func) {
     Layer layer;
 
     layer.nb_neurons = nb_neurons;
     layer.prev_layer = prev_layer;
     layer.next_layer = next_layer;
-    switch (actFunc) {
+    switch (act_func) {
         case SIGMOID:
-            layer.actFunc = sigmoid;
-            layer.actFuncPrime = sigmoid_prime;
+            layer.layer_act_func = layer_sigmoid;
+            layer.act_func_prime = sigmoid_prime;
             break;
         case RELU:
-            layer.actFunc = relu;
-            layer.actFuncPrime = relu_prime;
+            layer.layer_act_func = layer_relu;
+            layer.act_func_prime = relu_prime;
             break;
+        case SOFTMAX:
+            layer.layer_act_func = layer_softmax;
+            layer.act_func_prime = sigmoid_prime;
     }
 
     layer.values = (float *) calloc(nb_neurons, sizeof(float));
@@ -47,6 +51,31 @@ void layer_free(Layer *layer) {
     free(layer->values);
 }
 
+float randn() {
+    double u1, u2, w, mult;
+    static double x1, x2;
+    static int use_previous = 0;
+
+    if (use_previous == 1) {
+        use_previous = !use_previous;
+        return x2;
+    }
+
+    do {
+        u1 = -1 + ((double) rand() / RAND_MAX) * 2;
+        u2 = -1 + ((double) rand() / RAND_MAX) * 2;
+        w = pow(u1, 2) + pow(u2, 2);
+    } while (w >= 1 || w == 0);
+
+    mult = sqrt((-2 * log(w)) / w);
+    x1 = u1 * mult;
+    x2 = u2 * mult;
+
+    use_previous = !use_previous;
+
+    return x1;
+}
+
 void initialize_biases_and_weights(Layer *layer) {
     size_t nb_neurons = layer->nb_neurons;
     if (layer->prev_layer == NULL) {
@@ -56,13 +85,19 @@ void initialize_biases_and_weights(Layer *layer) {
         // Initializing biases
         layer->biases = (float *) malloc(nb_neurons * sizeof(float));
         for (size_t i = 0; i < nb_neurons; i++) {
-            layer->biases[i] = 2 * ((float) rand() / RAND_MAX) - 1;
+            layer->biases[i] = randn(); //((float) rand() / RAND_MAX) * 2 - 1;
         }
 
         // Initializing weights
         matrix_new(nb_neurons, layer->prev_layer->nb_neurons,
                    &(layer->weights));
-        matrix_randomize(-1.0f, 1.0f, &(layer->weights));
+        for (size_t i = 0; i < layer->weights.h; i++) {
+            for (size_t j = 0; j < layer->weights.w; j++) {
+                layer->weights.val[i][j]
+                  = randn() / sqrt(layer->prev_layer->nb_neurons);
+            }
+        }
+        /*matrix_randomize(-1.0f, 1.0f, &(layer->weights));*/
     }
 }
 
@@ -77,7 +112,7 @@ void initialize_deltas(Layer *layer) {
         layer->deltas = (float *) calloc(nb_neurons, sizeof(float));
         matrix_new(nb_neurons, layer->prev_layer->nb_neurons,
                    &(layer->d_weights));
-        layer->d_biases = (float *) malloc(nb_neurons * sizeof(float));
+        layer->d_biases = (float *) calloc(nb_neurons, sizeof(float));
         layer->z = (float *) calloc(nb_neurons, sizeof(float));
     }
 }
@@ -95,6 +130,41 @@ float *get_weights_in(Layer layer, size_t index) {
     return (layer.prev_layer) ? layer.weights.val[index] : NULL;
 }
 
+void layer_sigmoid(Layer *layer) {
+    for (size_t i = 0; i < layer->nb_neurons; i++) {
+        layer->values[i] = sigmoid(layer->z[i]); //*0.999+0.001;
+    }
+}
+
+void layer_relu(Layer *layer) {
+    for (size_t i = 0; i < layer->nb_neurons; i++) {
+        layer->values[i] = relu(layer->z[i]);
+    }
+}
+
+void layer_softmax(Layer *layer) {
+    size_t i;
+    float max, sum, constant, value;
+
+    max = layer->values[0];
+    for (i = 0; i < layer->nb_neurons; i++) {
+        value = layer->values[i];
+        if (value > max) {
+            max = value;
+        }
+    }
+
+    sum = 0.f;
+    for (i = 0; i < layer->nb_neurons; i++) {
+        sum += exp(layer->values[i] - max);
+    }
+
+    constant = max + log(sum);
+    for (i = 0; i < layer->nb_neurons; i++) {
+        layer->values[i] = exp(layer->values[i] - constant);
+    }
+}
+
 void layer_feed(Layer *layer, float *values) {
     memcpy(layer->values, values, sizeof(float) * layer->nb_neurons);
 }
@@ -105,9 +175,7 @@ void layer_front_pop(Layer *layer) {
     vector_add(layer->nb_neurons, layer->biases, layer->z);
 
     // activation function
-    for (size_t i = 0; i < layer->nb_neurons; i++) {
-        layer->values[i] = layer->actFunc(layer->z[i]);
-    }
+    layer->layer_act_func(layer);
 }
 
 void layer_backpropagation(Layer *layer) {
@@ -117,7 +185,7 @@ void layer_backpropagation(Layer *layer) {
     // Compute new deltas from previous ones
     matrix_cdt(next_layer->weights, next_layer->deltas, layer->deltas);
     for (size_t i = 0; i < nb_neurons; i++) {
-        layer->deltas[i] *= layer->actFuncPrime(layer->z[i]);
+        layer->deltas[i] *= layer->act_func_prime(layer->z[i]);
     }
 
     // Apply cost to biases

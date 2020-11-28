@@ -1,8 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
+#include "neuralnet/model.h"
 #include "neuralnet/data.h"
+#include "utils/matrix.h"
 #include "utils/vector.h"
+#include "utils/error.h"
+#include "utils/bitmap.h"
+
+#define LOWER_LETTER_ORG 0
+#define UPPER_LETTER_ORG 26
+#define SPECIAL_CHAR_ORG 52
 
 int dataset_new(Dataset *dataset, size_t size) {
     assert(size > 0);
@@ -49,4 +58,106 @@ Dataset *initialize_batches(Dataset *dataset, size_t batch_size) {
     }
 
     return batches;
+}
+
+char output_to_char(float *output) {
+    size_t max = 0;
+    for (size_t i = 0; i < OUTPUT_SIZE; i++) {
+        if (output[i] > output[max]) {
+            max = i;
+        }
+    }
+    if (output[max] == 0.01f)
+        return '?';
+    if (max <= 25)
+        return max + 'a';
+    if (max <= 51)
+        return max - 26 + 'A';
+    return max - 52 + '!';
+}
+
+void dataset_double_capacity(Dataset *dataset) {
+    dataset->size *= 2;
+    dataset->datas = realloc(dataset->datas, dataset->size * sizeof(Data));
+}
+
+void data_init_input(char *image_path, Vector *input) {
+    Matrix image;
+    exit_on_error(bitmap_load(image_path, &image));
+    matrix_scale(&image, 0.99f / 255);
+    matrix_add_const(&image, 0.01f);
+
+    input->size = IMAGE_WIDTH * IMAGE_WIDTH;
+    input->val = calloc(input->size, sizeof(float));
+    for (size_t i = 0; i < image.h; i++) {
+        vector_copy(image.w, image.val[i], &(input->val[i * image.w]));
+    }
+
+    matrix_free(&image);
+}
+
+void data_init_target(char character, Vector *target) {
+    target->size = OUTPUT_SIZE;
+    target->val = calloc(OUTPUT_SIZE, sizeof(float));
+
+    if (character >= 'a' && character <= 'z') {
+        target->val[character - 'a' + LOWER_LETTER_ORG] = 1.f;
+    } else if (character >= 'A' && character <= 'Z') {
+        target->val[character - 'A' + UPPER_LETTER_ORG] = 1.f;
+    } else if (character >= 33 && character <= 64) {
+        target->val[character - 33 + SPECIAL_CHAR_ORG] = 1.f;
+    }
+}
+
+char *strdup(const char *str) {
+    int n = strlen(str) + 1;
+    char *dup = malloc(n);
+    if (dup) {
+        strcpy(dup, str);
+    }
+    return dup;
+}
+
+void generate_dataset(char directory_path[], Dataset *dataset) {
+    char csv_file_path[1024], images_directory_path[1024];
+    strcpy(csv_file_path, directory_path);
+    strcat(csv_file_path, "data.csv");
+    strcpy(images_directory_path, directory_path);
+    strcat(images_directory_path, "images/");
+
+    FILE *csv_file = fopen(csv_file_path, "r");
+    if (csv_file == NULL) {
+        printf("\033[41m Incorrect dataset path \033[0m\n");
+        exit(1);
+    }
+
+    dataset_new(dataset, 1);
+
+    size_t i = 0; // index within dataset's datas array
+    char line[1024], *tmp, *label, *image_name, image_path[1024];
+    while (fgets(line, 1024, csv_file)) {
+        tmp = strdup(line);
+
+        label = strtok(tmp, "§");
+        if (!label) {
+            label = ",";
+            tmp += 2;
+        }
+        image_name = strtok(NULL, "§\n");
+        strcpy(image_path, images_directory_path);
+        strcat(image_path, image_name);
+
+        if (i == dataset->size) {
+            dataset_double_capacity(dataset);
+        }
+        data_init_input(image_path, &dataset->datas[i].input);
+        data_init_target(label[0], &dataset->datas[i].target);
+
+        free(tmp);
+        i++;
+    }
+
+    fclose(csv_file);
+    dataset->size = i;
+    dataset->datas = realloc(dataset->datas, dataset->size * sizeof(Data));
 }
