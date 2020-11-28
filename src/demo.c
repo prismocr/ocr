@@ -213,7 +213,7 @@ void network_demo(int argc, char *argv[]) {
 
         size_t sizes_static[] = {2, 2, 1};
         network = network_new(nb_layers, sizes_static);
-        network_sgd(&network, &dataset, 100000, 4, 1.f);
+        network_sgd(&network, &dataset, 100000, 4, 1.f, &dataset, 1);
     } else if (!strcmp("add", argv[2])) {
         // --- Create dataset---
         dataset_new(&dataset, 8);
@@ -229,12 +229,12 @@ void network_demo(int argc, char *argv[]) {
 
         size_t sizes_static[] = {3, 3, 2};
         network = network_new(nb_layers, sizes_static);
-        network_sgd(&network, &dataset, 1000, 4, 12.f);
+        network_sgd(&network, &dataset, 1000, 4, 12.f, &dataset, 1);
     }
     network_print_results(network, dataset);
 
     network_print_clean(network);
-    network_save("net.hex", network);
+    network_save("net.hex", &network);
     network_free(&network);
 
     dataset_free(&dataset);

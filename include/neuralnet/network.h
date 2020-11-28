@@ -53,17 +53,22 @@ float *network_feed_forward(Network *network, float *input);
  * @param number of epochs for training
  * @param size of the batches that will be extracted from dataset
  * @param the learning rate
+ * @param the data to test on
+ * @param boolean for monitoring
  */
-void network_sgd(Network *network, Dataset *dataset, size_t epochs,
-                 size_t batch_size, float learning_rate);
+void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
+                 size_t batch_size, float learning_rate,
+                 Dataset *dataset_evaluation, int monitor_training);
 /**
  * Applies gradient descent on a network
  *
  * @param the network
  * @param the inputs
  * @param the learning rate
+ * @param lambda used for regularization
+ * @param size of training dataset
  */
-void batch_gd(Network *network, Dataset *batch, float learning_rate);
+//void batch_gd(Network *network, Dataset *batch, float learning_rate, float lambda, float dataset_size);
 /**
  * Applies backpropagation on a network
  *
@@ -114,7 +119,7 @@ void network_print_results(Network network, Dataset dataset);
  * @param path of the file
  * @param network to save
  */
-void network_save(const char *path, Network network);
+void network_save(const char *path, Network *network);
 /**
  * Loads a network which is in a file
  *
@@ -124,4 +129,5 @@ void network_save(const char *path, Network network);
  */
 int network_load(const char *path, Network *out);
 
+size_t network_evaluate(Network *network, Dataset *test_data, int show_errors);
 #endif

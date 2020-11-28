@@ -71,6 +71,14 @@ void matrix_randomize(float min, float max, Matrix *mat);
 void matrix_scale(Matrix *mat, float scalar);
 
 /**
+ * Adds a constant on each and every element of the matrix
+ *
+ * @param matrix 
+ * @param value to add on each element of the matrix
+ */
+void matrix_add_const(Matrix *mat, float c);
+
+/**
  * Returns the average of the matrix values
  *
  * @param the matrix
