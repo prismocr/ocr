@@ -6,6 +6,7 @@ struct Vector {
     size_t size;
     float *val;
 };
+
 /**
  * Creates a new vector
  *
@@ -14,6 +15,7 @@ struct Vector {
  * @return state (error)
  */
 int vector_new(size_t size, Vector *Vector);
+
 /**
  * Frees a vector
  *
@@ -26,6 +28,7 @@ void vector_free(Vector *vector);
  * @param vector to print
  */
 void vector_print(Vector vector);
+
 /**
  * Prints a vector with a special format
  *
@@ -51,6 +54,7 @@ void vector_randomize(Vector *vect, float min, float max);
  * @param b destination
  */
 void vector_add(size_t size, float *a, float *b);
+
 /**
  * Removes a value to the vector
  *
@@ -59,6 +63,7 @@ void vector_add(size_t size, float *a, float *b);
  * @param b destination
  */
 void vector_sub(size_t size, float *a, float *res);
+
 /**
  * Makes a homothety on an array
  *
@@ -67,6 +72,7 @@ void vector_sub(size_t size, float *a, float *res);
  * @param arr source
  */
 void vector_scale(size_t size, float scalar, float *arr);
+
 /**
  * Dot products on arrays
  *
@@ -92,5 +98,13 @@ Vector arr2vect(float *array, size_t size);
  * @param b destination
  */
 void vector_copy(size_t size, float *a, float *b);
+
+/**
+ * Returns the average of the vector values.
+ *
+ * @param the vector.
+ * @return average value of the vector.
+ */
+float vector_average(Vector vec);
 
 #endif

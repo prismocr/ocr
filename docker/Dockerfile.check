@@ -1,0 +1,8 @@
+FROM neszt/cppcheck-docker
+
+RUN apk --no-cache add make
+
+WORKDIR /app
+
+COPY . /app
+RUN make cppcheck

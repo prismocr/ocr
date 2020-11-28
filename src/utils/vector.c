@@ -15,10 +15,8 @@ int vector_new(size_t size, Vector *vector) {
 }
 
 void vector_free(Vector *vector) {
-    if (vector->val) {
-        free(vector->val);
-        vector->val = NULL;
-    }
+    free(vector->val);
+    vector->val = NULL;
 }
 
 void vector_print(Vector vector) {
@@ -74,6 +72,18 @@ Vector arr2vect(float *array, size_t size) {
     vector.val = array;
     return vector;
 }
+
 void vector_copy(size_t size, float *a, float *b) {
     memcpy(b, a, sizeof(float) * size);
+}
+
+float vector_average(Vector vec) {
+    assert(vec.val != NULL);
+
+    float sum = 0;
+    for (size_t i = 0; i < vec.size; i++) {
+        sum += vec.val[i];
+    }
+
+    return sum / vec.size;
 }

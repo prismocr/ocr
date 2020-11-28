@@ -8,4 +8,3 @@ int main(int argc, char *argv[]) {
     Dataset dataset;
 	generate_dataset("dataset/",&dataset);
 }
-

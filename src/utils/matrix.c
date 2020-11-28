@@ -15,7 +15,7 @@ int matrix_new(size_t h, size_t w, Matrix *mat) {
     // Allocate matrix
     mat->val = (float **) malloc(h * sizeof(float *));
     if (mat->val == NULL) {
-        set_last_errorf("Failed to allocated memory for matrix: %s",
+        set_last_errorf("Failed to allocate memory for matrix: %s",
                         strerror(errno));
         return 1;
     }
@@ -24,7 +24,7 @@ int matrix_new(size_t h, size_t w, Matrix *mat) {
     for (size_t i = 0; i < h; i++) {
         mat->val[i] = (float *) calloc(w, sizeof(float));
         if (mat->val[i] == NULL) {
-            set_last_errorf("Failed to allocated memory for matrix: %s",
+            set_last_errorf("Failed to allocate memory for matrix: %s",
                             strerror(errno));
             return 1;
         }
@@ -139,7 +139,7 @@ float matrix_average(Matrix mat) {
         }
     }
 
-    return sum / (mat.h + mat.w);
+    return sum / (mat.h * mat.w);
 }
 
 void matrix_dot(Matrix mat_a, Matrix mat_b, Matrix *res) {

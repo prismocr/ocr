@@ -2,6 +2,8 @@
 #define IMAGE_H
 
 #include "utils/matrix.h"
+#include "utils/vector.h"
+
 #define PI 3.14159265359
 
 /**
@@ -30,6 +32,13 @@ void image_threshold(float thresh, float maxval, Matrix *image);
  */
 void image_threshold_inv(float thresh, float maxval, Matrix *image);
 
+/**
+ * Apply Otsu's binarization method.
+ * This method tries to find the optmial threshold by minimizin intra-class
+ * intensity variance.
+ *
+ * @param image to binarize.
+ */
 int image_threshold_otsu(Matrix *image);
 
 /**
@@ -56,6 +65,7 @@ Matrix image_crop(size_t x, size_t y, size_t w, size_t h, Matrix image);
 
 /**
  *  Adjust image contrast
+ *
  *  @param image
  *  @param delta
  */
@@ -63,16 +73,32 @@ void image_contrast(Matrix *image, float delta);
 
 /**
  *  Convert an angle in degrees to radians
+ *
  *  @param angle
  */
 float deg_to_rad(float angle);
 
 /**
  *  Rotate image by an arbitrary radian angle
+ *
  *  @param image
  *  @param angle
  */
 void image_rotate(Matrix *image, float angle);
+
+/**
+ * Returns the X histogram projection.
+ *
+ * @param image to get histogram projection from.
+ */
+Vector image_histogram_x(Matrix image);
+
+/**
+ * Returns the Y histogram projection.
+ *
+ * @param image to get the histogram projection from.
+ */
+Vector image_histogram_y(Matrix image);
 
 /**
  * Sharpen convolution using a 3x3 matrix
@@ -101,5 +127,14 @@ void gauss(Matrix *mat);
  * @param image
  */
 void wide_gauss(Matrix *mat);
+
+/**
+ * Computes new pixel with anti-aliasing filter
+ *
+ * @param image
+ * @param x
+ * @param y
+ */
+float anti_aliasing_point(Matrix *mat, size_t x, size_t y);
 
 #endif // IMAGE_H

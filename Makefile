@@ -9,7 +9,7 @@
 
 CC := gcc
 CPPFLAGS := -MMD -Iinclude/
-CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic -static
+CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic
 LDLIBS := -lm
 
 BUILDDIR := build
@@ -21,7 +21,7 @@ OBJS := $(patsubst src/%.c,%.o,$(wildcard src/*.c) $(wildcard src/**/*.c))
 #
 # Debug variables
 #
-DBGCFLAGS := $(CFLAGS) -g -O0 -DDEBUG
+DBGCFLAGS := $(CFLAGS) -g -O0 -DDEBUG #-fsanitize=address
 
 DBGDIR := $(BUILDDIR)/debug
 DBGOBJDIR := $(DBGDIR)/obj
@@ -31,7 +31,7 @@ DBGOBJS := $(addprefix $(DBGOBJDIR)/,$(OBJS))
 #
 # Release variables
 #
-RLSCFLAGS := $(CFLAGS) -O3 -DNDEBUG
+RLSCFLAGS := $(CFLAGS) -O3 -DNDEBUG -static
 
 RLSDIR := $(BUILDDIR)/release
 RLSOBJDIR := $(RLSDIR)/obj
@@ -50,12 +50,12 @@ TSTOBJS := $(addprefix $(TSTOBJDIR)/,$(addsuffix .o,$(notdir $(TSTEXEC))))
 
 .PHONY: all prep remake debug release test clean mrproper format cppcheck
 
-all: prep release
+all: release
 
 #
 # Debug rules
 #
-debug: $(DBGDIR)/$(EXEC)
+debug: prep $(DBGDIR)/$(EXEC)
 
 $(DBGDIR)/$(EXEC): $(DBGOBJS)
 	$(CC) $^ -o $@ $(CPPFLAGS) $(DBGCFLAGS) $(LDLIBS)
@@ -66,7 +66,7 @@ $(DBGOBJDIR)/%.o: src/%.c
 #
 # Release rules
 #
-release: $(RLSDIR)/$(EXEC)
+release: prep $(RLSDIR)/$(EXEC)
 
 $(RLSDIR)/$(EXEC): $(RLSOBJS)
 	$(CC) $^ -o $@ $(CCPFLAGS) $(RLSCFLAGS) $(LDLIBS)
@@ -78,6 +78,7 @@ $(RLSOBJDIR)/%.o: src/%.c
 # Test rules
 #
 test: prep $(TSTEXEC)
+	@if [ ! -d "Unity" ]; then git clone https://github.com/ThrowTheSwitch/Unity.git; fi;
 	$(foreach TEST,$(filter $(TSTDIR)/%,$^),./$(TEST) &&) echo "All test passed"
 
 $(TSTDIR)/%: $(TSTOBJDIR)/%.o $(filter-out $(DBGOBJDIR)/main.o,$(DBGOBJS)) Unity/src/unity.c
@@ -100,9 +101,10 @@ clean:
 mrproper:
 	$(RM) -r $(BUILDDIR)
 
-format: src/*.c include/*.h
+format: src/*.c src/**/*.c include/*.h test/*.c
 	@clang-format --style=file -i $^
 
-cppcheck: src/*.c
-	@cppcheck --enable=all -q --std=c99 -Iinclude/ $^
+cppcheck: src/*.c src/**/*.c
+	@cppcheck --enable=warning,style,performance,portability,information,\
+	missingInclude -q --std=c99 -Iinclude/ $^
 

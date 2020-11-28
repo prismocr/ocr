@@ -1,6 +1,6 @@
 #include <unity.h>
-#include "linked_list.h"
-#include "matrix.h"
+#include "utils/linked_list.h"
+#include "utils/matrix.h"
 
 MatrixLinkedList testee;
 
@@ -72,4 +72,3 @@ int main() {
 
     return UNITY_END();
 }
-
