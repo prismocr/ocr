@@ -51,26 +51,23 @@ void layer_free(Layer *layer) {
     free(layer->values);
 }
 
-float randn ()
-{
+float randn() {
     double u1, u2, w, mult;
     static double x1, x2;
     static int use_previous = 0;
 
-    if (use_previous == 1)
-    {
-      use_previous = !use_previous;
-      return x2;
+    if (use_previous == 1) {
+        use_previous = !use_previous;
+        return x2;
     }
 
-    do
-    {
-      u1 = -1 + ((double) rand () / RAND_MAX) * 2;
-      u2 = -1 + ((double) rand () / RAND_MAX) * 2;
-      w = pow(u1, 2) + pow(u2, 2);
+    do {
+        u1 = -1 + ((double) rand() / RAND_MAX) * 2;
+        u2 = -1 + ((double) rand() / RAND_MAX) * 2;
+        w = pow(u1, 2) + pow(u2, 2);
     } while (w >= 1 || w == 0);
 
-    mult = sqrt ((-2 * log (w)) / w);
+    mult = sqrt((-2 * log(w)) / w);
     x1 = u1 * mult;
     x2 = u2 * mult;
 
@@ -96,7 +93,8 @@ void initialize_biases_and_weights(Layer *layer) {
                    &(layer->weights));
         for (size_t i = 0; i < layer->weights.h; i++) {
             for (size_t j = 0; j < layer->weights.w; j++) {
-                layer->weights.val[i][j] = randn()/sqrt(layer->prev_layer->nb_neurons);
+                layer->weights.val[i][j]
+                  = randn() / sqrt(layer->prev_layer->nb_neurons);
             }
         }
         /*matrix_randomize(-1.0f, 1.0f, &(layer->weights));*/
@@ -132,20 +130,19 @@ float *get_weights_in(Layer layer, size_t index) {
     return (layer.prev_layer) ? layer.weights.val[index] : NULL;
 }
 
-void layer_sigmoid(Layer *layer){
+void layer_sigmoid(Layer *layer) {
     for (size_t i = 0; i < layer->nb_neurons; i++) {
-        layer->values[i] = sigmoid(layer->z[i]);//*0.999+0.001;
+        layer->values[i] = sigmoid(layer->z[i]); //*0.999+0.001;
     }
 }
 
-void layer_relu(Layer *layer){
+void layer_relu(Layer *layer) {
     for (size_t i = 0; i < layer->nb_neurons; i++) {
         layer->values[i] = relu(layer->z[i]);
     }
 }
 
-void layer_softmax(Layer *layer){
-
+void layer_softmax(Layer *layer) {
     size_t i;
     float max, sum, constant, value;
 

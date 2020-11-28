@@ -56,7 +56,7 @@ float *network_feed_forward(Network *network, float *input) {
     for (size_t i = 1; i < network->nb_layers; i++) {
         layer_front_pop(&(network->layers[i]));
     }
-    
+
     return network->output_layer->values;
 }
 
@@ -73,7 +73,8 @@ void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
         // Train the network on each batch
         for (size_t j = 0; j < nb_batches; j++) {
             // Apply gradient escent on a whole batch
-            //batch_gd(network, &batches[j], learning_rate, lambda, dataset_training->size);
+            // batch_gd(network, &batches[j], learning_rate, lambda,
+            // dataset_training->size);
             for (size_t i = 0; i < batch_size; i++) {
                 network_backpropagation(network, batches[j].datas[i]);
             }
@@ -81,17 +82,19 @@ void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
             apply_grad(network, batch_size, learning_rate);
         }
         printf("Epoch %ld complete\n", i);
-        if(monitor_training){
-            nb_correct_output = network_evaluate(network,dataset_evaluation,0);
-            printf("Epoch %ld: %ld/%ld\n",i,nb_correct_output,dataset_evaluation->size);
+        if (monitor_training) {
+            nb_correct_output
+              = network_evaluate(network, dataset_evaluation, 0);
+            printf("Epoch %ld: %ld/%ld\n", i, nb_correct_output,
+                   dataset_evaluation->size);
         }
     }
 
     free(batches);
 }
 
-/*void batch_gd(Network *network, Dataset *batch, float learning_rate, float lambda, float dataset_size) {
-    for (size_t i = 0; i < batch->size; i++) {
+/*void batch_gd(Network *network, Dataset *batch, float learning_rate, float
+lambda, float dataset_size) { for (size_t i = 0; i < batch->size; i++) {
         network_backpropagation(network, batch->datas[i]);
     }
     // Update network's weights and biases
@@ -111,7 +114,7 @@ void network_backpropagation(Network *network, Data data) {
     // Apply backpropagation on the last layer
     init_cost(out_l, data.target.val);
     vector_add(out_l->nb_neurons, out_l->deltas, out_l->d_biases);
-    
+
     matrix_dcl(out_l->nb_neurons, out_l->deltas, out_l->prev_layer->nb_neurons,
                out_l->prev_layer->values, &out_l->d_weights);
 
@@ -121,29 +124,28 @@ void network_backpropagation(Network *network, Data data) {
     }
 }
 
-
 void apply_grad(Network *network, size_t size_batch, float learning_rate) {
     size_t i, j, k;
-    float scale = learning_rate/size_batch;
+    float scale = learning_rate / size_batch;
     for (i = 1; i < network->nb_layers; i++) {
         Layer *layer = &network->layers[i];
         for (j = 0; j < layer->nb_neurons; j++) {
-            layer->biases[j]= scale * layer->d_biases[j];
+            layer->biases[j] = scale * layer->d_biases[j];
             layer->d_biases[j] = 0.f;
             for (k = 0; k < layer->prev_layer->nb_neurons; k++) {
-                layer->weights.val[j][k] -= scale*layer->d_weights.val[j][k];
+                layer->weights.val[j][k] -= scale * layer->d_weights.val[j][k];
                 layer->d_weights.val[j][k] = 0.f;
             }
         }
     }
 }
 
-float quadratic_cost_delta(float z, float output, float target){
-    return output-target * sigmoid_prime(z);
+float quadratic_cost_delta(float z, float output, float target) {
+    return output - target * sigmoid_prime(z);
 }
 
-float cross_entropy_cost_delta(float output, float target){
-    return output-target;
+float cross_entropy_cost_delta(float output, float target) {
+    return output - target;
 }
 
 void init_cost(Layer *out_layer, float *target) {
@@ -168,7 +170,7 @@ void network_print(Network network) {
     printf("\n===================================================\n");
     for (size_t i = 1; i < network.nb_layers; i++) {
         printf("\n--------------------\nLayer %ld:\nWeights:\n", i);
-        matrix_printf("%.2f ",network.layers[i].weights);
+        matrix_printf("%.2f ", network.layers[i].weights);
         printf("Biases:\n");
         for (size_t j = 0; j < network.layers[i].nb_neurons; j++)
             printf("%.2f ", network.layers[i].biases[j]);
@@ -263,19 +265,18 @@ int network_load(const char *path, Network *out) {
     return 0;
 }
 
-size_t network_evaluate(Network *network, Dataset *test_data, int show_errors){
+size_t network_evaluate(Network *network, Dataset *test_data, int show_errors) {
     size_t nb_correct = 0;
     char target_char, output_char;
-    for(size_t i=0; i<test_data->size; i++){
+    for (size_t i = 0; i < test_data->size; i++) {
         target_char = output_to_char(test_data->datas[i].target.val);
-        network_feed_forward(network,test_data->datas[i].input.val);
+        network_feed_forward(network, test_data->datas[i].input.val);
         output_char = output_to_char(network->output_layer->values);
         // printf("i:%ld target:%c ouput:%c\n",i,target_char,output_char);
-        if(output_char == target_char){
+        if (output_char == target_char) {
             nb_correct++;
-        }
-        else if(show_errors){
-            printf("i:%ld target:%c ouput:%c\n",i,target_char,output_char);
+        } else if (show_errors) {
+            printf("i:%ld target:%c ouput:%c\n", i, target_char, output_char);
         }
     }
     return nb_correct;
