@@ -101,7 +101,7 @@ clean:
 mrproper:
 	$(RM) -r $(BUILDDIR)
 
-format: src/*.c src/**/*.c include/*.h test/*.c
+format: src/*.c src/**/*.c include/*.h include/**/*.h test/*.c
 	@clang-format --style=file -i $^
 
 cppcheck: src/*.c src/**/*.c

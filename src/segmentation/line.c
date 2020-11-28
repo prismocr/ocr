@@ -22,12 +22,8 @@ int line_new(size_t x, size_t y, size_t w, size_t h, Line **line) {
         return 1;
     }
 
-    (*line)->x = x;
-    (*line)->y = y;
-    (*line)->w = w;
-    (*line)->h = h;
-    (*line)->words = NULL;
-    (*line)->next = NULL;
+    **line
+      = (Line){.x = x, .y = y, .w = w, .h = h, .words = NULL, .next = NULL};
 
     return 0;
 }

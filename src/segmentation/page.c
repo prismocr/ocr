@@ -14,10 +14,7 @@ int page_new(size_t w, size_t h, Page **page) {
                         strerror(errno));
         return 1;
     }
-    (*page)->w = w;
-    (*page)->h = h;
-    (*page)->regions = NULL;
-    (*page)->next = NULL;
+    **page = (Page){.w = w, .h = h, .regions = NULL, .next = NULL};
 
     return 0;
 }
@@ -38,4 +35,3 @@ void page_free(Page **page) {
     free(*page);
     *page = NULL;
 }
-

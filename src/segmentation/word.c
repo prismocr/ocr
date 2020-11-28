@@ -23,17 +23,15 @@ int word_new(size_t x, size_t y, size_t w, size_t h, Word **word) {
         return 1;
     }
 
-    (*word)->x = x;
-    (*word)->y = y;
-    (*word)->w = w;
-    (*word)->h = h;
-
-    (*word)->length = 0;
-    (*word)->letters = NULL;
+    **word = (Word){.x = x,
+                    .y = y,
+                    .w = w,
+                    .h = h,
+                    .length = 0,
+                    .letters = NULL,
+                    .next = NULL};
 
     mll_new(&(*word)->images);
-
-    (*word)->next = NULL;
 
     return 0;
 }
