@@ -75,7 +75,7 @@ void matrix_scale(Matrix *mat, float scalar);
 /**
  * Adds a constant on each and every element of the matrix
  *
- * @param matrix 
+ * @param matrix
  * @param value to add on each element of the matrix
  */
 void matrix_add_const(Matrix *mat, float c);

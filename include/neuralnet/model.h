@@ -8,7 +8,7 @@
 #define IMAGE_WIDTH 28
 
 typedef struct Network_config N_cfg;
-struct Network_config{
+struct Network_config {
     size_t epochs;
     size_t batch_size;
     float eta;
