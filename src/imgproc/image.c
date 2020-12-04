@@ -358,9 +358,10 @@ Matrix scale_stretch(Matrix *image, size_t w, size_t h) {
 
 Matrix scale_square(Matrix *image, size_t size) {
     float l = fmax(image->w, image->h);
-    float aspect_ratio = (size-2)/l;
+    float aspect_ratio = (size - 2) / l;
 
-    Matrix dst = scale_stretch(image, image->w*aspect_ratio, image->h*aspect_ratio);
+    Matrix dst
+      = scale_stretch(image, image->w * aspect_ratio, image->h * aspect_ratio);
     Matrix final;
     matrix_new(size, size, &final);
 
@@ -370,8 +371,8 @@ Matrix scale_square(Matrix *image, size_t size) {
         }
     }
 
-    size_t offset_x = (size - dst.w)/2;
-    size_t offset_y = (size - dst.h)/2;
+    size_t offset_x = (size - dst.w) / 2;
+    size_t offset_y = (size - dst.h) / 2;
     for (size_t x = 0; x < dst.w; x++) {
         for (size_t y = 0; y < dst.h; y++) {
             final.val[y + offset_y][x + offset_x] = dst.val[y][x];

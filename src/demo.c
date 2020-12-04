@@ -728,7 +728,6 @@ int scale_demo(int argc, char *argv[]) {
     return 0;
 }
 
-
 int pre_process(int argc, char *argv[]) {
     Matrix image;
 
@@ -752,7 +751,6 @@ int pre_process(int argc, char *argv[]) {
 
     return 0;
 }
-
 
 int demo(int argc, char *argv[]) {
     char *c = argv[1];

@@ -161,5 +161,4 @@ Matrix scale_stretch(Matrix *mat, size_t w, size_t h);
  */
 Matrix scale_square(Matrix *mat, size_t size);
 
-
 #endif // IMAGE_H
