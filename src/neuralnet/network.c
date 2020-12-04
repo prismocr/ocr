@@ -85,8 +85,9 @@ void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
         if (monitor_training) {
             nb_correct_output
               = network_evaluate(network, dataset_evaluation, 0);
-            printf("Epoch %ld: %ld/%ld\n", i, nb_correct_output,
-                   dataset_evaluation->size);
+            printf("Epoch %ld: %ld/%ld : %f\n", i, nb_correct_output,
+                   dataset_evaluation->size,
+                   (float)nb_correct_output*100/dataset_evaluation->size);
         }
     }
 
