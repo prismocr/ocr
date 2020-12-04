@@ -383,7 +383,6 @@ Matrix scale_square(Matrix *image, size_t size) {
     return final;
 }
 
-
 Matrix pre_process_char(Matrix *image) {
     // image_threshold_otsu(&image);
     Matrix img = trim(image);

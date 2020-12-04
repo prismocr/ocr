@@ -749,7 +749,6 @@ int pre_process_char_demo(int argc, char *argv[]) {
     return 0;
 }
 
-
 int all(int argc, char *argv[]) {
     Matrix image;
 
@@ -767,7 +766,6 @@ int all(int argc, char *argv[]) {
     // Trim & Scale 28x28
     // Feed to network
     // Results
-
 
     return 0;
 }

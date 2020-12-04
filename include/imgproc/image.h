@@ -168,5 +168,4 @@ Matrix scale_square(Matrix *mat, size_t size);
  */
 Matrix pre_process_char(Matrix *mat);
 
-
 #endif // IMAGE_H
