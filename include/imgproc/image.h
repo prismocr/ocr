@@ -145,12 +145,21 @@ float anti_aliasing_point(Matrix *mat, size_t x, size_t y);
 Matrix trim(Matrix *mat);
 
 /**
- * Trim white pixels of image
+ * Scale and stretch image
  *
  * @param image
  * @param w
  * @param h
  */
-Matrix scale(Matrix *mat, size_t w, size_t h);
+Matrix scale_stretch(Matrix *mat, size_t w, size_t h);
+
+/**
+ * Scale image while keeping aspect ratio
+ *
+ * @param image
+ * @param size
+ */
+Matrix scale_square(Matrix *mat, size_t size);
+
 
 #endif // IMAGE_H

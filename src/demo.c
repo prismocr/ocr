@@ -718,7 +718,7 @@ int scale_demo(int argc, char *argv[]) {
 
     exit_on_error(bitmap_load(argv[2], &image));
 
-    Matrix img = scale(&image, 28, 28);
+    Matrix img = scale_stretch(&image, 28, 28);
 
     exit_on_error(bitmap_save("out.bmp", &img));
 
@@ -727,6 +727,33 @@ int scale_demo(int argc, char *argv[]) {
 
     return 0;
 }
+
+
+int pre_process(int argc, char *argv[]) {
+    Matrix image;
+
+    printf("hello\n");
+    if (argc < 3) {
+        printf("Missing image path.\n");
+        return 1;
+    }
+
+    exit_on_error(bitmap_load(argv[2], &image));
+
+    Matrix img = trim(&image);
+    Matrix s = scale_square(&img, 28);
+
+    image_invert_color(255.f, &s);
+
+    exit_on_error(bitmap_save("out.bmp", &s));
+
+    matrix_free(&image);
+    matrix_free(&img);
+    matrix_free(&s);
+
+    return 0;
+}
+
 
 int demo(int argc, char *argv[]) {
     char *c = argv[1];
@@ -811,6 +838,10 @@ int demo(int argc, char *argv[]) {
     }
     if (!strcmp(c, "scale")) {
         return scale_demo(argc, argv);
+    }
+
+    if (!strcmp(c, "pre_process")) {
+        return pre_process(argc, argv);
     }
 
     printf("what?\n");
