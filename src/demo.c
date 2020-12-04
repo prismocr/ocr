@@ -732,7 +732,6 @@ int scale_demo(int argc, char *argv[]) {
 int pre_process(int argc, char *argv[]) {
     Matrix image;
 
-    printf("hello\n");
     if (argc < 3) {
         printf("Missing image path.\n");
         return 1;
