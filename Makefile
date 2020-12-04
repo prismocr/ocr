@@ -89,10 +89,10 @@ test: prep $(TSTEXEC)
 	@if [ ! -d "Unity" ]; then git clone https://github.com/ThrowTheSwitch/Unity.git; fi;
 	$(foreach TEST,$(filter $(TSTDIR)/%,$^),./$(TEST) &&) echo "All test passed"
 
-$(TSTDIR)/%: $(TSTOBJDIR)/%.o $(filter-out $(DBGOBJDIR)/main.o,$(DBGOBJS)) Unity/src/unity.c
+$(TSTDIR)/%: $(TSTOBJDIR)/%.o $(filter-out $(RLSOBJDIR)/main.o,$(RLSOBJS)) Unity/src/unity.c
 	$(CC) $^ -o $@ $(CPPFLAGS) $(TSTCFLAGS) $(LDLIBS) -IUnity/src
 
-$(TSTOBJDIR)/%.o: test/%.c $(filter-out $(DBGOBJDIR)/main.o,$(DBGOBJS))
+$(TSTOBJDIR)/%.o: test/%.c $(filter-out $(RLSOBJDIR)/main.o,$(RLSOBJS))
 	$(CC) -c $^ -o $@ $(CPPFLAGS) $(TSTCFLAGS) -IUnity/src
 
 #
