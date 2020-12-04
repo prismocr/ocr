@@ -217,15 +217,105 @@ static inline float clamp(float value, float min, float max) {
     return value;
 }
 
-
-
 float anti_aliasing_point(Matrix *image, size_t x, size_t y) {
-    if(x <= 0 || x >= image->h-1 || y <= 0 || y >= image->w-1) return 0;
-    
-    float a = clamp(image->val[x-1][y], 0.f, 255.f);
-    float b =  clamp(image->val[x+1][y], 0.f, 255.f);
-    float c =  clamp(image->val[x][y+1], 0.f, 255.f);
-    float d =  clamp(image->val[x][y-1], 0.f, 255.f);
+    if (x <= 0 || x >= image->h - 1 || y <= 0 || y >= image->w - 1)
+        return 0;
 
-    return (a+b+c+d)/4;
+    float a = clamp(image->val[x - 1][y], 0.f, 255.f);
+    float b = clamp(image->val[x + 1][y], 0.f, 255.f);
+    float c = clamp(image->val[x][y + 1], 0.f, 255.f);
+    float d = clamp(image->val[x][y - 1], 0.f, 255.f);
+
+    return (a + b + c + d) / 4;
+}
+
+int check_white_row(Matrix *image, size_t row) {
+    int h = image->h;
+
+    for (int i = 0; i < h; i++) 
+        if (image->val[i][row] <= 240.f) return 0;
+    return 1;
+}
+
+int check_white_column(Matrix *image, size_t col) {
+    int w = image->w;
+
+    for (int i = 0; i < w; i++)
+        if (image->val[col][i] <= 240.f) return 0;
+    return 1;
+}
+
+Matrix trim(Matrix *image) {
+    int w = image->w;
+    int h = image->h;
+
+    size_t leftmost = 0;
+    for (int row = 0; row < h; ++row) {
+        if (check_white_row(image, row)) leftmost = row;
+        else break;
+    }
+
+    size_t rightmost = 0;
+    for (int row = w - 1; row >= 0; --row) {
+        if (check_white_row(image, row)) rightmost = row;
+        else break;
+    }
+
+    size_t topmost = 0;
+    for (int col = 0; col < w; ++col) {
+        if (check_white_column(image, col)) topmost = col+1;
+        else break;
+    }
+
+    size_t bottommost = 0;
+    for (int col = h - 1; col >= 0; --col) {
+        if (check_white_column(image, col)) bottommost = col;
+        else break;
+    }
+
+    if(leftmost == rightmost) {
+        leftmost = 0;
+        rightmost = w;
+    }
+
+    if(bottommost == topmost) {
+        topmost = 0;
+        bottommost = h;
+    }
+
+    Matrix dest;
+    matrix_new(abs((int) bottommost - (int) topmost), abs((int) rightmost - (int) leftmost), &dest);
+
+    size_t x = 0, y = 0;
+    for(size_t j = topmost; j < bottommost; j++) {
+        for(size_t i = leftmost; i < rightmost; i++) {
+            dest.val[x][y] = image->val[j][i];
+            y++;
+        }
+        x++;
+        y = 0;
+    }
+
+    return dest;
+}
+
+
+Matrix scale(Matrix *image, size_t w, size_t h) {
+    Matrix dst;
+    matrix_new(h, w, &dst);
+    size_t width = image->w;
+    size_t height = image->h;
+    
+    for(size_t x = 0; x < w; x++) {
+        for(size_t y = 0; y < h; y++) {
+            int srcX = (int) round((float) x / (float) w * (float) width);
+            int srcY = (int) round((float) y / (float) h * (float) height);
+            srcX = (int) fmin(srcX, width-1);
+            srcY = (int) fmin(srcY, height-1);
+
+            dst.val[y][x] = image->val[srcY][srcX];
+        }
+    }
+
+    return dst;
 }

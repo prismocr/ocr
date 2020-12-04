@@ -109,6 +109,7 @@ void invert_demo(int argc, char *argv[]) {
 
     exit_on_error(bitmap_load(argv[2], &image));
 
+    image_threshold_otsu(&image);
     image_invert_color(255.f, &image);
 
     exit_on_error(bitmap_save("out.bmp", &image));
@@ -321,7 +322,45 @@ int auto_rotate(int argc, char *argv[]) {
     return 0;
 }
 
+int trim_demo(int argc, char *argv[]) {
+    Matrix image;
 
+    if (argc < 3) {
+        printf("Missing image path.\n");
+        return 1;
+    }
+
+    exit_on_error(bitmap_load(argv[2], &image));
+
+    Matrix img = trim(&image);
+
+    exit_on_error(bitmap_save("out.bmp", &img));
+    
+    matrix_free(&image);
+    matrix_free(&img);
+
+    return 0;
+}
+
+int scale_demo(int argc, char *argv[]) {
+    Matrix image;
+
+    if (argc < 3) {
+        printf("Missing image path.\n");
+        return 1;
+    }
+
+    exit_on_error(bitmap_load(argv[2], &image));
+
+    Matrix img = scale(&image, 28, 28);
+
+    exit_on_error(bitmap_save("out.bmp", &img));
+    
+    matrix_free(&image);
+    matrix_free(&img);
+
+    return 0;
+}
 
 int demo(int argc, char *argv[]) {
     char *c = argv[1];
@@ -385,6 +424,13 @@ int demo(int argc, char *argv[]) {
 
     if (!strcmp(c, "auto_rotate")) {
         return auto_rotate(argc, argv);
+    }
+
+    if (!strcmp(c, "trim")) {
+        return trim_demo(argc, argv);
+    }
+    if (!strcmp(c, "scale")) {
+        return scale_demo(argc, argv);
     }
 
     printf("what?\n");
