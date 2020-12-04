@@ -23,23 +23,23 @@ int word_new(size_t x, size_t y, size_t w, size_t h, Word **word) {
         return 1;
     }
 
-    (*word)->x = x;
-    (*word)->y = y;
-    (*word)->w = w;
-    (*word)->h = h;
-
-    (*word)->length = 0;
-    (*word)->letters = NULL;
+    **word = (Word){.x = x,
+                    .y = y,
+                    .w = w,
+                    .h = h,
+                    .length = 0,
+                    .letters = NULL,
+                    .next = NULL};
 
     mll_new(&(*word)->images);
-
-    (*word)->next = NULL;
 
     return 0;
 }
 
 void word_free(Word **word) {
-    // TODO: free images ?
+    assert(*word != NULL);
+
+    mll_free(&(*word)->images);
 
     free(*word);
     *word = NULL;

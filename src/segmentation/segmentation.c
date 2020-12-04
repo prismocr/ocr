@@ -9,18 +9,18 @@
 #include "utils/bitmap.h"
 #include <stdio.h>
 
-int segment(Matrix image, Page *page) {
-    if (page_new(image.w, image.h, &page)) {
+int segment(Matrix image, Page **page) {
+    if (page_new(image.w, image.h, page)) {
         return 1;
     }
 
-    if (region_segment_rlsa(image, &page->regions)) {
+    if (region_segment_rlsa(image, &(*page)->regions)) {
         return 1;
     }
 
     char buff[200];
     size_t i = 0;
-    for (Region *region = page->regions; region != NULL;
+    for (Region *region = (*page)->regions; region != NULL;
          region = region->next) {
         Matrix region_image
           = image_crop(region->x, region->y, region->w, region->h, image);

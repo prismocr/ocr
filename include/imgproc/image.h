@@ -137,4 +137,35 @@ void wide_gauss(Matrix *mat);
  */
 float anti_aliasing_point(Matrix *mat, size_t x, size_t y);
 
+/**
+ * Trim white pixels of image
+ *
+ * @param image
+ */
+Matrix trim(Matrix *mat);
+
+/**
+ * Scale and stretch image
+ *
+ * @param image
+ * @param w
+ * @param h
+ */
+Matrix scale_stretch(Matrix *mat, size_t w, size_t h);
+
+/**
+ * Scale image while keeping aspect ratio
+ *
+ * @param image
+ * @param size
+ */
+Matrix scale_square(Matrix *mat, size_t size);
+
+/**
+ * Pre process char
+ *
+ * @param image
+ */
+Matrix pre_process_char(Matrix *mat);
+
 #endif // IMAGE_H

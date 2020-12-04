@@ -68,7 +68,8 @@ void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
  * @param lambda used for regularization
  * @param size of training dataset
  */
-//void batch_gd(Network *network, Dataset *batch, float learning_rate, float lambda, float dataset_size);
+// void batch_gd(Network *network, Dataset *batch, float learning_rate, float
+// lambda, float dataset_size);
 /**
  * Applies backpropagation on a network
  *

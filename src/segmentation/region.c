@@ -9,7 +9,8 @@
 #include "utils/linked_list.h"
 #include "utils/error.h"
 
-static void rec_grass_fire(size_t i, size_t j, Matrix *image, float class);
+static void __attribute__((optimize("O0")))
+rec_grass_fire(size_t i, size_t j, Matrix *image, float class);
 
 int region_new(size_t x, size_t y, size_t w, size_t h, Region **region) {
     assert(*region == NULL);
@@ -32,7 +33,16 @@ int region_new(size_t x, size_t y, size_t w, size_t h, Region **region) {
 }
 
 void region_free(Region **region) {
-    // TODO: free lines
+    assert(*region != NULL);
+
+    Line *l = (*region)->lines;
+    Line *next = NULL;
+    while (l != NULL) {
+        next = l->next;
+        line_free(&l);
+        l = next;
+    }
+    (*region)->lines = NULL;
 
     free(*region);
     *region = NULL;
@@ -149,7 +159,8 @@ int region_segment_rlsa(Matrix page, Region **regions) {
 // TODO Do iterative form of the algo to avoid stack overflow
 // I use pointer to matrix here to have lighter stackframes
 // 4-conn recursive grass fire algorithm
-static void rec_grass_fire(size_t i, size_t j, Matrix *image, float class) {
+static void __attribute__((optimize("O0")))
+rec_grass_fire(size_t i, size_t j, Matrix *image, float class) {
     image->val[i][j] = class;
 
     // North

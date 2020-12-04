@@ -4,17 +4,24 @@
 #include "utils/matrix.h"
 #include "utils/vector.h"
 
+// TODO remove these headers
+//#include "utils/bitmap.h"
+//#include <stdio.h>
+
+// static size_t test_word = 0;
+
 int character_segment(Matrix word, MatrixLinkedList *characters) {
     Matrix word_copy = {0};
     matrix_copy(word, &word_copy);
 
+    // image_threshold_otsu(&word_copy);
     image_invert_color(255.f, &word_copy);
 
+    /*
     Matrix kernel = structuring_element(5, 1);
     opening(&word_copy, kernel);
     matrix_free(&kernel);
 
-    /*
     kernel = structuring_element(1, 3);
     closing(&word_copy, kernel);
     matrix_free(&kernel);
@@ -63,17 +70,28 @@ int character_segment(Matrix word, MatrixLinkedList *characters) {
     Matrix cropped_word
       = image_crop(left, top, right - left, bot - top, word_copy);
     matrix_free(&word_copy);
+
+    image_threshold_otsu(&cropped_word);
+    Matrix kernel
+      = structuring_element(cropped_word.h + (cropped_word.h + 1) % 2, 1);
+    dilate(&cropped_word, kernel);
+    matrix_free(&kernel);
+
     Vector word_hist = image_histogram_x(cropped_word);
+
+    // TODO remove
+    // char buff[200];
+    // sprintf(buff, "seg/test-%zu.bmp", test_word++);
+    // bitmap_save(buff, &cropped_word);
 
     size_t left_cropped_word = left;
     left = 0;
     size_t j;
     for (j = 0; j < word_hist.size; j++) {
-        if (word_hist.val[j] == 0.f) {
+        if (word_hist.val[j] < 1.f) {
             if (j >= left + 3) {
-                Matrix character
-                  = image_crop(left_cropped_word + left, 0, j - left - 2,
-                               cropped_word.h, word);
+                Matrix character = image_crop(left_cropped_word + left, 0,
+                                              j - left, cropped_word.h, word);
                 mll_insert(characters->length, character, characters);
                 matrix_free(&character);
             }
@@ -81,7 +99,7 @@ int character_segment(Matrix word, MatrixLinkedList *characters) {
         }
     }
     if (j >= left + 3) {
-        Matrix character = image_crop(left_cropped_word + left, 0, j - left - 2,
+        Matrix character = image_crop(left_cropped_word + left, 0, j - left,
                                       cropped_word.h, word);
         mll_insert(characters->length, character, characters);
         matrix_free(&character);
@@ -92,3 +110,8 @@ int character_segment(Matrix word, MatrixLinkedList *characters) {
 
     return 0;
 }
+
+// int character_segment_test(Matrix word, MatrixLinkedList *characters) {
+// TODO try conn recursive grass fire algorithm
+// return 0;
+//}

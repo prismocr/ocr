@@ -75,7 +75,7 @@ void matrix_scale(Matrix *mat, float scalar);
 /**
  * Adds a constant on each and every element of the matrix
  *
- * @param matrix 
+ * @param matrix
  * @param value to add on each element of the matrix
  */
 void matrix_add_const(Matrix *mat, float c);
@@ -129,5 +129,7 @@ void matrix_cdt(Matrix mat_a, float *column, float *res);
  * @param matrix to save the result in
  */
 void matrix_dcl(size_t nb_lin, float *a, size_t nb_col, float *b, Matrix *mat);
+
+void matrix_linearization(Matrix *matrix, float *arr);
 
 #endif // MATRIX_H

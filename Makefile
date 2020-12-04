@@ -21,7 +21,7 @@ OBJS := $(patsubst src/%.c,%.o,$(wildcard src/*.c) $(wildcard src/**/*.c))
 #
 # Debug variables
 #
-DBGCFLAGS := $(CFLAGS) -g -O0 -DDEBUG #-fsanitize=address
+DBGCFLAGS := $(CFLAGS) -g -O0 -DDEBUG -fsanitize=address
 
 DBGDIR := $(BUILDDIR)/debug
 DBGOBJDIR := $(DBGDIR)/obj
@@ -48,7 +48,15 @@ TSTOBJDIR := $(TSTDIR)/obj
 TSTEXEC := $(addprefix $(TSTDIR)/,$(basename $(notdir $(wildcard test/*.c))))
 TSTOBJS := $(addprefix $(TSTOBJDIR)/,$(addsuffix .o,$(notdir $(TSTEXEC))))
 
-.PHONY: all prep remake debug release test clean mrproper format cppcheck
+#
+# Temp variables
+#
+TMPDIR := $(BUILDDIR)/temp
+TMPOBJDIR := $(TMPDIR)/obj
+TMPOBJSUBDIRS := $(addprefix $(TMPOBJDIR)/,$(SRC_SUBDIRS))
+TMPOBJS := $(addprefix $(TMPOBJDIR)/,$(OBJS))
+
+.PHONY: all prep remake debug release test clean mrproper format cppcheck temp prep-temp
 
 all: release
 
@@ -61,7 +69,7 @@ $(DBGDIR)/$(EXEC): $(DBGOBJS)
 	$(CC) $^ -o $@ $(CPPFLAGS) $(DBGCFLAGS) $(LDLIBS)
 
 $(DBGOBJDIR)/%.o: src/%.c
-	$(CC) -c $< -o $@ $(CPPFLAGS) $(DBGCFLAGS) $(DBGCFLAGS)
+	$(CC) -c $< -o $@ $(CPPFLAGS) $(DBGCFLAGS)
 
 #
 # Release rules
@@ -69,7 +77,7 @@ $(DBGOBJDIR)/%.o: src/%.c
 release: prep $(RLSDIR)/$(EXEC)
 
 $(RLSDIR)/$(EXEC): $(RLSOBJS)
-	$(CC) $^ -o $@ $(CCPFLAGS) $(RLSCFLAGS) $(LDLIBS)
+	$(CC) $^ -o $@ $(CPPFLAGS) $(RLSCFLAGS) $(LDLIBS)
 
 $(RLSOBJDIR)/%.o: src/%.c
 	$(CC) -c $< -o $@ $(CPPFLAGS) $(RLSCFLAGS)
@@ -81,17 +89,17 @@ test: prep $(TSTEXEC)
 	@if [ ! -d "Unity" ]; then git clone https://github.com/ThrowTheSwitch/Unity.git; fi;
 	$(foreach TEST,$(filter $(TSTDIR)/%,$^),./$(TEST) &&) echo "All test passed"
 
-$(TSTDIR)/%: $(TSTOBJDIR)/%.o $(filter-out $(DBGOBJDIR)/main.o,$(DBGOBJS)) Unity/src/unity.c
+$(TSTDIR)/%: $(TSTOBJDIR)/%.o $(filter-out $(RLSOBJDIR)/main.o,$(RLSOBJS)) Unity/src/unity.c
 	$(CC) $^ -o $@ $(CPPFLAGS) $(TSTCFLAGS) $(LDLIBS) -IUnity/src
 
-$(TSTOBJDIR)/%.o: test/%.c $(filter-out $(DBGOBJDIR)/main.o,$(DBGOBJS))
+$(TSTOBJDIR)/%.o: test/%.c $(filter-out $(RLSOBJDIR)/main.o,$(RLSOBJS))
 	$(CC) -c $^ -o $@ $(CPPFLAGS) $(TSTCFLAGS) -IUnity/src
 
 #
 # Other rules
 #
 prep:
-	@mkdir -p $(DBGOBJDIR) $(RLSOBJDIR) $(TSTOBJDIR) $(DBGOBJSUBDIRS) $(RLSOBJSUBDIRS)
+	@mkdir -p $(TSTOBJDIR) $(DBGOBJSUBDIRS) $(RLSOBJSUBDIRS)
 
 remake: clean all
 
@@ -101,10 +109,22 @@ clean:
 mrproper:
 	$(RM) -r $(BUILDDIR)
 
-format: src/*.c src/**/*.c include/*.h test/*.c
+format: src/*.c src/**/*.c include/*.h include/**/*.h test/*.c
 	@clang-format --style=file -i $^
 
 cppcheck: src/*.c src/**/*.c
 	@cppcheck --enable=warning,style,performance,portability,information,\
 	missingInclude -q --std=c99 -Iinclude/ $^
+
+temp: prep-temp $(TMPDIR)/$(EXEC)
+
+prep-temp:
+	@if [ -d $(TMPDIR) ] ; then rm -r $(TMPDIR) ; fi
+	@mkdir -p $(TMPOBJSUBDIRS)
+
+$(TMPDIR)/$(EXEC): $(TMPOBJS)
+	$(CC) $^ -o $@ $(CPPFLAGS) $(TMPCFLAGS) $(LDLIBS)
+
+$(TMPOBJDIR)/%.o: src/%.c
+	$(CC) -c $< -o $@ $(CPPFLAGS) $(TMPCFLAGS)
 
