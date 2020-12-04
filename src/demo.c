@@ -728,7 +728,7 @@ int scale_demo(int argc, char *argv[]) {
     return 0;
 }
 
-int pre_process(int argc, char *argv[]) {
+int pre_process_char_demo(int argc, char *argv[]) {
     Matrix image;
 
     if (argc < 3) {
@@ -738,16 +738,36 @@ int pre_process(int argc, char *argv[]) {
 
     exit_on_error(bitmap_load(argv[2], &image));
 
-    Matrix img = trim(&image);
-    Matrix s = scale_square(&img, 28);
+    // image_threshold_otsu(&image);
+    Matrix img = pre_process_char(&image);
 
-    image_invert_color(255.f, &s);
-
-    exit_on_error(bitmap_save("out.bmp", &s));
+    exit_on_error(bitmap_save("out.bmp", &img));
 
     matrix_free(&image);
     matrix_free(&img);
-    matrix_free(&s);
+
+    return 0;
+}
+
+
+int all(int argc, char *argv[]) {
+    Matrix image;
+
+    if (argc < 3) {
+        printf("Missing image path.\n");
+        return 1;
+    }
+
+    exit_on_error(bitmap_load(argv[2], &image));
+
+    // Sharpen & Blur
+    // Contrast
+    // Auto rotate
+    // Segmentation
+    // Trim & Scale 28x28
+    // Feed to network
+    // Results
+
 
     return 0;
 }
@@ -838,7 +858,7 @@ int demo(int argc, char *argv[]) {
     }
 
     if (!strcmp(c, "pre_process")) {
-        return pre_process(argc, argv);
+        return pre_process_char_demo(argc, argv);
     }
 
     printf("what?\n");

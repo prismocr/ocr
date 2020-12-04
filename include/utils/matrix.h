@@ -130,4 +130,6 @@ void matrix_cdt(Matrix mat_a, float *column, float *res);
  */
 void matrix_dcl(size_t nb_lin, float *a, size_t nb_col, float *b, Matrix *mat);
 
+void matrix_linearization(Matrix *matrix, float *arr);
+
 #endif // MATRIX_H

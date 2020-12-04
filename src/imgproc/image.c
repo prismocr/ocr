@@ -382,3 +382,16 @@ Matrix scale_square(Matrix *image, size_t size) {
     matrix_free(&dst);
     return final;
 }
+
+
+Matrix pre_process_char(Matrix *image) {
+    // image_threshold_otsu(&image);
+    Matrix img = trim(image);
+    Matrix s = scale_square(&img, 28);
+
+    image_invert_color(255.f, &s);
+
+    matrix_free(&img);
+
+    return s;
+}

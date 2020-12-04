@@ -192,3 +192,10 @@ void matrix_dcl(size_t nb_lin, float *a, size_t nb_col, float *b, Matrix *mat) {
         }
     }
 }
+
+void matrix_linearization(Matrix *matrix, float* arr){
+    for(size_t i=0; i<matrix->h; i++){
+        memcpy(arr, matrix->val[i], matrix->w);
+        arr += matrix->w;
+    }
+}

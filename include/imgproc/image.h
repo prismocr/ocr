@@ -161,4 +161,12 @@ Matrix scale_stretch(Matrix *mat, size_t w, size_t h);
  */
 Matrix scale_square(Matrix *mat, size_t size);
 
+/**
+ * Pre process char
+ *
+ * @param image
+ */
+Matrix pre_process_char(Matrix *mat);
+
+
 #endif // IMAGE_H
