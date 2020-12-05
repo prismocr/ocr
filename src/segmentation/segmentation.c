@@ -1,9 +1,12 @@
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 #include "segmentation/segmentation.h"
 #include "imgproc/image.h"
 #include "utils/matrix.h"
 #include "imgproc/morphology.h"
 #include "utils/linked_list.h"
+#include "utils/error.h"
 
 // TODO remove these headers
 #include "utils/bitmap.h"
@@ -48,6 +51,14 @@ int segment(Matrix image, Page **page) {
                 bitmap_save(buff, &word_image);
 
                 character_segment(word_image, &word->images);
+                word->length = word->images.length;
+                word->letters = (char *) calloc((1 + word->length), sizeof(char));
+                if (word->letters == NULL) {
+                    set_last_errorf(
+                      "Failled to allocate memory for letters: %s",
+                      strerror(errno));
+                    return 1;
+                }
 
                 for (size_t l = 0; l < word->images.length; l++) {
                     sprintf(buff, "seg/char-%zu-%zu-%zu-%zu.bmp", i, j, k, l);

@@ -40,6 +40,7 @@ void word_free(Word **word) {
     assert(*word != NULL);
 
     mll_free(&(*word)->images);
+    free((*word)->letters);
 
     free(*word);
     *word = NULL;
@@ -69,10 +70,10 @@ int word_segment(Matrix line, Word **words) {
             left = j;
         }
     }
-    float average_space = (float) total_space / nb_spaces;
+    size_t average_space = nb_spaces == 0 ? 0 : total_space / nb_spaces;
 
-    Matrix kernel = structuring_element(
-      1, (size_t) average_space - (((size_t) average_space + 1) % 2));
+    Matrix kernel
+      = structuring_element(1, average_space + (average_space + 1) % 2);
     dilate(&line, kernel);
     matrix_free(&kernel);
 
@@ -136,7 +137,7 @@ static void extract_words(Matrix *image) {
     image_threshold_otsu(image);
     image_invert_color(255.f, image);
 
-    kernel = structuring_element(image->h - (image->h + 1) % 2, 1);
+    kernel = structuring_element(image->h + (image->h + 1) % 2, 1);
 
     dilate(image, kernel);
 
