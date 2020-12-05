@@ -13,6 +13,7 @@
 #include <stdio.h>
 
 int segment(Matrix image, Page **page) {
+    printf("test\n");
     if (page_new(image.w, image.h, page)) {
         return 1;
     }
@@ -52,7 +53,8 @@ int segment(Matrix image, Page **page) {
 
                 character_segment(word_image, &word->images);
                 word->length = word->images.length;
-                word->letters = (char *) calloc((1 + word->length), sizeof(char));
+                word->letters
+                  = (char *) calloc((1 + word->length), sizeof(char));
                 if (word->letters == NULL) {
                     set_last_errorf(
                       "Failled to allocate memory for letters: %s",
