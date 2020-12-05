@@ -453,16 +453,15 @@ Matrix pre_process_char(Matrix *image) {
     image_levels(&s, 5);
     image_invert_color(255.f, &s);
 
-    float m = max_color(&s);
-    printf("%f\n", m);
-    for (size_t x = 0; x < s.w; x++) {
-        for (size_t y = 0; y < s.h; y++) {
-            // s.val[y][x] = 0;
-            if (s.val[y][x] == m)
-                s.val[y][x] = 255.f;
-            // if(image->val[y][x] < 10) image->val[y][x] = 0.f;
-        }
-    }
+    // float m = max_color(&s);
+    // for (size_t x = 0; x < s.w; x++) {
+    //     for (size_t y = 0; y < s.h; y++) {
+    //         // s.val[y][x] = 0;
+    //         if (s.val[y][x] == m)
+    //             s.val[y][x] = 255.f;
+    //         // if(image->val[y][x] < 10) image->val[y][x] = 0.f;
+    //     }
+    // }
 
     matrix_free(&img);
 
