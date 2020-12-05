@@ -455,17 +455,15 @@ Matrix pre_process_char(Matrix *image) {
     matrix_scale(&s, 0.99f / 255);
     matrix_add_const(&s, 0.01f);
 
-    float m = max_color(&s);
-
-    float m = max_color(&s);
-    for (size_t x = 0; x < s.w; x++) {
-        for (size_t y = 0; y < s.h; y++) {
-            // s.val[y][x] = 0;
-            if (s.val[y][x] == m)
-                s.val[y][x] = 255.f;
-            // if(image->val[y][x] < 10) image->val[y][x] = 0.f;
-        }
-    }
+    // float m = max_color(&s);
+    // for (size_t x = 0; x < s.w; x++) {
+    //     for (size_t y = 0; y < s.h; y++) {
+    //         // s.val[y][x] = 0;
+    //         if (s.val[y][x] == m)
+    //             s.val[y][x] = 255.f;
+    //         // if(image->val[y][x] < 10) image->val[y][x] = 0.f;
+    //     }
+    // }
 
     matrix_free(&img);
 
