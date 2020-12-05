@@ -176,4 +176,12 @@ Matrix scale_square(Matrix *mat, size_t size);
  */
 Matrix pre_process_char(Matrix *mat);
 
+/**
+ * Levels of image
+ *
+ * @param image
+ * @param n
+ */
+void image_levels(Matrix *mat, size_t n);
+
 #endif // IMAGE_H

@@ -332,55 +332,50 @@ Matrix trim(Matrix *image) {
     int w = image->w;
     int h = image->h;
 
-    size_t leftmost = 0;
-    for (int row = 0; row < h; ++row) {
-        if (check_white_row(image, row))
-            leftmost = row;
-        else
-            break;
+    // Find vertical bounds of image image
+    size_t top, bot;
+    top = image->h;
+    bot = image->h;
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            if (top == (size_t) h && image->val[y][x] < 250.f) {
+                top = y;
+            }
+            if (bot == (size_t) h && image->val[h - y - 1][x] < 250.f) {
+                bot = h - y - 1;
+            }
+        }
     }
 
-    size_t rightmost = 0;
-    for (int row = w - 1; row >= 0; --row) {
-        if (check_white_row(image, row))
-            rightmost = row;
-        else
-            break;
+    if (top == bot)
+        bot = h;
+
+    // Find horizontal bounds of image image
+    size_t left, right;
+    left = w;
+    right = w;
+    for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+            if (left == (size_t) w && image->val[y][x] < 250.f) {
+                left = x;
+            }
+            if (right == (size_t) w && image->val[y][w - x - 1] < 250.f) {
+                right = w - x - 1;
+            }
+        }
     }
 
-    size_t topmost = 0;
-    for (int col = 0; col < w; ++col) {
-        if (check_white_column(image, col))
-            topmost = col + 1;
-        else
-            break;
-    }
-
-    size_t bottommost = 0;
-    for (int col = h - 1; col >= 0; --col) {
-        if (check_white_column(image, col))
-            bottommost = col;
-        else
-            break;
-    }
-
-    if (leftmost == rightmost) {
-        leftmost = 0;
-        rightmost = w;
-    }
-
-    if (bottommost == topmost) {
-        topmost = 0;
-        bottommost = h;
+    if (left == right) {
+        right = w;
     }
 
     Matrix dest;
-    matrix_new(abs((int) bottommost - (int) topmost),
-               abs((int) rightmost - (int) leftmost), &dest);
+    matrix_new(abs((int) bot - (int) top), abs((int) right - (int) left),
+               &dest);
 
     size_t x = 0, y = 0;
-    for (size_t j = topmost; j < bottommost; j++) {
-        for (size_t i = leftmost; i < rightmost; i++) {
+    for (size_t j = top; j < bot; j++) {
+        for (size_t i = left; i < right; i++) {
             dest.val[x][y] = image->val[j][i];
             y++;
         }
@@ -448,4 +443,17 @@ Matrix pre_process_char(Matrix *image) {
     matrix_free(&img);
 
     return s;
+}
+
+void image_levels(Matrix *mat, size_t n) {
+    for (size_t x = 0; x < mat->w; x++) {
+        for (size_t y = 0; y < mat->h; y++) {
+            float v = mat->val[y][x];
+            for (size_t i = 0; i < n; i++) {
+                if (v >= i * (255.f / n) && v <= (i + 1) * (255.f / n)) {
+                    mat->val[y][x] = (i + 1) * (255.f / n);
+                }
+            }
+        }
+    }
 }
