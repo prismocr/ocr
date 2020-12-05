@@ -16,6 +16,7 @@ int character_segment(Matrix word, MatrixLinkedList *characters) {
 
     Matrix trimmed_word_copy;
     matrix_copy(trimmed_word, &trimmed_word_copy);
+    image_invert_color(255.f, &trimmed_word_copy);
 
     image_threshold_otsu(&trimmed_word);
     Matrix kernel
