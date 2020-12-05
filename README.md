@@ -70,6 +70,19 @@ Then to run test:
 ```
 make test
 ```
+
+## Development
+### Auto-format before commit
+Add the following code to `.git/hooks/pre-commit` (create the file if not
+already existing) and make it executable `chmod +x .git/hooks/pre-commit`.
+```bash
+#!/bin/sh
+
+STAGED_FILES=$(git diff --name-only --cached)
+make format
+git add ${STAGED_FILES}
+```
+
 ## Authors
 
 [Naexys](https://github.com/Naexys)\
