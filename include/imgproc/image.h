@@ -64,6 +64,14 @@ void image_invert_color(float maxval, Matrix *image);
 Matrix image_crop(size_t x, size_t y, size_t w, size_t h, Matrix image);
 
 /**
+ * Trim an image.
+ *
+ * @param image to trim.
+ * @param trimmed image.
+ */
+int image_trim(Matrix image, Matrix *out);
+
+/**
  *  Adjust image contrast
  *
  *  @param image
