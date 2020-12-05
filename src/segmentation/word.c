@@ -40,6 +40,7 @@ void word_free(Word **word) {
     assert(*word != NULL);
 
     mll_free(&(*word)->images);
+    free((*word)->letters);
 
     free(*word);
     *word = NULL;
