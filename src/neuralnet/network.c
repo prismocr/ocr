@@ -217,7 +217,8 @@ void network_save(const char *path, Network *network) {
     fputc(network->nb_layers, f);
 
     for (size_t i = 0; i < network->nb_layers; i++) {
-        fputc(network->layers[i].nb_neurons, f);
+        fwrite(&network->layers[i].nb_neurons, 1,
+                       sizeof(float), f);
     }
     for (size_t i = 1; i < network->nb_layers; i++) {
         for (size_t j = 0; j < network->layers[i].nb_neurons; j++) {
@@ -242,7 +243,10 @@ int network_load(const char *path, Network *out) {
     size_t nb_layers = fgetc(f);
     size_t *sizes = (size_t *) malloc(nb_layers * sizeof(size_t));
     for (size_t i = 0; i < nb_layers; i++) {
-        sizes[i] = fgetc(f);
+        size_t unused
+                  = fread(&sizes[i], 1,
+                          sizeof(float), f);
+        UNUSED(unused);
     }
     Network network = network_new(nb_layers, sizes);
 

@@ -9,7 +9,7 @@ void model_new(N_cfg *cfg, Model *model) {
     // size_t test_data_size = (long) NB_TEST_FONTS * OUTPUT_SIZE
 
     // Complete Dataset
-    generate_dataset(cfg->dataset_path, &model->dataset);
+    load_dataset(cfg->dataset_path, &model->dataset);
     size_t test_data_size = model->dataset.size * cfg->test_data_ratio;
     size_t training_data_size = model->dataset.size - test_data_size;
 

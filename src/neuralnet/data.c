@@ -67,8 +67,7 @@ char output_to_char(float *output) {
             max = i;
         }
     }
-    if (output[max] == 0.01f)
-        return '?';
+
     if (max <= 25)
         return max + 'a';
     if (max <= 51)
@@ -118,7 +117,7 @@ char *strdup(const char *str) {
     return dup;
 }
 
-void generate_dataset(char directory_path[], Dataset *dataset) {
+void load_dataset(char directory_path[], Dataset *dataset) {
     char csv_file_path[1024], images_directory_path[1024];
     strcpy(csv_file_path, directory_path);
     strcat(csv_file_path, "data.csv");

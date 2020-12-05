@@ -3,6 +3,7 @@
 #include "imgproc/morphology.h"
 #include "utils/matrix.h"
 #include "utils/vector.h"
+#include <stdio.h>
 
 // TODO remove these headers
 //#include "utils/bitmap.h"
@@ -92,7 +93,8 @@ int character_segment(Matrix word, MatrixLinkedList *characters) {
             if (j >= left + 3) {
                 Matrix character = image_crop(left_cropped_word + left, 0,
                                               j - left, cropped_word.h, word);
-                mll_insert(characters->length, character, characters);
+                Matrix processed_character = pre_process_char(&character);
+                mll_insert(characters->length, processed_character, characters);
                 matrix_free(&character);
             }
             left = j;
@@ -101,7 +103,18 @@ int character_segment(Matrix word, MatrixLinkedList *characters) {
     if (j >= left + 3) {
         Matrix character = image_crop(left_cropped_word + left, 0, j - left,
                                       cropped_word.h, word);
-        mll_insert(characters->length, character, characters);
+        Matrix processed_character = pre_process_char(&character);
+        for(size_t i=0; i<processed_character.h; i++){
+            for(size_t j=0; j<processed_character.w; j++){
+                float f = processed_character.val[i][j];
+                if(f>0.1)
+                    printf("\033[41m");
+                printf("%.2f \033[00m",f);
+            }
+            printf("\n");
+        }
+        printf("\n");
+        mll_insert(characters->length, processed_character, characters);
         matrix_free(&character);
     }
 
