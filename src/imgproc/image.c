@@ -438,8 +438,8 @@ Matrix pre_process_char(Matrix *image) {
     Matrix img = trim(image);
     Matrix s = scale_square(&img, 28);
 
+    image_levels(&s, 3);
     image_invert_color(255.f, &s);
-
     matrix_free(&img);
 
     return s;
