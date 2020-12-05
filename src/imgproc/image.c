@@ -96,6 +96,61 @@ Matrix image_crop(size_t x, size_t y, size_t w, size_t h, Matrix image) {
     return cropped_image;
 }
 
+int image_trim(Matrix image, Matrix *out) {
+    Matrix image_copy = {0};
+    matrix_copy(image, &image_copy);
+
+    image_threshold_otsu(&image_copy);
+    image_invert_color(255.f, &image_copy);
+
+    // Find vertical bounds of image image
+    size_t top, bot;
+    top = image_copy.h;
+    bot = image_copy.h;
+    for (size_t y = 0; y < image_copy.h; y++) {
+        for (size_t x = 0; x < image_copy.w; x++) {
+            if (top == image_copy.h && image_copy.val[y][x] > 0.f) {
+                top = y;
+            }
+            if (bot == image_copy.h
+                && image_copy.val[image_copy.h - y - 1][x] > 0.f) {
+                bot = image_copy.h - y - 1;
+            }
+        }
+    }
+
+    // blank image
+    if (top == bot) {
+        return 1;
+    }
+
+    // Find horizontal bounds of image image
+    size_t left, right;
+    left = image_copy.w;
+    right = image_copy.w;
+    for (size_t x = 0; x < image_copy.w; x++) {
+        for (size_t y = 0; y < image_copy.h; y++) {
+            if (left == image_copy.w && image_copy.val[y][x]) {
+                left = x;
+            }
+            if (right == image_copy.w
+                && image_copy.val[y][image_copy.w - x - 1] > 0.f) {
+                right = image_copy.w - x - 1;
+            }
+        }
+    }
+
+    if (left == right) {
+        return 1;
+    }
+
+    matrix_free(&image_copy);
+
+    *out = image_crop(left, top, right - left, bot - top, image_copy);
+
+    return 0;
+}
+
 void image_normalize(Matrix *image) {
     size_t i, j;
 
