@@ -34,6 +34,7 @@ int character_segment(Matrix word, MatrixLinkedList *characters) {
                                               trimmed_word_copy);
                 Matrix proc_character = pre_process_char(&character);
                 mll_insert(characters->length, proc_character, characters);
+                matrix_free(&proc_character);
                 matrix_free(&character);
             }
             left = j;
