@@ -28,12 +28,14 @@ int character_segment(Matrix word, MatrixLinkedList *characters) {
     size_t left = 0;
     size_t j;
     for (j = 0; j < word_hist.size; j++) {
-        if (word_hist.val[j] < 1.f || j == word_hist.size-1) {
+        if (word_hist.val[j] < 1.f || j == word_hist.size - 1) {
             if (j >= left + 3) {
                 Matrix character = image_crop(left, 0, j - left, trimmed_word.h,
                                               trimmed_word_copy);
                 Matrix proc_character = pre_process_char(&character);
+
                 mll_insert(characters->length, proc_character, characters);
+
                 matrix_free(&proc_character);
                 matrix_free(&character);
             }
@@ -47,4 +49,3 @@ int character_segment(Matrix word, MatrixLinkedList *characters) {
 
     return 0;
 }
-

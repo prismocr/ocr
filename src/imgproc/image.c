@@ -100,7 +100,7 @@ int image_trim(Matrix image, Matrix *out) {
     Matrix image_copy = {0};
     matrix_copy(image, &image_copy);
 
-    //image_threshold_otsu(&image_copy);
+    // image_threshold_otsu(&image_copy);
     image_invert_color(255.f, &image_copy);
 
     // Find vertical bounds of image image
