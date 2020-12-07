@@ -213,6 +213,9 @@ int bitmap_save(const char *path, Matrix *image) {
 }
 
 static float bgr_to_gray(unsigned char color[3]) {
+    if (color[0] == 255 && color[1] == 255 && color[2] == 255)
+        return 255.f;
+
     return color[0] * 0.07f + color[1] * 0.71f + color[2] * 0.21f;
 }
 
