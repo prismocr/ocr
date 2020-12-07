@@ -433,6 +433,27 @@ Matrix scale_square(Matrix *image, size_t size) {
     return final;
 }
 
+float max_color(Matrix *image) {
+    float m = 0;
+    for (size_t x = 0; x < image->w; x++) {
+        for (size_t y = 0; y < image->h; y++) {
+            if (image->val[y][x] > m)
+                m = image->val[y][x];
+        }
+    }
+
+    return m;
+}
+
+void image_normalize_brightness(Matrix *image) {
+    float m = max_color(image);
+    for (size_t x = 0; x < image->w; x++) {
+        for (size_t y = 0; y < image->h; y++) {
+            image->val[y][x] *= (255.f / m);
+        }
+    }
+}
+
 Matrix pre_process_char(Matrix *image) {
     // image_threshold_otsu(&image);
     Matrix img = trim(image);
@@ -440,6 +461,8 @@ Matrix pre_process_char(Matrix *image) {
 
     image_levels(&s, 3);
     image_invert_color(255.f, &s);
+    image_normalize_brightness(&s);
+
     matrix_free(&img);
 
     return s;
