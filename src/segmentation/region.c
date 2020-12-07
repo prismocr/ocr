@@ -11,6 +11,7 @@
 
 static void __attribute__((optimize("O0")))
 rec_grass_fire(size_t i, size_t j, Matrix *image, float class);
+static void blob_detection(Matrix *image, float *label);
 
 int region_new(size_t x, size_t y, size_t w, size_t h, Region **region) {
     assert(*region == NULL);
@@ -47,6 +48,8 @@ void region_free(Region **region) {
     free(*region);
     *region = NULL;
 }
+
+size_t test = 0;
 
 int region_segment_rlsa(Matrix page, Region **regions) {
     // TODO: pass image to don't apply otsu on every lines
@@ -96,14 +99,32 @@ int region_segment_rlsa(Matrix page, Region **regions) {
     dilate(&horizontal_morph_im, kernel);
     matrix_free(&kernel);
 
+#include <utils/bitmap.h>
+    char buff[200];
+    sprintf(buff, "seg/test-%zu.bmp", test++);
+    bitmap_save(buff, &horizontal_morph_im);
+
+    /*
     float class = 256.f;
-    for (size_t i = 0; i < horizontal_morph_im.h; i++) {
-        for (size_t j = 0; j < horizontal_morph_im.w; j++) {
+    size_t v = 0;
+    for (size_t i = 0; i < horizontal_morph_im.h && v < 6; i++) {
+        for (size_t j = 0; j < horizontal_morph_im.w && v < 3; j++) {
             if (horizontal_morph_im.val[i][j] == 255.f) {
-                rec_grass_fire(i, j, &horizontal_morph_im, class ++);
+                rec_grass_fire(i, j, &horizontal_morph_im, class++);
+                //printf("%f %f\n", class++, v * 255.f / 6 + 20.f);
+                //rec_grass_fire(i, j, &horizontal_morph_im, v * 255.f / 6
+    + 20.f);
+                //v += 1;
             }
         }
     }
+    */
+    // float class = 256.f;
+    float class = 0;
+    blob_detection(&horizontal_morph_im, &class);
+
+    sprintf(buff, "seg/test-%zu.bmp", test++);
+    bitmap_save(buff, &horizontal_morph_im);
 
     // consider bounding box as region of interest
     Region *first_region = NULL;
@@ -179,7 +200,42 @@ rec_grass_fire(size_t i, size_t j, Matrix *image, float class) {
     }
 
     // East
-    if (j < image->h - 1 && image->val[i][j + 1] == 255.f) {
+    if (j < image->w - 1 && image->val[i][j + 1] == 255.f) {
         rec_grass_fire(i, j + 1, image, class);
+    }
+}
+
+float min(float a, float b) {
+    return a <= b ? a : b;
+}
+
+#define MIN(a, b) (a <= b ? a : b)
+
+// 4 conn
+static void blob_detection(Matrix *image, float *label) {
+    for (size_t i = 0; i < image->h; i++) {
+        for (size_t j = 0; j < image->w; j++) {
+            if (image->val[i][j] == 255.f) {
+                if (i == 0 || j == 0) {
+                    if (i == 0 && j != 0 && image->val[i][j - 1] >= 1.) {
+                        image->val[i][j] = image->val[i][j - 1];
+                    } else if (i != 0 && j == 0 && image->val[i - 1][j] >= 1.) {
+                        image->val[i][j] = image->val[i - 1][j];
+                    } else {
+                        // printf("yooo %f\n", image->val[i][j]);
+                        image->val[i][j] = (*label)++ * 255.f / 6 + 20.f;
+                    }
+                } else if (image->val[i - 1][j] < 1.
+                           && image->val[i][j - 1] < 1.) {
+                    // printf("yeah %f\n", image->val[i][j]);
+                    image->val[i][j] = (*label)++ * 255.f / 6 + 20.f;
+                } else {
+                    // printf("min %f %f\n", image->val[i-1][j],
+                    // image->val[i][j-1]);
+                    image->val[i][j]
+                      = MIN(image->val[i - 1][j], image->val[i][j - 1]);
+                }
+            }
+        }
     }
 }
