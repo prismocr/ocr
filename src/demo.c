@@ -12,6 +12,7 @@
 #include "neuralnet/network.h"
 #include "neuralnet/layer.h"
 #include "neuralnet/output.h"
+#include "recognition/recognition.h"
 
 void sharpen_demo(int argc, char *argv[]) {
     Matrix image;
@@ -770,6 +771,35 @@ int all(int argc, char *argv[]) {
     return 0;
 }
 
+int demo_ocr(int argc, char *argv[]){
+    if (argc < 3) {
+        printf("Missing image path.\n");
+        return 1;
+    }
+
+    Network network;
+    network_load("net99.65.hex", &network);
+    ocr(&network,argv[2]);
+
+    return 0;
+}
+
+int demo_ocr_char(int argc, char *argv[]){
+    if (argc < 3) {
+        printf("Missing image path.\n");
+        return 1;
+    }
+
+    Network network;
+    network_load("net99.65.hex", &network);
+    
+    Matrix image;
+    exit_on_error(bitmap_load(argv[2], &image));
+    printf("Result : %c\n", network_get_result(&network, &image));
+
+    return 0;
+}
+
 int demo(int argc, char *argv[]) {
     char *c = argv[1];
 
@@ -859,6 +889,13 @@ int demo(int argc, char *argv[]) {
         return pre_process_char_demo(argc, argv);
     }
 
+    if (!strcmp(c, "ocr")) {
+        return demo_ocr(argc, argv);
+    }
+
+    if (!strcmp(c, "ocr_char")) {
+        return demo_ocr_char(argc, argv);
+    }
     printf("what?\n");
 
     return 1;
