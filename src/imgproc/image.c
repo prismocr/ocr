@@ -310,7 +310,7 @@ static int image_pixel_probabilities(Matrix image,
 
     return 0;
 }
-int check_white_row(Matrix *image, size_t row) {
+size_t check_white_row(Matrix *image, size_t row) {
     size_t w = image->w;
 
     for (size_t i = 0; i < w; i++)
@@ -319,7 +319,7 @@ int check_white_row(Matrix *image, size_t row) {
     return 1;
 }
 
-int check_white_column(Matrix *image, size_t col) {
+size_t check_white_column(Matrix *image, size_t col) {
     size_t h = image->h;
 
     for (size_t i = 0; i < h; i++)

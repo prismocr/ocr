@@ -120,5 +120,9 @@ float image_detect_skew(Matrix *image, float precision) {
 
 void image_auto_rotate(Matrix *image, float precision) {
     float skew = image_detect_skew(image, precision);
+
+    if (skew <= 1.f)
+        return;
+
     image_rotate(image, skew);
 }
