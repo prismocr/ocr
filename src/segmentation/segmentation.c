@@ -13,7 +13,6 @@
 #include <stdio.h>
 
 int segment(Matrix image, Page **page) {
-    printf("test\n");
     if (page_new(image.w, image.h, page)) {
         return 1;
     }

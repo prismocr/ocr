@@ -9,9 +9,7 @@
 #include "utils/linked_list.h"
 #include "utils/error.h"
 
-static void __attribute__((optimize("O0")))
-rec_grass_fire(size_t i, size_t j, Matrix *image, float class);
-static void blob_detection(Matrix *image, float *label);
+static void connected_components_labeling(Matrix *image, float *label);
 
 int region_new(size_t x, size_t y, size_t w, size_t h, Region **region) {
     assert(*region == NULL);
@@ -48,8 +46,6 @@ void region_free(Region **region) {
     free(*region);
     *region = NULL;
 }
-
-size_t test = 0;
 
 int region_segment_rlsa(Matrix page, Region **regions) {
     // TODO: pass image to don't apply otsu on every lines
@@ -99,32 +95,8 @@ int region_segment_rlsa(Matrix page, Region **regions) {
     dilate(&horizontal_morph_im, kernel);
     matrix_free(&kernel);
 
-#include <utils/bitmap.h>
-    char buff[200];
-    sprintf(buff, "seg/test-%zu.bmp", test++);
-    bitmap_save(buff, &horizontal_morph_im);
-
-    /*
     float class = 256.f;
-    size_t v = 0;
-    for (size_t i = 0; i < horizontal_morph_im.h && v < 6; i++) {
-        for (size_t j = 0; j < horizontal_morph_im.w && v < 3; j++) {
-            if (horizontal_morph_im.val[i][j] == 255.f) {
-                rec_grass_fire(i, j, &horizontal_morph_im, class++);
-                //printf("%f %f\n", class++, v * 255.f / 6 + 20.f);
-                //rec_grass_fire(i, j, &horizontal_morph_im, v * 255.f / 6
-    + 20.f);
-                //v += 1;
-            }
-        }
-    }
-    */
-    // float class = 256.f;
-    float class = 0;
-    blob_detection(&horizontal_morph_im, &class);
-
-    sprintf(buff, "seg/test-%zu.bmp", test++);
-    bitmap_save(buff, &horizontal_morph_im);
+    connected_components_labeling(&horizontal_morph_im, &class);
 
     // consider bounding box as region of interest
     Region *first_region = NULL;
@@ -177,42 +149,12 @@ int region_segment_rlsa(Matrix page, Region **regions) {
     return 0;
 }
 
-// TODO Do iterative form of the algo to avoid stack overflow
-// I use pointer to matrix here to have lighter stackframes
-// 4-conn recursive grass fire algorithm
-static void __attribute__((optimize("O0")))
-rec_grass_fire(size_t i, size_t j, Matrix *image, float class) {
-    image->val[i][j] = class;
-
-    // North
-    if (i > 0 && image->val[i - 1][j] == 255.f) {
-        rec_grass_fire(i - 1, j, image, class);
-    }
-
-    // South
-    if (i < image->h - 1 && image->val[i + 1][j] == 255.f) {
-        rec_grass_fire(i + 1, j, image, class);
-    }
-
-    // West
-    if (j > 0 && image->val[i][j - 1] == 255.f) {
-        rec_grass_fire(i, j - 1, image, class);
-    }
-
-    // East
-    if (j < image->w - 1 && image->val[i][j + 1] == 255.f) {
-        rec_grass_fire(i, j + 1, image, class);
-    }
-}
-
-float min(float a, float b) {
-    return a <= b ? a : b;
-}
-
 #define MIN(a, b) (a <= b ? a : b)
 
-// 4 conn
-static void blob_detection(Matrix *image, float *label) {
+/* Two pass 4-direction connected components labeling
+ * Pixel labels are val - 255.f
+ */
+static void connected_components_labeling(Matrix *image, float *label) {
     for (size_t i = 0; i < image->h; i++) {
         for (size_t j = 0; j < image->w; j++) {
             if (image->val[i][j] == 255.f) {
@@ -222,18 +164,48 @@ static void blob_detection(Matrix *image, float *label) {
                     } else if (i != 0 && j == 0 && image->val[i - 1][j] >= 1.) {
                         image->val[i][j] = image->val[i - 1][j];
                     } else {
-                        // printf("yooo %f\n", image->val[i][j]);
-                        image->val[i][j] = (*label)++ * 255.f / 6 + 20.f;
+                        image->val[i][j] = (*label)++;
                     }
-                } else if (image->val[i - 1][j] < 1.
-                           && image->val[i][j - 1] < 1.) {
-                    // printf("yeah %f\n", image->val[i][j]);
-                    image->val[i][j] = (*label)++ * 255.f / 6 + 20.f;
+                } else if (image->val[i - 1][j] < 1.f
+                           || image->val[i][j - 1] < 1.f) {
+                    if (image->val[i - 1][j] > 1.f) {
+                        image->val[i][j] = image->val[i - 1][j];
+                    } else if (image->val[i][j - 1] > 1.) {
+                        image->val[i][j] = image->val[i][j - 1];
+                    } else {
+                        image->val[i][j] = (*label)++;
+                    }
                 } else {
-                    // printf("min %f %f\n", image->val[i-1][j],
-                    // image->val[i][j-1]);
                     image->val[i][j]
                       = MIN(image->val[i - 1][j], image->val[i][j - 1]);
+                }
+            }
+        }
+    }
+
+    for (size_t i = image->h; i > 0;) {
+        i -= 1;
+        for (size_t j = image->w; j > 0;) {
+            j -= 1;
+            if (image->val[i][j] > 1.f) {
+                if (i == image->h - 1 && j == image->w - 1) {
+                    if (i == image->h - 1 && j != image->w - 1
+                        && image->val[i][j + 1] > 1.f) {
+                        image->val[i][j] = image->val[i][j + 1];
+                    } else if (i != image->h - 1 && j == image->w - 1
+                               && image->val[i + 1][j] > 1.f) {
+                        image->val[i][j] = image->val[i + 1][j];
+                    }
+                } else if (image->val[i + 1][j] < 1.f
+                           || image->val[i][j + 1] < 1.f) {
+                    if (image->val[i + 1][j] > 1.f) {
+                        image->val[i][j] = image->val[i + 1][j];
+                    } else if (image->val[i][j + 1] > 1.f) {
+                        image->val[i][j] = image->val[i][j + 1];
+                    }
+                } else {
+                    image->val[i][j]
+                      = MIN(image->val[i + 1][j], image->val[i][j + 1]);
                 }
             }
         }
