@@ -151,7 +151,7 @@ void save_pages_equal_to_file() {
     FILE *f2;
 
     f1 = fopen("tmppages.txt", "r");
-    f2 = fopen("test/testpages.txt", "r");
+    f2 = fopen("test/assets/testpages.txt", "r");
 
     if (f2 == NULL || f2 == NULL) {
         TEST_ASSERT_EQUAL_INT(0, 1);

@@ -493,7 +493,7 @@ void save_pages_demo() {
 
     p1.next = &p2;
     p2.next = NULL;
-    output_save_default(&p1, "testpages.txt");
+    output_save_default(&p1, "assets/testpages.txt");
 }
 
 void output_save_multi_column_demo() {
