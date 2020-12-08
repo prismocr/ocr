@@ -60,8 +60,8 @@ int word_segment(Matrix line, Word **words) {
     hist = image_histogram_x(line);
 
     float height_thresh = vector_average(hist) * 0.2f;
-    for (size_t j = 0; j < hist.size; j++) {
-        hist.val[j] = hist.val[j] > height_thresh ? hist.val[j] : 0.f;
+    for (size_t i = 0; i < hist.size; i++) {
+        hist.val[i] = hist.val[i] > height_thresh ? hist.val[i] : 0.f;
     }
 
     size_t space_threshold = (size_t)(0.4f * average_space(hist));
@@ -74,27 +74,26 @@ int word_segment(Matrix line, Word **words) {
     hist = image_histogram_x(line);
 
     height_thresh = vector_average(hist) * 0.2f;
-    for (size_t j = 0; j < hist.size; j++) {
-        hist.val[j] = hist.val[j] > height_thresh ? hist.val[j] : 0.f;
+    for (size_t i = 0; i < hist.size; i++) {
+        hist.val[i] = hist.val[i] > height_thresh ? hist.val[i] : 0.f;
     }
 
-    // Word recovery
     size_t left = 0;
     size_t prev_left = 0;
     size_t next_left = 0;
     Word *first_word = NULL;
     Word *prev_word = NULL;
-    for (size_t j = 0; j < hist.size; j++) {
-        if (hist.val[j] <= 1.f) {
-            size_t right = j;
-            if (j > left + 3) {
-                while (j < hist.size && hist.val[j] <= 1.f) {
-                    next_left = j++;
+    for (size_t i = 0; i < hist.size; i++) {
+        if (hist.val[i] < 1.f) {
+            size_t right = i;
+            if (i > left + 3) {
+                while (i < hist.size && hist.val[i] < 1.f) {
+                    next_left = i++;
                 }
 
                 Word *current_word = NULL;
-                if (word_new((left + prev_left) / 2 + 1, 0,
-                             (right + j) / 2 - (left + prev_left) / 2, line.h,
+                if (word_new(prev_left == 0 ? 0 : prev_left + 1, 0,
+                             (right + i) / 2 - prev_left, line.h,
                              &current_word)) {
                     return 1;
                 }
@@ -106,7 +105,7 @@ int word_segment(Matrix line, Word **words) {
                 }
                 prev_word = current_word;
 
-                prev_left = (right + j) / 2;
+                prev_left = (right + i) / 2;
                 left = next_left;
             } else {
                 left = right;

@@ -75,9 +75,8 @@ int line_segment_morph_hist(Matrix region, Line **lines) {
                 }
 
                 Line *current_line = NULL;
-                if (line_new(0, (top + prev_top) / 2 + 1, region.w,
-                             (bot + i) / 2 - (top + prev_top) / 2 - 2,
-                             &current_line)) {
+                if (line_new(0, prev_top == 0 ? 0 : prev_top + 1, region.w,
+                             (bot + i) / 2 - prev_top, &current_line)) {
                     return 1;
                 }
 
