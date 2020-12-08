@@ -38,9 +38,9 @@ int character_segment(Matrix word, MatrixLinkedList *characters) {
                 }
 
                 Matrix character
-                  = image_crop((left + prev_left) / 2, 0,
-                               (right + i - (left + prev_left)) / 2 + 1,
-                               trimmed_word.h, trimmed_word_copy);
+                  = image_crop(prev_left == 0 ? 0 : prev_left + 1, 0,
+                               (right + i) / 2 - prev_left, trimmed_word.h,
+                               trimmed_word_copy);
                 Matrix proc_character = pre_process_char(&character);
 
                 mll_insert(characters->length, proc_character, characters);
