@@ -135,7 +135,7 @@ void load_dataset(char directory_path[], Dataset *dataset) {
     size_t i = 0; // index within dataset's datas array
     char line[1024], *tmp, *label, *image_name, image_path[1024];
     while (fgets(line, 1024, csv_file)) {
-        //tmp = strdup(line);
+        // tmp = strdup(line);
         label = strtok(line, "§");
         if (!label) {
             label = ",";
@@ -151,7 +151,7 @@ void load_dataset(char directory_path[], Dataset *dataset) {
         data_init_input(image_path, &dataset->datas[i].input);
         data_init_target(label[0], &dataset->datas[i].target);
 
-        //free(tmp);
+        // free(tmp);
         i++;
     }
 

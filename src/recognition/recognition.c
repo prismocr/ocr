@@ -26,10 +26,11 @@ void recognize_word(MatrixNode *image, char *letters, Network *network) {
 
 void recognize_line(Word *word, Network *network) {
     while (word) {
-        //printf("x:%ld y:%ld w:%ld h:%ld length:%ld\n",word->x, word->y, word->w, word->h, word->length);
+        // printf("x:%ld y:%ld w:%ld h:%ld length:%ld\n",word->x, word->y,
+        // word->w, word->h, word->length);
         word->length = word->images.length;
         word->letters = malloc(word->length);
-        if(word->length)
+        if (word->length)
             recognize_word(word->images.first, word->letters, network);
         printf(" ");
         word = word->next;
@@ -60,13 +61,13 @@ void recognize(Page *page, Network *network) {
     }
 }
 
-void preprocessing(Matrix *image){
+void preprocessing(Matrix *image) {
     sharpen(image);
     image_contrast(image, 20.f);
     image_auto_rotate(image, 0.01f);
 }
 
-void ocr(Network *network, char* image_path){
+void ocr(Network *network, char *image_path) {
     Page *page = NULL;
     Matrix image;
     exit_on_error(bitmap_load(image_path, &image));

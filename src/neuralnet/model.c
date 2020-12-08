@@ -36,7 +36,8 @@ void model_train(Model *model, int monitor) {
 float model_evaluate(Model *model) {
     size_t nb_correct_output
       = network_evaluate(&model->network, &model->dataset, 1);
-    float percentage = (float)nb_correct_output*100/model->dataset.size;
-    printf("%ld/%ld : %f\n", nb_correct_output, model->dataset.size,percentage);
+    float percentage = (float) nb_correct_output * 100 / model->dataset.size;
+    printf("%ld/%ld : %f\n", nb_correct_output, model->dataset.size,
+           percentage);
     return (float) percentage;
 }

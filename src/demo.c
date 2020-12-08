@@ -771,7 +771,7 @@ int all(int argc, char *argv[]) {
     return 0;
 }
 
-int demo_ocr(int argc, char *argv[]){
+int demo_ocr(int argc, char *argv[]) {
     if (argc < 3) {
         printf("Missing image path.\n");
         return 1;
@@ -779,12 +779,12 @@ int demo_ocr(int argc, char *argv[]){
 
     Network network;
     network_load("net99.65.hex", &network);
-    ocr(&network,argv[2]);
+    ocr(&network, argv[2]);
 
     return 0;
 }
 
-int demo_ocr_char(int argc, char *argv[]){
+int demo_ocr_char(int argc, char *argv[]) {
     if (argc < 3) {
         printf("Missing image path.\n");
         return 1;
@@ -792,7 +792,7 @@ int demo_ocr_char(int argc, char *argv[]){
 
     Network network;
     network_load("net99.65.hex", &network);
-    
+
     Matrix image;
     exit_on_error(bitmap_load(argv[2], &image));
     printf("Result : %c\n", network_get_result(&network, &image));
