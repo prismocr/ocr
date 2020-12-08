@@ -11,6 +11,12 @@
 #include "utils/error.h"
 #include "utils/linked_list.h"
 
+// TODO remove these headers
+#include "utils/bitmap.h"
+#include <stdio.h>
+size_t test = 0;
+char buff[200];
+
 static void extract_words(Matrix *image);
 
 int word_new(size_t x, size_t y, size_t w, size_t h, Word **word) {
@@ -48,12 +54,25 @@ void word_free(Word **word) {
 
 int word_segment(Matrix line, Word **words) {
     // TODO: rename this function
-    extract_words(&line);
+    // extract_words(&line);
+
+    Matrix kernel;
+
+    image_threshold_otsu(&line);
+    image_invert_color(255.f, &line);
+
+    kernel = structuring_element(3, 1);
+    opening(&line, kernel);
+    matrix_free(&kernel);
+
+    kernel = structuring_element(line.h + (line.h + 1) % 2, 1);
+    dilate(&line, kernel);
+    matrix_free(&kernel);
 
     Vector hist = image_histogram_x(line);
 
     // TODO: tweak value
-    float height_thresh = vector_average(hist) * 0.3f;
+    float height_thresh = vector_average(hist) * 0.1f;
     for (size_t j = 0; j < hist.size; j++) {
         hist.val[j] = hist.val[j] > height_thresh ? hist.val[j] : 0.f;
     }
@@ -71,23 +90,56 @@ int word_segment(Matrix line, Word **words) {
         }
     }
     size_t average_space = nb_spaces == 0 ? 0 : total_space / nb_spaces;
+    size_t space_threshold = (size_t)(0.4f * average_space);
 
-    Matrix kernel
-      = structuring_element(1, average_space + (average_space + 1) % 2);
-    dilate(&line, kernel);
+    kernel
+      = structuring_element(1, space_threshold + (space_threshold + 1) % 2);
+    opening(&line, kernel);
     matrix_free(&kernel);
 
+    sprintf(buff, "seg/test-%zu.bmp", test++);
+    bitmap_save(buff, &line);
+
+    /*
     kernel = structuring_element(1, 3);
     erode(&line, kernel);
     matrix_free(&kernel);
+    */
 
-    // TODO optimize this garbage
     vector_free(&hist);
     hist = image_histogram_x(line);
-    height_thresh = vector_average(hist) * 0.3f;
+
+    // TODO: tweak value
+    height_thresh = vector_average(hist) * 0.4f;
     for (size_t j = 0; j < hist.size; j++) {
         hist.val[j] = hist.val[j] > height_thresh ? hist.val[j] : 0.f;
     }
+
+    // Average space
+    nb_spaces = 0;
+    total_space = 0;
+    for (size_t j = 0, left = 0; j < hist.size; j++) {
+        if (hist.val[j] != 0.f) {
+            if (j >= left + 3) {
+                nb_spaces++;
+                total_space += j - left;
+            }
+            left = j;
+        }
+    }
+
+    printf("%zu %zu ", nb_spaces, total_space);
+    average_space = nb_spaces == 0 ? 0 : total_space / nb_spaces;
+    space_threshold = (size_t)(0.5f * average_space);
+    printf("avg %zu\n", average_space);
+
+    kernel
+      = structuring_element(1, space_threshold + (space_threshold + 1) % 2);
+    dilate(&line, kernel);
+    matrix_free(&kernel);
+
+    sprintf(buff, "seg/test-%zu.bmp", test++);
+    bitmap_save(buff, &line);
 
     // Word recovery
     size_t left = 0;
@@ -96,10 +148,10 @@ int word_segment(Matrix line, Word **words) {
     Word *first_word = NULL;
     Word *prev_word = NULL;
     for (size_t j = 0; j < hist.size; j++) {
-        if (hist.val[j] == 0.f) {
+        if (hist.val[j] <= 1.f) {
             size_t right = j;
             if (j > left + 3) {
-                while (j < hist.size && hist.val[j] == 0.f) {
+                while (j < hist.size && hist.val[j] <= 0.f) {
                     next_left = j++;
                 }
 
