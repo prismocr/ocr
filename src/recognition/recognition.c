@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "segmentation/segmentation.h"
 #include "neuralnet/network.h"
+#include "neuralnet/output.h"
 #include "recognition/recognition.h"
 #include "utils/matrix.h"
 #include "imgproc/image.h"
@@ -77,5 +78,5 @@ void ocr(Network *network, char* image_path){
     // Recognition
     recognize(page, network);
     // Export
-    // Brice stuff
+    output_save_default(page, "out.txt");
 }
