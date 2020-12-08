@@ -53,7 +53,6 @@ int region_segment_rlsa(Matrix page, Region **regions) {
     matrix_copy(page, &image_copy);
     image_threshold_otsu(&image_copy);
     image_invert_color(255.f, &image_copy);
-
     Matrix horizontal_morph_im;
     matrix_copy(image_copy, &horizontal_morph_im);
 
@@ -188,7 +187,7 @@ static void connected_components_labeling(Matrix *image, float *label) {
         for (size_t j = image->w; j > 0;) {
             j -= 1;
             if (image->val[i][j] > 1.f) {
-                if (i == image->h - 1 && j == image->w - 1) {
+                if (i == image->h - 1 || j == image->w - 1) {
                     if (i == image->h - 1 && j != image->w - 1
                         && image->val[i][j + 1] > 1.f) {
                         image->val[i][j] = image->val[i][j + 1];
