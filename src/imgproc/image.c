@@ -310,64 +310,69 @@ static int image_pixel_probabilities(Matrix image,
 
     return 0;
 }
-int check_white_row(Matrix *image, size_t row) {
-    int h = image->h;
+size_t check_white_row(Matrix *image, size_t row) {
+    size_t w = image->w;
 
-    for (int i = 0; i < h; i++)
-        if (image->val[i][row] <= 240.f)
+    for (size_t i = 0; i < w; i++)
+        if (image->val[row][i] != 255.f)
             return 0;
     return 1;
 }
 
-int check_white_column(Matrix *image, size_t col) {
-    int w = image->w;
+size_t check_white_column(Matrix *image, size_t col) {
+    size_t h = image->h;
 
-    for (int i = 0; i < w; i++)
-        if (image->val[col][i] <= 240.f)
+    for (size_t i = 0; i < h; i++)
+        if (image->val[i][col] != 255.f)
             return 0;
     return 1;
+}
+
+size_t image_bound_left(Matrix *image) {
+    for (size_t x = 0; x < image->w; x++) {
+        if (!check_white_column(image, x)) {
+            return x;
+        }
+    }
+
+    return 0;
+}
+
+size_t image_bound_right(Matrix *image) {
+    for (int x = image->w - 1; x >= 0; x--) {
+        if (!check_white_column(image, x)) {
+            return x + 1;
+        }
+    }
+
+    return image->w - 1;
+}
+
+size_t image_bound_top(Matrix *image) {
+    for (size_t x = 0; x < image->h; x++) {
+        if (!check_white_row(image, x)) {
+            return x;
+        }
+    }
+
+    return 0;
+}
+
+size_t image_bound_bottom(Matrix *image) {
+    for (int x = image->h - 1; x >= 0; x--) {
+        if (!check_white_row(image, x)) {
+            return x + 1;
+        }
+    }
+
+    return image->h - 1;
 }
 
 Matrix trim(Matrix *image) {
-    int w = image->w;
-    int h = image->h;
-
-    // Find vertical bounds of image image
-    size_t top, bot;
-    top = image->h;
-    bot = image->h;
-    for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            if (top == (size_t) h && image->val[y][x] < 250.f) {
-                top = y;
-            }
-            if (bot == (size_t) h && image->val[h - y - 1][x] < 250.f) {
-                bot = h - y - 1;
-            }
-        }
-    }
-
-    if (top == bot)
-        bot = h;
-
-    // Find horizontal bounds of image image
-    size_t left, right;
-    left = w;
-    right = w;
-    for (int x = 0; x < w; x++) {
-        for (int y = 0; y < h; y++) {
-            if (left == (size_t) w && image->val[y][x] < 250.f) {
-                left = x;
-            }
-            if (right == (size_t) w && image->val[y][w - x - 1] < 250.f) {
-                right = w - x - 1;
-            }
-        }
-    }
-
-    if (left == right) {
-        right = w;
-    }
+    size_t top = image_bound_top(image);
+    size_t bot = image_bound_bottom(image);
+    size_t left = image_bound_left(image);
+    size_t right = image_bound_right(image);
 
     Matrix dest;
     matrix_new(abs((int) bot - (int) top), abs((int) right - (int) left),

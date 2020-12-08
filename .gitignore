@@ -8,6 +8,8 @@ Unity/
 # Only allow bmp in examples/
 *.bmp
 !examples/*.bmp
+!test/assets/**/*.bmp
+!test/assets/*.txt
 .vscode
 *.csv
 *.hex

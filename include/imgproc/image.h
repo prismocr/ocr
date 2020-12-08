@@ -184,4 +184,32 @@ Matrix pre_process_char(Matrix *mat);
  */
 void image_levels(Matrix *mat, size_t n);
 
+/**
+ * Left boundary of image
+ *
+ * @param image
+ */
+size_t image_bound_left(Matrix *image);
+
+/**
+ * Right boundary of image
+ *
+ * @param image
+ */
+size_t image_bound_right(Matrix *image);
+
+/**
+ * Top boundary of image
+ *
+ * @param image
+ */
+size_t image_bound_top(Matrix *image);
+
+/**
+ * Bottom boundary of image
+ *
+ * @param image
+ */
+size_t image_bound_bottom(Matrix *image);
+
 #endif // IMAGE_H
