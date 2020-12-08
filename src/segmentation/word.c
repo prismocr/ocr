@@ -92,9 +92,9 @@ int word_segment(Matrix line, Word **words) {
                 }
 
                 Word *current_word = NULL;
-                if (word_new(prev_left == 0 ? 0 : prev_left + 1, 0,
-                             (right + i) / 2 - prev_left, line.h,
-                             &current_word)) {
+                size_t x = prev_left == 0 ? left : prev_left + 1;
+                size_t w = i == hist.size ? right + 1 - x : (right + i) / 2 - x;
+                if (word_new(x, 0, w, line.h, &current_word)) {
                     return 1;
                 }
 
