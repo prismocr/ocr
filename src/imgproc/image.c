@@ -144,7 +144,9 @@ int image_trim(Matrix image, Matrix *out) {
         return 1;
     }
 
-    *out = image_crop(left, top, right - left, bot - top, image_copy);
+    *out = image_crop(left == 0 ? 0 : left - 1, top == 0 ? 0 : top - 1,
+                      right == image.w ? right - left : right - left + 1,
+                      bot == image.h ? bot - top : bot - top + 1, image_copy);
 
     matrix_free(&image_copy);
 
