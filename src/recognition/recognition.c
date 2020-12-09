@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include "segmentation/segmentation.h"
 #include "neuralnet/network.h"
+#include "neuralnet/output.h"
 #include "recognition/recognition.h"
 #include "utils/matrix.h"
 #include "imgproc/image.h"
 #include "imgproc/rotation.h"
+#include "utils/bitmap.h"
+#include "utils/error.h"
 
 char network_get_result(Network *network, Matrix *image) {
     float input[image->w * image->w];
@@ -23,7 +26,12 @@ void recognize_word(MatrixNode *image, char *letters, Network *network) {
 
 void recognize_line(Word *word, Network *network) {
     while (word) {
-        recognize_word(word->images.first, word->letters, network);
+        // printf("x:%ld y:%ld w:%ld h:%ld length:%ld\n",word->x, word->y,
+        // word->w, word->h, word->length);
+        word->length = word->images.length;
+        word->letters = malloc(word->length);
+        if (word->length)
+            recognize_word(word->images.first, word->letters, network);
         printf(" ");
         word = word->next;
     }
@@ -45,7 +53,7 @@ void recognize_page(Region *region, Network *network) {
     }
 }
 
-void recognize_document(Page *page, Network *network) {
+void recognize(Page *page, Network *network) {
     while (page) {
         recognize_page(page->regions, network);
         printf("\n=======================================\n");
@@ -53,15 +61,23 @@ void recognize_document(Page *page, Network *network) {
     }
 }
 
-void recognize(Matrix *image, Network *net) {
-    // Pre-process
+void preprocessing(Matrix *image) {
     sharpen(image);
     image_contrast(image, 20.f);
     image_auto_rotate(image, 0.01f);
+}
 
+void ocr(Network *network, char *image_path) {
+    Page *page = NULL;
+    Matrix image;
+    exit_on_error(bitmap_load(image_path, &image));
+
+    // Pre-process
+    preprocessing(&image);
     // Segmentation
-    Page *page;
-    segment(*image, &page);
-
-    recognize_document(page, net);
+    segment(image, &page);
+    // Recognition
+    recognize(page, network);
+    // Export
+    output_save_default(page, "out.txt");
 }

@@ -9,7 +9,7 @@ void model_new(N_cfg *cfg, Model *model) {
     // size_t test_data_size = (long) NB_TEST_FONTS * OUTPUT_SIZE
 
     // Complete Dataset
-    generate_dataset(cfg->dataset_path, &model->dataset);
+    load_dataset(cfg->dataset_path, &model->dataset);
     size_t test_data_size = model->dataset.size * cfg->test_data_ratio;
     size_t training_data_size = model->dataset.size - test_data_size;
 
@@ -36,6 +36,8 @@ void model_train(Model *model, int monitor) {
 float model_evaluate(Model *model) {
     size_t nb_correct_output
       = network_evaluate(&model->network, &model->dataset, 1);
-    printf("%ld/%ld\n", nb_correct_output, model->dataset.size);
-    return (float) nb_correct_output * 100 / model->dataset.size;
+    float percentage = (float) nb_correct_output * 100 / model->dataset.size;
+    printf("%ld/%ld : %f\n", nb_correct_output, model->dataset.size,
+           percentage);
+    return (float) percentage;
 }
