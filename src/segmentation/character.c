@@ -5,27 +5,17 @@
 #include "utils/vector.h"
 #include <stdio.h>
 
-// TODO remove these headers
-#include "utils/bitmap.h"
-#include <stdio.h>
-
 int character_segment(Matrix word, MatrixLinkedList *characters) {
-    Matrix trimmed_word;
-    if (image_trim(word, &trimmed_word)) {
-        return 1;
-    }
+    Matrix word_copy;
+    matrix_copy(word, &word_copy);
+    image_threshold_otsu(&word_copy);
+    image_invert_color(255.f, &word_copy);
 
-    Matrix trimmed_word_copy;
-    matrix_copy(trimmed_word, &trimmed_word_copy);
-    image_threshold_otsu(&trimmed_word);
-    image_invert_color(255.f, &trimmed_word_copy);
-
-    Matrix kernel
-      = structuring_element(trimmed_word.h + (trimmed_word.h + 1) % 2, 1);
-    dilate(&trimmed_word, kernel);
+    Matrix kernel = structuring_element(word_copy.h + (word_copy.h + 1) % 2, 1);
+    dilate(&word_copy, kernel);
     matrix_free(&kernel);
 
-    Vector hist = image_histogram_x(trimmed_word);
+    Vector hist = image_histogram_x(word_copy);
 
     size_t left = 0;
     size_t prev_left = 0;
@@ -38,10 +28,8 @@ int character_segment(Matrix word, MatrixLinkedList *characters) {
                     next_left = i++;
                 }
 
-                Matrix character
-                  = image_crop(prev_left == 0 ? 0 : prev_left + 1, 0,
-                               (right + i) / 2 - prev_left, trimmed_word.h,
-                               trimmed_word_copy);
+                size_t w = i == hist.size ? i - 1 - prev_left : i - prev_left;
+                Matrix character = image_crop(prev_left, 0, w, word.h, word);
 
                 Matrix proc_character = pre_process_char(&character);
                 mll_insert(characters->length, proc_character, characters);
@@ -58,8 +46,7 @@ int character_segment(Matrix word, MatrixLinkedList *characters) {
     }
 
     vector_free(&hist);
-    matrix_free(&trimmed_word_copy);
-    matrix_free(&trimmed_word);
+    matrix_free(&word_copy);
 
     return 0;
 }
