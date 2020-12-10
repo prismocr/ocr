@@ -777,10 +777,14 @@ int demo_ocr(int argc, char *argv[]) {
         printf("Missing image path.\n");
         return 1;
     }
+    if (argc < 4) {
+        printf("Missing network name.\n");
+        return 1;
+    }
 
     Network network;
-    network_load("net99.82.hex", &network);
-    ocr(&network, argv[2]);
+    network_load(argv[2], &network);
+    ocr(&network, argv[3]);
 
     return 0;
 }
@@ -790,12 +794,16 @@ int demo_ocr_char(int argc, char *argv[]) {
         printf("Missing image path.\n");
         return 1;
     }
+    if (argc < 4) {
+        printf("Missing network name.\n");
+        return 1;
+    }
 
     Network network;
-    network_load("net99.65.hex", &network);
+    network_load(argv[2], &network);
 
     Matrix image;
-    exit_on_error(bitmap_load(argv[2], &image));
+    exit_on_error(bitmap_load(argv[3], &image));
     printf("Result : %c\n", network_get_result(&network, &image));
 
     return 0;
@@ -804,23 +812,22 @@ int demo_ocr_char(int argc, char *argv[]) {
 int demo_ocr_train(){
     srand(time(NULL));
 
-    N_cfg cfg = {.epochs = 100,
+    N_cfg cfg = {.epochs = 30,
                  .batch_size = 5,
                  .eta = 0.2,
-                 .momentum = 0.2f,
+                 .momentum = 0.1f,
                  .test_data_ratio = 0.0f,
                  .dataset_path = "dataset/",
                  .nb_layers = 3,
                  .layer_sizes
-                 = (size_t[]){IMAGE_WIDTH * IMAGE_WIDTH, 500, OUTPUT_SIZE}};
+                 = (size_t[]){IMAGE_WIDTH * IMAGE_WIDTH, 100, OUTPUT_SIZE}};
 
     Model model;
-    char netword_name[13];
+    char netword_name[14];
 
     model_new(&cfg, &model);
 
     model_train(&model, 1);
-
     float accuracy = model_evaluate(&model);
     sprintf(netword_name, "net%.2f.hex", accuracy);
     network_save(netword_name, &model.network);
