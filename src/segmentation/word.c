@@ -11,7 +11,7 @@
 #include "utils/error.h"
 #include "utils/linked_list.h"
 
-static size_t average_space(Vector hist);
+// static size_t average_space(Vector hist);
 
 int word_new(size_t x, size_t y, size_t w, size_t h, Word **word) {
     assert(*word == NULL);
@@ -53,6 +53,7 @@ int word_segment(Matrix line, Word **words) {
     image_threshold_otsu(&line);
     image_invert_color(255.f, &line);
 
+    /*
     kernel = structuring_element(3, 3);
     dilate(&line, kernel);
     matrix_free(&kernel);
@@ -77,25 +78,92 @@ int word_segment(Matrix line, Word **words) {
     for (size_t i = 0; i < hist.size; i++) {
         hist.val[i] = hist.val[i] > height_thresh ? hist.val[i] : 0.f;
     }
+    */
 
-    size_t left = 0;
-    size_t prev_left = 0;
-    size_t next_left = 0;
+    kernel = structuring_element(1, 3);
+    dilate(&line, kernel);
+    matrix_free(&kernel);
+    kernel = structuring_element(line.h + (line.h + 1) % 2, 1);
+    dilate(&line, kernel);
+    matrix_free(&kernel);
+
+    hist = image_histogram_x(line);
+    float height_thresh = vector_average(hist) * 0.2f;
+    for (size_t i = 0; i < hist.size; i++) {
+        hist.val[i] = hist.val[i] > height_thresh ? hist.val[i] : 0.f;
+    }
+
+    /*
+    size_t max_space = 0;
+    for (size_t j = 0, left = 0; j < hist.size; j++) {
+        if (hist.val[j] < 1.f) {
+            if (j >= left + 3) {
+                if (j - left > max_space) {
+                    max_space = j - left;
+                }
+            }
+            left = j;
+        }
+    }
+
+    size_t space_threshold = (size_t)(0.9f * max_space);
+    */
+
     Word *first_word = NULL;
     Word *prev_word = NULL;
+    size_t prev_word_right = 0;
+    size_t curr_word_right = 0;
+    size_t next_word_left = 0;
+    for (size_t i = 0; i < hist.size; i++) {
+        if (hist.val[i] >= 1.f) {
+            while (i < hist.size) {
+                while (i < hist.size && hist.val[i] >= 1.f) {
+                    i += 1;
+                    curr_word_right = i;
+                }
+
+                while (i < hist.size && hist.val[i] < 1.f) {
+                    i += 1;
+                    next_word_left = i;
+                }
+
+                if (next_word_left - curr_word_right > 10) {
+                    break;
+                }
+            }
+
+            Word *current_word = NULL;
+            size_t w = next_word_left == hist.size
+                         ? next_word_left - 1 - prev_word_right
+                         : next_word_left - prev_word_right;
+            if (word_new(prev_word_right, 0, w, line.h, &current_word)) {
+                return 1;
+            }
+
+            if (first_word == NULL) {
+                first_word = current_word;
+            } else { // prev_word is not NULL
+                prev_word->next = current_word;
+            }
+            prev_word = current_word;
+            prev_word_right = curr_word_right;
+        }
+    }
+
+    /*
     for (size_t i = 0; i < hist.size; i++) {
         if (hist.val[i] < 1.f) {
             size_t right = i;
-            if (i > left + 3) {
+            if (i >= left + 3 && i - left > space_threshold) {
                 while (i < hist.size && hist.val[i] < 1.f) {
                     next_left = i++;
                 }
 
                 Word *current_word = NULL;
-                size_t x = prev_left == 0 ? left : prev_left;
-                size_t w = i == hist.size ? right + 1 - x : (right + i) / 2 - x;
-                if (word_new(x, 0, w, line.h, &current_word)) {
-                    return 1;
+                //size_t x = prev_left == 0 ? left : prev_left;
+                //size_t w = i == hist.size ? right + 1 - x : (right + i) / 2 -
+    x; size_t x = prev_left; size_t w = i == hist.size ? i - 1 - x : i - x; if
+    (word_new(x, 0, w, line.h, &current_word)) { return 1;
                 }
 
                 if (first_word == NULL) {
@@ -107,11 +175,13 @@ int word_segment(Matrix line, Word **words) {
 
                 prev_left = (right + i) / 2;
                 left = next_left;
-            } else {
+            } else if (i < left + 3) {
+                printf("space %zu\n", i - left);
                 left = right;
             }
         }
     }
+    */
     *words = first_word;
 
     vector_free(&hist);
@@ -119,11 +189,12 @@ int word_segment(Matrix line, Word **words) {
     return 0;
 }
 
+/*
 static size_t average_space(Vector hist) {
     size_t nb_spaces = 0;
     size_t total_space = 0;
     for (size_t j = 0, left = 0; j < hist.size; j++) {
-        if (hist.val[j] != 0.f) {
+        if (hist.val[j] < 0.f) {
             if (j >= left + 3) {
                 if (nb_spaces >= 1) {
                     total_space += j - left;
@@ -136,3 +207,4 @@ static size_t average_space(Vector hist) {
 
     return nb_spaces == 1 ? 0 : total_space / (nb_spaces - 1);
 }
+*/
