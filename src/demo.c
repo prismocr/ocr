@@ -12,6 +12,7 @@
 #include "neuralnet/network.h"
 #include "neuralnet/layer.h"
 #include "neuralnet/output.h"
+#include "neuralnet/model.h"
 #include "recognition/recognition.h"
 
 void sharpen_demo(int argc, char *argv[]) {
@@ -217,7 +218,7 @@ void network_demo(int argc, char *argv[]) {
 
         size_t sizes_static[] = {2, 2, 1};
         network = network_new(nb_layers, sizes_static);
-        network_sgd(&network, &dataset, 100000, 4, 1.f, &dataset, 1);
+        network_sgd(&network, &dataset, 100000, 4, 1.f, 0.5, &dataset, 1);
     } else if (!strcmp("add", argv[2])) {
         // --- Create dataset---
         dataset_new(&dataset, 8);
@@ -233,7 +234,7 @@ void network_demo(int argc, char *argv[]) {
 
         size_t sizes_static[] = {3, 3, 2};
         network = network_new(nb_layers, sizes_static);
-        network_sgd(&network, &dataset, 1000, 4, 12.f, &dataset, 1);
+        network_sgd(&network, &dataset, 1000, 4, 12.f, 0.5, &dataset, 1);
     }
     network_print_results(network, dataset);
 
@@ -778,7 +779,7 @@ int demo_ocr(int argc, char *argv[]) {
     }
 
     Network network;
-    network_load("net99.65.hex", &network);
+    network_load("net99.82.hex", &network);
     ocr(&network, argv[2]);
 
     return 0;
@@ -800,6 +801,34 @@ int demo_ocr_char(int argc, char *argv[]) {
     return 0;
 }
 
+int demo_ocr_train(){
+    srand(time(NULL));
+
+    N_cfg cfg = {.epochs = 100,
+                 .batch_size = 5,
+                 .eta = 0.2,
+                 .momentum = 0.2f,
+                 .test_data_ratio = 0.0f,
+                 .dataset_path = "dataset/",
+                 .nb_layers = 3,
+                 .layer_sizes
+                 = (size_t[]){IMAGE_WIDTH * IMAGE_WIDTH, 500, OUTPUT_SIZE}};
+
+    Model model;
+    char netword_name[13];
+
+    model_new(&cfg, &model);
+
+    model_train(&model, 1);
+
+    float accuracy = model_evaluate(&model);
+    sprintf(netword_name, "net%.2f.hex", accuracy);
+    network_save(netword_name, &model.network);
+
+    model_free(&model);
+
+    return 0;
+}
 int demo(int argc, char *argv[]) {
     char *c = argv[1];
 
@@ -895,6 +924,10 @@ int demo(int argc, char *argv[]) {
 
     if (!strcmp(c, "ocr_char")) {
         return demo_ocr_char(argc, argv);
+    }
+
+    if (!strcmp(c, "train")) {
+        return demo_ocr_train();
     }
     printf("what?\n");
 

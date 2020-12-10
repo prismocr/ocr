@@ -12,6 +12,7 @@ struct Network_config {
     size_t epochs;
     size_t batch_size;
     float eta;
+    float momentum;
     float test_data_ratio;
     char *dataset_path;
     size_t nb_layers;

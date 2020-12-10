@@ -16,7 +16,7 @@ char network_get_result(Network *network, Matrix *image) {
 }
 
 void recognize_word(MatrixNode *image, char *letters, Network *network) {
-    for(;image;image = image->next){
+    for (; image; image = image->next) {
         *letters = network_get_result(network, &image->val);
         printf("%c", *letters);
         letters++;
@@ -24,7 +24,7 @@ void recognize_word(MatrixNode *image, char *letters, Network *network) {
 }
 
 void recognize_line(Word *word, Network *network) {
-    for(;word;word = word->next){
+    for (; word; word = word->next) {
         // printf("x:%ld y:%ld w:%ld h:%ld length:%ld\n",word->x, word->y,
         // word->w, word->h, word->length);
         word->length = word->images.length;
@@ -36,21 +36,21 @@ void recognize_line(Word *word, Network *network) {
 }
 
 void recognize_region(Line *line, Network *network) {
-    for(;line;line = line->next){
+    for (; line; line = line->next) {
         recognize_line(line->words, network);
         printf("\n");
     }
 }
 
 void recognize_page(Region *region, Network *network) {
-    for(;region;region = region->next){
+    for (; region; region = region->next) {
         recognize_region(region->lines, network);
         printf("\n");
     }
 }
 
 void recognize(Page *page, Network *network) {
-    for(;page;page = page->next){
+    for (; page; page = page->next) {
         recognize_page(page->regions, network);
         printf("\n=======================================\n");
     }

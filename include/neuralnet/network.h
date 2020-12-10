@@ -53,11 +53,12 @@ float *network_feed_forward(Network *network, float *input);
  * @param number of epochs for training
  * @param size of the batches that will be extracted from dataset
  * @param the learning rate
+ * @param momentum co-efficient
  * @param the data to test on
  * @param boolean for monitoring
  */
 void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
-                 size_t batch_size, float learning_rate,
+                 size_t batch_size, float learning_rate, float momentum,
                  Dataset *dataset_evaluation, int monitor_training);
 /**
  * Applies gradient descent on a network
@@ -92,7 +93,8 @@ void init_cost(Layer *out_layer, float *target);
  * @param size of the batch the network has been trained on
  * @param the learning rate
  */
-void apply_grad(Network *network, size_t size_batch, float learning_rate);
+void apply_grad(Network *network, size_t size_batch, float learning_rate,
+                float momentum);
 
 /**
  * Prints all datas of a network
