@@ -100,6 +100,11 @@ int line_segment_water_flow(Matrix region);
 int word_segment(Matrix line, Word **words);
 
 /**
+ *
+ */
+int word_segment_prob(Matrix line, Word **words);
+
+/**
  * Segment a word image into characters images.
  *
  * @param image of the word.
