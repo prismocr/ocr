@@ -181,8 +181,8 @@ int output_save_multi_column(Page *page, const char *path) {
                     if (test_coordinates_region) {
                         // printf("\033[1;31mYOU'RE INSIDE A REGION x=%zu y=%zu
                         // w=%zu h=%zu\n\033[0m", actual_region->x,
-                        // actual_region->y, actual_region->w, actual_region->h);
-                        // STEP 3.5 : Search longest line
+                        // actual_region->y, actual_region->w,
+                        // actual_region->h); STEP 3.5 : Search longest line
                         Line *actual_line = actual_region->lines;
                         size_t longest_line_of_region = 0;
                         while (actual_line) {
@@ -202,7 +202,8 @@ int output_save_multi_column(Page *page, const char *path) {
                             // actual_line->w); printf("line offset x = %zu y =
                             // %zu h = %zu w = %zu\n", actual_line->x +
                             // actual_region->x, actual_line->y +
-                            // actual_region->y, actual_line->h, actual_line->w);
+                            // actual_region->y, actual_line->h,
+                            // actual_line->w);
                             size_t test_coordinates_region = verify_coordinates(
                               x, y, actual_line->x + actual_region->x,
                               actual_line->y + actual_region->y, actual_line->h,
