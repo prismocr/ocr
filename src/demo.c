@@ -812,7 +812,7 @@ int demo_ocr_char(int argc, char *argv[]) {
     return 0;
 }
 
-int demo_ocr_train(){
+int demo_ocr_train() {
     srand(time(NULL));
 
     N_cfg cfg = {.epochs = 30,
