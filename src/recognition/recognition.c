@@ -74,5 +74,5 @@ void ocr(Network *network, char *image_path) {
     // Recognition
     recognize(page, network);
     // Export
-    output_save_default(page, "out.txt");
+    output_save_multi_column(page, "outmc.txt");
 }

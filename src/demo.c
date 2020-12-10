@@ -499,6 +499,8 @@ void save_pages_demo() {
 
 void output_save_multi_column_demo() {
     // PAGE 1
+    printf("output save multi column: TOFIX");
+    return;
     Page p;
     Region r1;
     Line l1;
@@ -687,7 +689,8 @@ void output_save_multi_column_demo() {
     p.w = 100 + 2 * (40 * (7 + 8));
     p.h = 40 * 4;
 
-    output_save_multi_column(&p, "testpagesregions.txt");
+    printf("saving mc...\n");
+    output_save_multi_column(&p, "tprs.txt");
 }
 
 int trim_demo(int argc, char *argv[]) {
@@ -910,7 +913,6 @@ int demo(int argc, char *argv[]) {
         return 0;
     }
     if (!strcmp(c, "save_pages_m")) {
-        // save_pages_demo(argc, argv);
         output_save_multi_column_demo();
         return 0;
     }
