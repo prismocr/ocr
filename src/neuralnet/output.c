@@ -109,16 +109,15 @@ size_t compute_line_length(Line *line) {
     return score;
 }
 
-
-size_t calculte_mean(Page *page){
+size_t calculte_mean(Page *page) {
     Page *actual_page = page;
     size_t total = 0;
     size_t index = 0;
-    if (!page){
+    if (!page) {
         printf("uh oh page = null");
         return 1;
     }
-    while (page){
+    while (page) {
         Region *actual_region = actual_page->regions;
         while (actual_region) {
             Line *actual_line = actual_region->lines;
@@ -131,10 +130,8 @@ size_t calculte_mean(Page *page){
         }
         page = page->next;
     }
-    return total/index;
+    return total / index;
 }
-
-
 
 int output_save_multi_column(Page *page, const char *path) {
     FILE *f;
@@ -157,7 +154,7 @@ int output_save_multi_column(Page *page, const char *path) {
         y = average_size_char / 2;
         // printf("\nPAGES SIZES %zu %zu\n", actual_page->h, actual_page->w);
         while (y < actual_page->h) {
-            //printf("%zu %zu %zu\n", actual_page->w, average_size_char,
+            // printf("%zu %zu %zu\n", actual_page->w, average_size_char,
             //    actual_page->w / average_size_char);
 
             // if segfault, probably here:
@@ -173,7 +170,7 @@ int output_save_multi_column(Page *page, const char *path) {
             line_as_string[size_max_char_pages - 1] = 0;
             x = 0;
 
-            //printf("\nNEW ITERATION\n\n");
+            // printf("\nNEW ITERATION\n\n");
             while (x < actual_page->w) {
                 // STEP 3 : is x and y in a region ?
                 Region *actual_region = actual_page->regions;
@@ -182,8 +179,10 @@ int output_save_multi_column(Page *page, const char *path) {
                       x, y, actual_region->x, actual_region->y,
                       actual_region->h, actual_region->w);
                     if (test_coordinates_region) {
-                        //printf("\033[1;31mYOU'RE INSIDE A REGION x=%zu y=%zu w=%zu h=%zu\n\033[0m", actual_region->x, actual_region->y, actual_region->w, actual_region->h);
-                        // STEP 3.5 : Search longest line
+                        // printf("\033[1;31mYOU'RE INSIDE A REGION x=%zu y=%zu
+                        // w=%zu h=%zu\n\033[0m", actual_region->x,
+                        // actual_region->y, actual_region->w,
+                        // actual_region->h); STEP 3.5 : Search longest line
                         Line *actual_line = actual_region->lines;
                         size_t longest_line_of_region = 0;
                         while (actual_line) {
@@ -196,21 +195,29 @@ int output_save_multi_column(Page *page, const char *path) {
                         }
                         actual_line = actual_region->lines;
                         // STEP 4 : Found which line
-                        //printf("Actual line x = %zu, y = %zu\n\n", x, y);
+                        // printf("Actual line x = %zu, y = %zu\n\n", x, y);
                         while (actual_line) {
-                            //printf("line x = %zu y = %zu h = %zu w = %zu\n", actual_line->x, actual_line->y, actual_line->h, actual_line->w);
-                            //printf("line offset x = %zu y = %zu h = %zu w = %zu\n", actual_line->x + actual_region->x, actual_line->y +  actual_region->y, actual_line->h, actual_line->w);
+                            // printf("line x = %zu y = %zu h = %zu w = %zu\n",
+                            // actual_line->x, actual_line->y, actual_line->h,
+                            // actual_line->w); printf("line offset x = %zu y =
+                            // %zu h = %zu w = %zu\n", actual_line->x +
+                            // actual_region->x, actual_line->y +
+                            // actual_region->y, actual_line->h,
+                            // actual_line->w);
                             size_t test_coordinates_region = verify_coordinates(
-                              x, y, actual_line->x + actual_region->x, actual_line->y +  actual_region->y,
-                              actual_line->h, actual_line->w);
+                              x, y, actual_line->x + actual_region->x,
+                              actual_line->y + actual_region->y, actual_line->h,
+                              actual_line->w);
                             if (test_coordinates_region) {
-                                //printf("\033[1;32mYOU'RE INSIDE A LINE\n\033[0m");
+                                // printf("\033[1;32mYOU'RE INSIDE A
+                                // LINE\n\033[0m");
                                 // STEP 5 : add this to the current string to
                                 // save
                                 Word *actual_word = actual_line->words;
                                 size_t len_of_line = 0;
                                 while (actual_word) {
-                                    //printf("\033[1;34mYOU'RE INSIDE A WORD\n\033[0m");
+                                    // printf("\033[1;34mYOU'RE INSIDE A
+                                    // WORD\n\033[0m");
                                     for (size_t word_index = 0;
                                          word_index < actual_word->length;
                                          word_index++, index++) {
@@ -229,13 +236,13 @@ int output_save_multi_column(Page *page, const char *path) {
                                 }
                                 // STEP 6 : increment x by the line size + 1char
                                 x += actual_line->w + average_size_char;
-                                //printf("DOUBLE BREAKING\n");
+                                // printf("DOUBLE BREAKING\n");
                                 goto DOUBLE_BREAK;
                                 // Need Double Break
                             } else {
                                 actual_line = actual_line->next;
                             }
-                            //printf("Not the right line man...\n");
+                            // printf("Not the right line man...\n");
                         }
                     }
                     actual_region = actual_region->next;
@@ -246,8 +253,8 @@ int output_save_multi_column(Page *page, const char *path) {
                 index++;
             }
             // STEP 7 : save the line
-            //printf("SAVING LINE:\n");
-            //PRINT_CHAR_ARRAY(line_as_string);
+            // printf("SAVING LINE:\n");
+            // PRINT_CHAR_ARRAY(line_as_string);
             save_char_array(line_as_string, f);
             save_char('\n', f);
             y += average_size_char;
