@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <ctype.h>
 #include "segmentation/segmentation.h"
 #include "neuralnet/network.h"
 #include "neuralnet/output.h"
@@ -9,6 +8,7 @@
 #include "imgproc/rotation.h"
 #include "utils/bitmap.h"
 #include "utils/error.h"
+#include "textproc/text.h"
 
 char network_get_result(Network *network, Matrix *image) {
     float input[image->w * image->w];
@@ -57,38 +57,6 @@ void recognize(Page *page, Network *network) {
     }
 }
 
-void postprocessing(char *post_process) {
-    FILE *f_read;
-    FILE *f_save;
-    f_read = fopen(post_process, "r");
-    f_save = fopen("post_processed.txt", "w");
-    fseek(f_read, 0, SEEK_END);
-    long size = ftell(f_read);
-    fseek(f_read, 0, SEEK_SET);
-    printf("size = %ld\n", size);
-    char str[size];
-
-    for (long i = 0; i < size; i++)
-        str[i] = fgetc(f_read);
-
-    char s = ' ';
-    size_t dot_distance = 0;
-
-    for (long i = 0; i < size; i++) {
-        s = str[i];
-        if (!dot_distance && s != ' ' && s != '\n' && s != '\t') {
-            s = toupper(s);
-            dot_distance = 1;
-        }
-        if (s == '.') {
-            dot_distance = 0;
-        }
-        fwrite(&s, sizeof(char), 1, f_save);
-    }
-    fclose(f_read);
-    fclose(f_save);
-}
-
 void preprocessing(Matrix *image) {
     sharpen(image);
     image_contrast(image, 20.f);
@@ -110,5 +78,5 @@ void ocr(Network *network, char *image_path) {
     // output_save_default(page, "post.txt");
     // output_save_multi_column(page, "outmc.txt");
 
-    postprocessing("post.txt"); //, "postprocessed.txt");
+    // postprocessing("post.txt"); //, "postprocessed.txt");
 }

@@ -14,6 +14,7 @@
 #include "neuralnet/output.h"
 #include "neuralnet/model.h"
 #include "recognition/recognition.h"
+#include "textproc/text.h"
 
 void sharpen_demo(int argc, char *argv[]) {
     Matrix image;
@@ -839,6 +840,39 @@ int demo_ocr_train() {
 
     return 0;
 }
+
+int words_demo() {
+    printf("loading\n");
+    Dict dict;
+    dict_load("./assets/words_en.txt", &dict);
+
+    clock_t begin = clock();
+
+    /* here, do your time-consuming job */
+
+    for (size_t i = 0; i < 100; i++) {
+        char sentence[] = "hello i thonk you for this test";
+        char *word = strtok(sentence, " ");
+
+        while (word != NULL) {
+            char *result = calloc(100, sizeof(char));
+            dict_find_closest_word(&dict, word, result);
+
+            // printf("closest of %s is %s\n", word, result);
+            word = strtok(NULL, " ");
+        }
+    }
+
+    clock_t end = clock();
+    double time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
+    printf("%f\n", time_spent);
+
+    printf("loaded\n");
+    dict_free(&dict);
+
+    return 0;
+}
+
 int demo(int argc, char *argv[]) {
     char *c = argv[1];
 
@@ -938,6 +972,11 @@ int demo(int argc, char *argv[]) {
     if (!strcmp(c, "train")) {
         return demo_ocr_train();
     }
+
+    if (!strcmp(c, "words")) {
+        return words_demo();
+    }
+
     printf("what?\n");
 
     return 1;
