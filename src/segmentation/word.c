@@ -44,7 +44,7 @@ void word_free(Word **word) {
     mll_free(&(*word)->images);
     free((*word)->letters);
 
-    for(size_t i = 0; i < (*word)->num_candidates; i++){
+    for (size_t i = 0; i < (*word)->num_candidates; i++) {
         free((*word)->candidates[i]);
     }
     free((*word)->candidates);

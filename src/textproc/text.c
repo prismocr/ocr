@@ -50,8 +50,9 @@ void post_process_words(Page *page) {
                 while (actual_word) {
                     char *result = calloc(2048, sizeof(char));
                     dict_find_closest_word(&dict, actual_word->letters, result);
-                    //printf("closest of %s is %s\n", actual_word->letters,result);
-                    if(result)
+                    // printf("closest of %s is %s\n",
+                    // actual_word->letters,result);
+                    if (result)
                         free(result);
                     else
                         printf("No more memory");
@@ -82,7 +83,7 @@ void dict_load(const char *path, Dict *dict) {
     dict->words[dict->size] = 0;
 }
 
-//int
+// int
 
 void dict_find_closest_word(Dict *dict, char *word, char *result) {
     if (strlen(word) == 1) {
@@ -113,7 +114,8 @@ void dict_find_closest_word(Dict *dict, char *word, char *result) {
             min = distance;
             strcpy(result, w);
             score = 0;
-        } else if (score < score_max && distance == min && strlen(result) + strlen(w) < 4096) {
+        } else if (score < score_max && distance == min
+                   && strlen(result) + strlen(w) < 4096) {
             strcat(result, "/");
             strcat(result, w);
             score++;
