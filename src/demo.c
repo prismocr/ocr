@@ -818,8 +818,8 @@ int demo_ocr_train() {
 
     N_cfg cfg = {.epochs = 50,
                  .batch_size = 5,
-                 .eta = 0.075f,
-                 .momentum = 0.7f,
+                 .eta = 0.15f,
+                 .momentum = 0.0f,
                  .test_data_ratio = 0.2f,
                  .dataset_path = "dataset/",
                  .nb_layers = 3,
