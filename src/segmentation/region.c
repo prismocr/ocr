@@ -8,6 +8,7 @@
 #include "imgproc/morphology.h"
 #include "imgproc/connected_components.h"
 #include "utils/linked_list.h"
+#include "utils/union_find.h"
 #include "utils/error.h"
 
 int region_new(size_t x, size_t y, size_t w, size_t h, Region **region) {
@@ -93,19 +94,32 @@ int region_segment_rlsa(Matrix page, Region **regions) {
     dilate(&horizontal_morph_im, kernel);
     matrix_free(&kernel);
 
-    float class = 256.f;
-    cc_labeling(&horizontal_morph_im, &class);
+    UnionFind u;
+    cc_labeling(&horizontal_morph_im, &u);
 
     // consider bounding box as region of interest
     Region *first_region = NULL;
     Region *prev_region = NULL;
-    for (float c = 256.f; c < class; c++) {
+    int n = 0;
+    while (n < u.num_nodes) {
+        int root = uf_find(n, &u);
+        if (root == -1) {
+            n += 1;
+            continue;
+        }
+
+        for (int i = n; i < u.num_nodes; i++) {
+            if (uf_find(i, &u) == root) {
+                u.parents[i] = -1;
+            }
+        }
+        float c = 256 + root;
+
         size_t top, bot, left, right;
         top = page.h;
         bot = 0;
         left = page.w;
         right = 0;
-
         for (size_t i = 0; i < horizontal_morph_im.h; i++) {
             for (size_t j = 0; j < horizontal_morph_im.w; j++) {
                 if (horizontal_morph_im.val[i][j] == c) {
@@ -139,9 +153,12 @@ int region_segment_rlsa(Matrix page, Region **regions) {
             }
             prev_region = current_region;
         }
+
+        n += 1;
     }
     *regions = first_region;
 
+    uf_free(&u);
     matrix_free(&horizontal_morph_im);
 
     return 0;

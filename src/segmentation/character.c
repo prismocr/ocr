@@ -6,12 +6,6 @@
 #include "utils/vector.h"
 #include <stdio.h>
 
-// TODO remove these headers
-#include "utils/bitmap.h"
-#include <stdio.h>
-char buff[200];
-size_t test = 0;
-
 int character_segment(Matrix word, MatrixLinkedList *characters) {
     Matrix word_copy;
     matrix_copy(word, &word_copy);
@@ -64,19 +58,29 @@ int character_segment_cc(Matrix word, MatrixLinkedList *characters) {
     image_threshold_otsu(&word_copy);
     image_invert_color(255.f, &word_copy);
 
-    sprintf(buff, "seg/test-%zu.bmp", test++);
-    bitmap_save(buff, &word_copy);
+    UnionFind u;
+    cc_labeling(&word_copy, &u);
 
-    float class = 256.f;
-    cc_labeling(&word_copy, &class);
+    int n = 0;
+    while (n < u.num_nodes) {
+        int root = uf_find(n, &u);
+        if (root == -1) {
+            n += 1;
+            continue;
+        }
 
-    for (float c = 256.f; c < class; c++) {
+        for (int i = n; i < u.num_nodes; i++) {
+            if (uf_find(i, &u) == root) {
+                u.parents[i] = -1;
+            }
+        }
+        float c = 256 + root;
+
         size_t top, bot, left, right;
         top = word_copy.h;
         bot = 0;
         left = word_copy.w;
         right = 0;
-
         for (size_t i = 0; i < word_copy.h; i++) {
             for (size_t j = 0; j < word_copy.w; j++) {
                 if (word_copy.val[i][j] == c) {
@@ -97,26 +101,19 @@ int character_segment_cc(Matrix word, MatrixLinkedList *characters) {
         }
 
         if (right > left && bot > top) {
-            // Matrix character = image_crop(left, top, right - left, bot - top,
-            //    word);
-            Matrix character;
-            matrix_new(bot - top, right - left, &character);
-
-            for (size_t u = 0; u < character.h; u++) {
-                for (size_t v = 0; v < character.w; v++) {
-                    if (word_copy.val[u + top][u + left] != c) {
-                        character.val[u][v] = 255.f;
-                    }
-                }
-            }
+            Matrix character
+              = image_crop(left, top, right - left, bot - top, word);
 
             Matrix proc_character = pre_process_char(&character);
-            mll_insert(characters->length, character, characters);
+            mll_insert(characters->length, proc_character, characters);
 
             matrix_free(&proc_character);
             matrix_free(&character);
         }
+
+        n += 1;
     }
+    uf_free(&u);
     matrix_free(&word_copy);
 
     return 0;

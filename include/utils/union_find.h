@@ -9,21 +9,21 @@ typedef struct union_find UnionFind;
 
 /*
  * A static implementation of union find.
- * Corresponding value in subsets:
+ * Corresponding value in parents:
  * -1: not existing
  *  i: root
  *  otherwise: parent
  */
 struct union_find {
     size_t capacity;
-    int *subsets;
+    int *parents;
 
-    int num_classes;
+    int num_nodes;
 };
 
 int uf_new(UnionFind *u);
 void uf_free(UnionFind *u);
-int uf_add_subset(UnionFind *u);
+int uf_add_node(UnionFind *u);
 
 /*
  * Finds the equivalency class of a subset with path compression.

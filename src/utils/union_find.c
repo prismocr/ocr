@@ -7,55 +7,58 @@
 
 int uf_new(UnionFind *u) {
     u->capacity = UNION_FIND_DEFAULT_CAPACITY;
-    u->subsets = (int *) malloc(u->capacity * sizeof(int));
-    if (u->subsets == NULL) {
+    u->parents = (int *) malloc(u->capacity * sizeof(int));
+    if (u->parents == NULL) {
         set_last_errorf("Failed to allocate memory for union find: %s",
                         strerror(errno));
         return 1;
     }
 
-    memset(u->subsets, -1, u->capacity * sizeof(int));
-    u->num_classes = 0;
+    memset(u->parents, -1, u->capacity * sizeof(int));
+    u->num_nodes = 0;
 
     return 0;
 }
 
 void uf_free(UnionFind *u) {
-    free(u->subsets);
-    u->subsets = NULL;
+    free(u->parents);
+    u->parents = NULL;
 }
 
-int uf_add_subset(UnionFind *u) {
-    if ((size_t) u->num_classes == u->capacity) {
-        u->capacity *= 2;
-        int *new = (int *) realloc(u->subsets, u->capacity * sizeof(int));
+int uf_add_node(UnionFind *u) {
+    if ((size_t) u->num_nodes == u->capacity) {
+        int *new = (int *) realloc(u->parents, 2 * u->capacity * sizeof(int));
         if (new == NULL) {
             set_last_errorf("Failed to reallocate memory for union find: %s",
                             strerror(errno));
             return -1;
         }
-        u->subsets = new;
+        u->parents = new;
+        memset(u->parents + u->capacity, -1, u->capacity * sizeof(int));
+        u->capacity *= 2;
     }
 
-    u->subsets[u->num_classes] = u->num_classes;
-    return u->num_classes++;
+    u->parents[u->num_nodes] = u->num_nodes;
+    return u->num_nodes++;
 }
 
 int uf_find(int x, UnionFind *u) {
-    assert(x < u->capacity);
-
-    if (x != u->subsets[x]) {
-        u->subsets[x] = uf_find(u->subsets[x], u);
+    if (x == -1) {
+        return x;
     }
 
-    return u->subsets[x];
+    if (x != u->parents[x]) {
+        u->parents[x] = uf_find(u->parents[x], u);
+    }
+
+    return u->parents[x];
 }
 
 int uf_union(int x, int y, UnionFind *u) {
-    int x_class = uf_find(x, u);
-    int y_class = uf_find(y, u);
+    int x_root = uf_find(x, u);
+    int y_root = uf_find(y, u);
 
-    u->subsets[y_class] = x_class;
+    u->parents[y_root] = x_root;
 
-    return x_class;
+    return x_root;
 }
