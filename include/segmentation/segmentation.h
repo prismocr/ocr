@@ -112,4 +112,6 @@ int word_segment_prob(Matrix line, Word **words);
  */
 int character_segment(Matrix word, MatrixLinkedList *characters);
 
+int character_segment_cc(Matrix word, MatrixLinkedList *characters);
+
 #endif // SEGMENTATION_H

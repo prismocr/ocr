@@ -6,10 +6,9 @@
 #include "utils/matrix.h"
 #include "imgproc/image.h"
 #include "imgproc/morphology.h"
+#include "imgproc/connected_components.h"
 #include "utils/linked_list.h"
 #include "utils/error.h"
-
-static void connected_components_labeling(Matrix *image, float *label);
 
 int region_new(size_t x, size_t y, size_t w, size_t h, Region **region) {
     assert(*region == NULL);
@@ -146,67 +145,4 @@ int region_segment_rlsa(Matrix page, Region **regions) {
     matrix_free(&horizontal_morph_im);
 
     return 0;
-}
-
-#define MIN(a, b) (a <= b ? a : b)
-
-/* Two pass 4-direction connected components labeling
- * Pixel labels are val - 255.f
- */
-static void connected_components_labeling(Matrix *image, float *label) {
-    for (size_t i = 0; i < image->h; i++) {
-        for (size_t j = 0; j < image->w; j++) {
-            if (image->val[i][j] == 255.f) {
-                if (i == 0 || j == 0) {
-                    if (i == 0 && j != 0 && image->val[i][j - 1] >= 1.) {
-                        image->val[i][j] = image->val[i][j - 1];
-                    } else if (i != 0 && j == 0 && image->val[i - 1][j] >= 1.) {
-                        image->val[i][j] = image->val[i - 1][j];
-                    } else {
-                        image->val[i][j] = (*label)++;
-                    }
-                } else if (image->val[i - 1][j] < 1.f
-                           || image->val[i][j - 1] < 1.f) {
-                    if (image->val[i - 1][j] > 1.f) {
-                        image->val[i][j] = image->val[i - 1][j];
-                    } else if (image->val[i][j - 1] > 1.) {
-                        image->val[i][j] = image->val[i][j - 1];
-                    } else {
-                        image->val[i][j] = (*label)++;
-                    }
-                } else {
-                    image->val[i][j]
-                      = MIN(image->val[i - 1][j], image->val[i][j - 1]);
-                }
-            }
-        }
-    }
-
-    for (size_t i = image->h; i > 0;) {
-        i -= 1;
-        for (size_t j = image->w; j > 0;) {
-            j -= 1;
-            if (image->val[i][j] > 1.f) {
-                if (i == image->h - 1 || j == image->w - 1) {
-                    if (i == image->h - 1 && j != image->w - 1
-                        && image->val[i][j + 1] > 1.f) {
-                        image->val[i][j] = image->val[i][j + 1];
-                    } else if (i != image->h - 1 && j == image->w - 1
-                               && image->val[i + 1][j] > 1.f) {
-                        image->val[i][j] = image->val[i + 1][j];
-                    }
-                } else if (image->val[i + 1][j] < 1.f
-                           || image->val[i][j + 1] < 1.f) {
-                    if (image->val[i + 1][j] > 1.f) {
-                        image->val[i][j] = image->val[i + 1][j];
-                    } else if (image->val[i][j + 1] > 1.f) {
-                        image->val[i][j] = image->val[i][j + 1];
-                    }
-                } else {
-                    image->val[i][j]
-                      = MIN(image->val[i + 1][j], image->val[i][j + 1]);
-                }
-            }
-        }
-    }
 }
