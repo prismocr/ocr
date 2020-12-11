@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "segmentation/segmentation.h"
 
 typedef struct dict Dict;
 
@@ -11,8 +12,8 @@ struct dict {
     char *words;
     size_t pos;
 };
-
-void postprocessing(char *post_process);
+void post_process_words(Page *page);
+// void postprocessing(char *post_process);
 void dict_load(const char *path, Dict *dict);
 int dict_iterate(Dict *dict, char *word);
 void dict_free(Dict *dict);

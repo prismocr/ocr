@@ -28,8 +28,10 @@ int word_new(size_t x, size_t y, size_t w, size_t h, Word **word) {
                     .w = w,
                     .h = h,
                     .length = 0,
+                    .num_candidates = 0,
                     .letters = NULL,
-                    .next = NULL};
+                    .next = NULL,
+                    .candidates = NULL};
 
     mll_new(&(*word)->images);
 
@@ -41,6 +43,11 @@ void word_free(Word **word) {
 
     mll_free(&(*word)->images);
     free((*word)->letters);
+
+    for(size_t i = 0; i < (*word)->num_candidates; i++){
+        free((*word)->candidates[i]);
+    }
+    free((*word)->candidates);
 
     free(*word);
     *word = NULL;

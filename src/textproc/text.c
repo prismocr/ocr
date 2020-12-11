@@ -1,7 +1,9 @@
 #include "textproc/text.h"
+#include "segmentation/segmentation.h"
 #include <ctype.h>
 #include <string.h>
 
+// TODO : Rewrite
 void postprocessing(char *post_process) {
     FILE *f_read;
     FILE *f_save;
@@ -34,6 +36,35 @@ void postprocessing(char *post_process) {
     fclose(f_save);
 }
 
+void post_process_words(Page *page) {
+    Dict dict;
+    dict_load("./assets/words_en.txt", &dict);
+
+    Page *actual_page = page;
+    while (actual_page) {
+        Region *actual_region = actual_page->regions;
+        while (actual_region) {
+            Line *actual_line = actual_region->lines;
+            while (actual_line) {
+                Word *actual_word = actual_line->words;
+                while (actual_word) {
+                    char *result = calloc(2048, sizeof(char));
+                    dict_find_closest_word(&dict, actual_word->letters, result);
+                    //printf("closest of %s is %s\n", actual_word->letters,result);
+                    if(result)
+                        free(result);
+                    else
+                        printf("No more memory");
+                    actual_word = actual_word->next;
+                }
+                actual_line = actual_line->next;
+            }
+            actual_region = actual_region->next;
+        }
+        actual_page = actual_page->next;
+    }
+}
+
 void dict_load(const char *path, Dict *dict) {
     FILE *f = fopen(path, "rb");
     fseek(f, 0, SEEK_END);
@@ -51,6 +82,8 @@ void dict_load(const char *path, Dict *dict) {
     dict->words[dict->size] = 0;
 }
 
+//int
+
 void dict_find_closest_word(Dict *dict, char *word, char *result) {
     if (strlen(word) == 1) {
         strcpy(result, word);
@@ -60,6 +93,9 @@ void dict_find_closest_word(Dict *dict, char *word, char *result) {
     char *w = calloc(100, sizeof(char));
     size_t min = 999;
     dict->pos = 0;
+
+    size_t score = 0;
+    size_t score_max = 10;
 
     size_t len = strlen(word);
 
@@ -76,6 +112,11 @@ void dict_find_closest_word(Dict *dict, char *word, char *result) {
         if (distance < min) {
             min = distance;
             strcpy(result, w);
+            score = 0;
+        } else if (score < score_max && distance == min && strlen(result) + strlen(w) < 4096) {
+            strcat(result, "/");
+            strcat(result, w);
+            score++;
         }
 
         if (distance == 0)
