@@ -48,13 +48,16 @@ void post_process_words(Page *page) {
             while (actual_line) {
                 Word *actual_word = actual_line->words;
                 while (actual_word) {
-                    char *result = calloc(2048, sizeof(char));
-                    dict_find_closest_word(&dict, actual_word->letters, result);
-                    //printf("closest of %s is %s\n", actual_word->letters,result);
-                    if(result)
-                        free(result);
-                    else
-                        printf("No more memory");
+                    if (actual_word->length > 3) {
+                        actual_word->candidates = calloc(256, sizeof(char));
+                        dict_find_closest_word(&dict, actual_word->letters,
+                                               actual_word->candidates);
+                        // printf("closest of %s is %s and len is %zu\n",
+                        // actual_word->letters, actual_word->candidates,
+                        // actual_word->length);
+                    } else {
+                        actual_word->candidates = NULL;
+                    }
                     actual_word = actual_word->next;
                 }
                 actual_line = actual_line->next;
@@ -63,6 +66,7 @@ void post_process_words(Page *page) {
         }
         actual_page = actual_page->next;
     }
+    dict_free(&dict);
 }
 
 void dict_load(const char *path, Dict *dict) {
@@ -81,11 +85,8 @@ void dict_load(const char *path, Dict *dict) {
 
     dict->words[dict->size] = 0;
 }
-
-//int
-
 void dict_find_closest_word(Dict *dict, char *word, char *result) {
-    if (strlen(word) == 1) {
+    if (strlen(word) == 3) {
         strcpy(result, word);
         return;
     }
@@ -97,7 +98,7 @@ void dict_find_closest_word(Dict *dict, char *word, char *result) {
     size_t score = 0;
     size_t score_max = 10;
 
-    size_t len = strlen(word);
+    size_t len = strlen(word); // STRTOK !!
 
     while (dict_iterate(dict, w)) {
         if (!strcmp(w, word)) {
@@ -113,7 +114,8 @@ void dict_find_closest_word(Dict *dict, char *word, char *result) {
             min = distance;
             strcpy(result, w);
             score = 0;
-        } else if (score < score_max && distance == min && strlen(result) + strlen(w) < 4096) {
+        } else if (score < score_max && distance == min
+                   && strlen(result) + strlen(w) < 256) {
             strcat(result, "/");
             strcat(result, w);
             score++;

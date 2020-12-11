@@ -252,7 +252,7 @@ int network_load(const char *path, Network *out) {
     for (size_t i = 0; i < nb_layers; i++) {
         size_t unused = fread(&sizes[i], sizeof(size_t), 1, f);
         UNUSED(unused);
-        printf("size layer %ld: %ld\n",i,sizes[i]);
+        // printf("size layer %ld: %ld\n", i, sizes[i]);
     }
     Network network = network_new(nb_layers, sizes);
 
