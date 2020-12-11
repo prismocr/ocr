@@ -29,7 +29,6 @@ Layer layer_new(size_t nb_neurons, Layer *prev_layer, Layer *next_layer,
 
     layer.values = (float *) calloc(nb_neurons, sizeof(float));
     initialize_biases_and_weights(&layer);
-    initialize_deltas(&layer);
 
     initialize_neurons(&layer);
 
@@ -79,8 +78,20 @@ float randn() {
 void initialize_biases_and_weights(Layer *layer) {
     size_t nb_neurons = layer->nb_neurons;
     if (layer->prev_layer == NULL) {
+        // Weights and Biases
         layer->biases = NULL;
         layer->weights.val = NULL;
+
+        // Deltas
+        layer->deltas = NULL;
+        layer->d_weights.val = NULL;
+        layer->d_biases = NULL;
+        layer->z = NULL;
+
+        // Velocity
+        layer->v_weights.val = NULL;
+        layer->v_biases = NULL;
+
     } else {
         // Initializing biases
         layer->biases = (float *) malloc(nb_neurons * sizeof(float));
@@ -97,23 +108,18 @@ void initialize_biases_and_weights(Layer *layer) {
                   = randn() / sqrt(layer->prev_layer->nb_neurons);
             }
         }
-        /*matrix_randomize(-1.0f, 1.0f, &(layer->weights));*/
-    }
-}
 
-void initialize_deltas(Layer *layer) {
-    size_t nb_neurons = layer->nb_neurons;
-    if (layer->prev_layer == NULL) {
-        layer->deltas = NULL;
-        layer->d_weights.val = NULL;
-        layer->d_biases = NULL;
-        layer->z = NULL;
-    } else {
+        // Deltas
         layer->deltas = (float *) calloc(nb_neurons, sizeof(float));
         matrix_new(nb_neurons, layer->prev_layer->nb_neurons,
                    &(layer->d_weights));
         layer->d_biases = (float *) calloc(nb_neurons, sizeof(float));
         layer->z = (float *) calloc(nb_neurons, sizeof(float));
+
+        // Velocity
+        matrix_new(nb_neurons, layer->prev_layer->nb_neurons,
+                   &(layer->v_weights));
+        layer->v_biases = (float *) calloc(nb_neurons, sizeof(float));
     }
 }
 

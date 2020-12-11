@@ -462,11 +462,14 @@ void image_normalize_brightness(Matrix *image) {
 }
 
 Matrix pre_process_char(Matrix *image) {
+    // Matrix cpy;
+    // matrix_copy(*image, &cpy);
+    // return cpy;
     // image_threshold_otsu(&image);
     Matrix img = trim(image);
     Matrix s = scale_square(&img, 28);
 
-    image_levels(&s, 3);
+    image_levels(&s, 10);
     image_invert_color(255.f, &s);
     image_normalize_brightness(&s);
 

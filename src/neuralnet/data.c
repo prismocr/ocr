@@ -11,7 +11,8 @@
 
 #define LOWER_LETTER_ORG 0
 #define UPPER_LETTER_ORG 26
-#define SPECIAL_CHAR_ORG 52
+#define DIGIT_ORG 52
+#define SPECIAL_CHAR_ORG 62
 
 int dataset_new(Dataset *dataset, size_t size) {
     assert(size > 0);
@@ -68,11 +69,37 @@ char output_to_char(float *output) {
         }
     }
 
-    if (max <= 25)
+    if (max < UPPER_LETTER_ORG)
         return max + 'a';
-    if (max <= 51)
-        return max - 26 + 'A';
-    return max - 52 + '!';
+    if (max < DIGIT_ORG)
+        return max - UPPER_LETTER_ORG + 'A';
+    if (max < SPECIAL_CHAR_ORG)
+        return max - DIGIT_ORG + '0';
+    switch (max - SPECIAL_CHAR_ORG) {
+        case 0:
+            return '!';
+        case 1:
+            return '\"';
+        case 2:
+            return '\'';
+        case 3:
+            return '(';
+        case 4:
+            return ')';
+        case 5:
+            return ',';
+        case 6:
+            return '-';
+        case 7:
+            return '.';
+        case 8:
+            return ':';
+        case 9:
+            return ';';
+        case 10:
+            return '?';
+    }
+    return '#';
 }
 
 void dataset_double_capacity(Dataset *dataset) {
@@ -103,8 +130,44 @@ void data_init_target(char character, Vector *target) {
         target->val[character - 'a' + LOWER_LETTER_ORG] = 1.f;
     } else if (character >= 'A' && character <= 'Z') {
         target->val[character - 'A' + UPPER_LETTER_ORG] = 1.f;
-    } else if (character >= 33 && character <= 64) {
-        target->val[character - 33 + SPECIAL_CHAR_ORG] = 1.f;
+    } else if (character >= '0' && character <= '9') {
+        target->val[character - '0' + DIGIT_ORG] = 1.f;
+    } else {
+        switch (character) {
+            case '!':
+                target->val[SPECIAL_CHAR_ORG + 0] = 1.f;
+                break;
+            case '\"':
+                target->val[SPECIAL_CHAR_ORG + 1] = 1.f;
+                break;
+            case '\'':
+                target->val[SPECIAL_CHAR_ORG + 2] = 1.f;
+                break;
+            case '(':
+                target->val[SPECIAL_CHAR_ORG + 3] = 1.f;
+                break;
+            case ')':
+                target->val[SPECIAL_CHAR_ORG + 4] = 1.f;
+                break;
+            case ',':
+                target->val[SPECIAL_CHAR_ORG + 5] = 1.f;
+                break;
+            case '-':
+                target->val[SPECIAL_CHAR_ORG + 6] = 1.f;
+                break;
+            case '.':
+                target->val[SPECIAL_CHAR_ORG + 7] = 1.f;
+                break;
+            case ':':
+                target->val[SPECIAL_CHAR_ORG + 8] = 1.f;
+                break;
+            case ';':
+                target->val[SPECIAL_CHAR_ORG + 9] = 1.f;
+                break;
+            case '?':
+                target->val[SPECIAL_CHAR_ORG + 10] = 1.f;
+                break;
+        }
     }
 }
 

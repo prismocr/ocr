@@ -61,7 +61,7 @@ float *network_feed_forward(Network *network, float *input) {
 }
 
 void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
-                 size_t batch_size, float learning_rate,
+                 size_t batch_size, float learning_rate, float momentum,
                  Dataset *dataset_evaluation, int monitor_training) {
     Dataset *batches = initialize_batches(dataset_training, batch_size);
     size_t nb_batches = dataset_training->size / batch_size, nb_correct_output;
@@ -79,10 +79,10 @@ void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
                 network_backpropagation(network, batches[j].datas[i]);
             }
             // Update network's weights and biases
-            apply_grad(network, batch_size, learning_rate);
+            apply_grad(network, batch_size, learning_rate, momentum);
         }
         printf("Epoch %ld complete\n", i);
-        if (monitor_training) {
+        if (monitor_training && dataset_evaluation->size > 0) {
             nb_correct_output
               = network_evaluate(network, dataset_evaluation, 0);
             printf("Epoch %ld: %ld/%ld : %f\n", i, nb_correct_output,
@@ -125,16 +125,24 @@ void network_backpropagation(Network *network, Data data) {
     }
 }
 
-void apply_grad(Network *network, size_t size_batch, float learning_rate) {
+void apply_grad(Network *network, size_t size_batch, float learning_rate,
+                float momentum) {
     size_t i, j, k;
     float scale = learning_rate / size_batch;
     for (i = 1; i < network->nb_layers; i++) {
         Layer *layer = &network->layers[i];
         for (j = 0; j < layer->nb_neurons; j++) {
-            layer->biases[j] = scale * layer->d_biases[j];
+            layer->v_biases[j]
+              = momentum * layer->v_biases[j] - scale * layer->d_biases[j];
+            layer->biases[j] += layer->v_biases[j];
             layer->d_biases[j] = 0.f;
             for (k = 0; k < layer->prev_layer->nb_neurons; k++) {
-                layer->weights.val[j][k] -= scale * layer->d_weights.val[j][k];
+                layer->v_weights.val[j][k]
+                  = momentum * layer->v_weights.val[j][k]
+                    - scale * layer->d_weights.val[j][k];
+                layer->weights.val[j][k] += layer->v_weights.val[j][k];
+                // layer->weights.val[j][k] -= scale *
+                // layer->d_weights.val[j][k];
                 layer->d_weights.val[j][k] = 0.f;
             }
         }

@@ -8,6 +8,7 @@
 #include "imgproc/rotation.h"
 #include "utils/bitmap.h"
 #include "utils/error.h"
+#include "textproc/text.h"
 
 char network_get_result(Network *network, Matrix *image) {
     float input[image->w * image->w];
@@ -16,16 +17,15 @@ char network_get_result(Network *network, Matrix *image) {
 }
 
 void recognize_word(MatrixNode *image, char *letters, Network *network) {
-    while (image) {
+    for (; image; image = image->next) {
         *letters = network_get_result(network, &image->val);
         printf("%c", *letters);
-        image = image->next;
         letters++;
     }
 }
 
 void recognize_line(Word *word, Network *network) {
-    while (word) {
+    for (; word; word = word->next) {
         // printf("x:%ld y:%ld w:%ld h:%ld length:%ld\n",word->x, word->y,
         // word->w, word->h, word->length);
         word->length = word->images.length;
@@ -33,31 +33,27 @@ void recognize_line(Word *word, Network *network) {
         if (word->length)
             recognize_word(word->images.first, word->letters, network);
         printf(" ");
-        word = word->next;
     }
 }
 
 void recognize_region(Line *line, Network *network) {
-    while (line) {
+    for (; line; line = line->next) {
         recognize_line(line->words, network);
         printf("\n");
-        line = line->next;
     }
 }
 
 void recognize_page(Region *region, Network *network) {
-    while (region) {
+    for (; region; region = region->next) {
         recognize_region(region->lines, network);
         printf("\n");
-        region = region->next;
     }
 }
 
 void recognize(Page *page, Network *network) {
-    while (page) {
+    for (; page; page = page->next) {
         recognize_page(page->regions, network);
         printf("\n=======================================\n");
-        page = page->next;
     }
 }
 
@@ -79,5 +75,8 @@ void ocr(Network *network, char *image_path) {
     // Recognition
     recognize(page, network);
     // Export
-    output_save_default(page, "out.txt");
+    // output_save_default(page, "post.txt");
+    // output_save_multi_column(page, "outmc.txt");
+
+    // postprocessing("post.txt"); //, "postprocessed.txt");
 }

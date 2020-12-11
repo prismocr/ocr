@@ -12,7 +12,9 @@
 #include "neuralnet/network.h"
 #include "neuralnet/layer.h"
 #include "neuralnet/output.h"
+#include "neuralnet/model.h"
 #include "recognition/recognition.h"
+#include "textproc/text.h"
 
 void sharpen_demo(int argc, char *argv[]) {
     Matrix image;
@@ -217,7 +219,7 @@ void network_demo(int argc, char *argv[]) {
 
         size_t sizes_static[] = {2, 2, 1};
         network = network_new(nb_layers, sizes_static);
-        network_sgd(&network, &dataset, 100000, 4, 1.f, &dataset, 1);
+        network_sgd(&network, &dataset, 100000, 4, 1.f, 0.5, &dataset, 1);
     } else if (!strcmp("add", argv[2])) {
         // --- Create dataset---
         dataset_new(&dataset, 8);
@@ -233,7 +235,7 @@ void network_demo(int argc, char *argv[]) {
 
         size_t sizes_static[] = {3, 3, 2};
         network = network_new(nb_layers, sizes_static);
-        network_sgd(&network, &dataset, 1000, 4, 12.f, &dataset, 1);
+        network_sgd(&network, &dataset, 1000, 4, 12.f, 0.5, &dataset, 1);
     }
     network_print_results(network, dataset);
 
@@ -498,6 +500,8 @@ void save_pages_demo() {
 
 void output_save_multi_column_demo() {
     // PAGE 1
+    printf("output save multi column: TOFIX");
+    return;
     Page p;
     Region r1;
     Line l1;
@@ -686,7 +690,8 @@ void output_save_multi_column_demo() {
     p.w = 100 + 2 * (40 * (7 + 8));
     p.h = 40 * 4;
 
-    output_save_multi_column(&p, "testpagesregions.txt");
+    printf("saving mc...\n");
+    output_save_multi_column(&p, "tprs.txt");
 }
 
 int trim_demo(int argc, char *argv[]) {
@@ -776,10 +781,14 @@ int demo_ocr(int argc, char *argv[]) {
         printf("Missing image path.\n");
         return 1;
     }
+    if (argc < 4) {
+        printf("Missing network name.\n");
+        return 1;
+    }
 
     Network network;
-    network_load("net99.65.hex", &network);
-    ocr(&network, argv[2]);
+    network_load(argv[2], &network);
+    ocr(&network, argv[3]);
 
     return 0;
 }
@@ -789,13 +798,77 @@ int demo_ocr_char(int argc, char *argv[]) {
         printf("Missing image path.\n");
         return 1;
     }
+    if (argc < 4) {
+        printf("Missing network name.\n");
+        return 1;
+    }
 
     Network network;
-    network_load("net99.65.hex", &network);
+    network_load(argv[2], &network);
 
     Matrix image;
-    exit_on_error(bitmap_load(argv[2], &image));
+    exit_on_error(bitmap_load(argv[3], &image));
     printf("Result : %c\n", network_get_result(&network, &image));
+
+    return 0;
+}
+
+int demo_ocr_train() {
+    srand(time(NULL));
+
+    N_cfg cfg = {.epochs = 50,
+                 .batch_size = 5,
+                 .eta = 0.075f,
+                 .momentum = 0.7f,
+                 .test_data_ratio = 0.2f,
+                 .dataset_path = "dataset/",
+                 .nb_layers = 3,
+                 .layer_sizes
+                 = (size_t[]){IMAGE_WIDTH * IMAGE_WIDTH, 500, OUTPUT_SIZE}};
+
+    Model model;
+    char netword_name[14];
+
+    model_new(&cfg, &model);
+
+    model_train(&model, 1);
+    float accuracy = model_evaluate(&model);
+    sprintf(netword_name, "net%.2f.hex", accuracy);
+    network_save(netword_name, &model.network);
+
+    model_free(&model);
+
+    return 0;
+}
+
+int words_demo() {
+    printf("loading\n");
+    Dict dict;
+    dict_load("./assets/words_en.txt", &dict);
+
+    clock_t begin = clock();
+
+    /* here, do your time-consuming job */
+
+    for (size_t i = 0; i < 100; i++) {
+        char sentence[] = "hello i thonk you for this test";
+        char *word = strtok(sentence, " ");
+
+        while (word != NULL) {
+            char *result = calloc(100, sizeof(char));
+            dict_find_closest_word(&dict, word, result);
+
+            // printf("closest of %s is %s\n", word, result);
+            word = strtok(NULL, " ");
+        }
+    }
+
+    clock_t end = clock();
+    double time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
+    printf("%f\n", time_spent);
+
+    printf("loaded\n");
+    dict_free(&dict);
 
     return 0;
 }
@@ -874,7 +947,6 @@ int demo(int argc, char *argv[]) {
         return 0;
     }
     if (!strcmp(c, "save_pages_m")) {
-        // save_pages_demo(argc, argv);
         output_save_multi_column_demo();
         return 0;
     }
@@ -896,6 +968,15 @@ int demo(int argc, char *argv[]) {
     if (!strcmp(c, "ocr_char")) {
         return demo_ocr_char(argc, argv);
     }
+
+    if (!strcmp(c, "train")) {
+        return demo_ocr_train();
+    }
+
+    if (!strcmp(c, "words")) {
+        return words_demo();
+    }
+
     printf("what?\n");
 
     return 1;

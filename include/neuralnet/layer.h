@@ -20,6 +20,8 @@ struct Layer {
     float *deltas;
     float *d_biases;
     Matrix d_weights;
+    float *v_biases;
+    Matrix v_weights;
 
     l2v layer_act_func;
     f2f act_func_prime;
@@ -53,12 +55,7 @@ void layer_free(Layer *layer);
  * @param number of neurons of the layer
  */
 void initialize_biases_and_weights(Layer *layer);
-/**
- * Initializes deltas of layer to 0, used for stochastic gradient descent
- *
- * @param layer to initialize
- */
-void initialize_deltas(Layer *layer);
+
 /**
  * Initializes deltas of layer to 0, used for stochastic gradient descent
  *
