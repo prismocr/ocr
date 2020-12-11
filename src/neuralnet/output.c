@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "segmentation/segmentation.h"
 #include "neuralnet/output.h"
@@ -76,6 +77,60 @@ int output_save_default(Page *page, const char *path) {
                     save_char('\n', f);
             }
             actual_region = actual_region->next;
+            save_char('\n', f);
+        }
+        actual_page = actual_page->next;
+        if (actual_page) {
+            save_char('\n', f);
+            save_char('\n', f);
+        }
+    }
+    fclose(f);
+    return 0;
+}
+
+int output_save_corrector(Page *page, const char *path) {
+    FILE *f;
+    f = fopen(path, "w");
+    Page *actual_page = page;
+    while (actual_page) {
+        Region *actual_region = actual_page->regions;
+        while (actual_region) {
+            save_char('\t', f);
+            Line *actual_line = actual_region->lines;
+            while (actual_line) {
+                Word *actual_word = actual_line->words;
+                while (actual_word) {
+                    if (!actual_word->candidates) {
+                        size_t length = actual_word->length;
+                        for (size_t i = 0; i < length; i++) {
+                            save_char(actual_word->letters[i], f);
+                        }
+                    } else {
+                        save_char('[', f);
+                        size_t length = actual_word->length;
+                        for (size_t i = 0; i < length; i++) {
+                            save_char(actual_word->letters[i], f);
+                        }
+                        save_char('=', f);
+                        length = strlen(actual_word->candidates);
+                        // printf("Len = %zu, %c\n", length, );
+                        for (size_t i = 0; i < length; i++) {
+                            save_char(actual_word->candidates[i], f);
+                        }
+                        save_char(']', f);
+                    }
+
+                    actual_word = actual_word->next;
+                    if (actual_word)
+                        save_char(' ', f);
+                }
+                actual_line = actual_line->next;
+                if (actual_line)
+                    save_char('\n', f);
+            }
+            actual_region = actual_region->next;
+            save_char('\n', f);
         }
         actual_page = actual_page->next;
         if (actual_page) {
