@@ -824,8 +824,7 @@ int demo_ocr_train() {
                  .dataset_path = "dataset/",
                  .nb_layers = 3,
                  .layer_sizes
-                 = (size_t[]){IMAGE_WIDTH * IMAGE_WIDTH, 500, OUTPUT_SIZE}
-                };
+                 = (size_t[]){IMAGE_WIDTH * IMAGE_WIDTH, 500, OUTPUT_SIZE}};
 
     Model model;
     char netword_name[14];

@@ -75,7 +75,7 @@ char output_to_char(float *output) {
         return max - UPPER_LETTER_ORG + 'A';
     if (max < SPECIAL_CHAR_ORG)
         return max - DIGIT_ORG + '0';
-    switch(max - SPECIAL_CHAR_ORG){
+    switch (max - SPECIAL_CHAR_ORG) {
         case 0:
             return '!';
         case 1:
@@ -132,41 +132,40 @@ void data_init_target(char character, Vector *target) {
         target->val[character - 'A' + UPPER_LETTER_ORG] = 1.f;
     } else if (character >= '0' && character <= '9') {
         target->val[character - '0' + DIGIT_ORG] = 1.f;
-    }
-    else{
-        switch(character){
+    } else {
+        switch (character) {
             case '!':
-                target->val[SPECIAL_CHAR_ORG+0] = 1.f;
+                target->val[SPECIAL_CHAR_ORG + 0] = 1.f;
                 break;
             case '\"':
-                target->val[SPECIAL_CHAR_ORG+1] = 1.f;
+                target->val[SPECIAL_CHAR_ORG + 1] = 1.f;
                 break;
             case '\'':
-                target->val[SPECIAL_CHAR_ORG+2] = 1.f;
+                target->val[SPECIAL_CHAR_ORG + 2] = 1.f;
                 break;
             case '(':
-                target->val[SPECIAL_CHAR_ORG+3] = 1.f;
+                target->val[SPECIAL_CHAR_ORG + 3] = 1.f;
                 break;
             case ')':
-                target->val[SPECIAL_CHAR_ORG+4] = 1.f;
+                target->val[SPECIAL_CHAR_ORG + 4] = 1.f;
                 break;
             case ',':
-                target->val[SPECIAL_CHAR_ORG+5] = 1.f;
+                target->val[SPECIAL_CHAR_ORG + 5] = 1.f;
                 break;
             case '-':
-                target->val[SPECIAL_CHAR_ORG+6] = 1.f;
+                target->val[SPECIAL_CHAR_ORG + 6] = 1.f;
                 break;
             case '.':
-                target->val[SPECIAL_CHAR_ORG+7] = 1.f;
+                target->val[SPECIAL_CHAR_ORG + 7] = 1.f;
                 break;
             case ':':
-                target->val[SPECIAL_CHAR_ORG+8] = 1.f;
+                target->val[SPECIAL_CHAR_ORG + 8] = 1.f;
                 break;
             case ';':
-                target->val[SPECIAL_CHAR_ORG+9] = 1.f;
+                target->val[SPECIAL_CHAR_ORG + 9] = 1.f;
                 break;
             case '?':
-                target->val[SPECIAL_CHAR_ORG+10] = 1.f;
+                target->val[SPECIAL_CHAR_ORG + 10] = 1.f;
                 break;
         }
     }
