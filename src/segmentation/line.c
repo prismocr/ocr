@@ -75,8 +75,9 @@ int line_segment_morph_hist(Matrix region, Line **lines) {
                 }
 
                 Line *current_line = NULL;
-                if (line_new(0, prev_top == 0 ? 0 : prev_top + 1, region.w,
-                             (bot + i) / 2 - prev_top, &current_line)) {
+                size_t y = prev_top;
+                size_t h = i == hist.size ? i - 1 - y : i - y;
+                if (line_new(0, y, region.w, h, &current_line)) {
                     return 1;
                 }
 
