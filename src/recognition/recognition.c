@@ -8,6 +8,7 @@
 #include "imgproc/rotation.h"
 #include "utils/bitmap.h"
 #include "utils/error.h"
+#include "textproc/text.h"
 
 char network_get_result(Network *network, Matrix *image) {
     float input[image->w * image->w];
@@ -74,5 +75,8 @@ void ocr(Network *network, char *image_path) {
     // Recognition
     recognize(page, network);
     // Export
-    output_save_default(page, "out.txt");
+    // output_save_default(page, "post.txt");
+    // output_save_multi_column(page, "outmc.txt");
+
+    // postprocessing("post.txt"); //, "postprocessed.txt");
 }

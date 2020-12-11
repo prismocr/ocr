@@ -14,6 +14,7 @@
 #include "neuralnet/output.h"
 #include "neuralnet/model.h"
 #include "recognition/recognition.h"
+#include "textproc/text.h"
 
 void sharpen_demo(int argc, char *argv[]) {
     Matrix image;
@@ -499,6 +500,8 @@ void save_pages_demo() {
 
 void output_save_multi_column_demo() {
     // PAGE 1
+    printf("output save multi column: TOFIX");
+    return;
     Page p;
     Region r1;
     Line l1;
@@ -687,7 +690,8 @@ void output_save_multi_column_demo() {
     p.w = 100 + 2 * (40 * (7 + 8));
     p.h = 40 * 4;
 
-    output_save_multi_column(&p, "testpagesregions.txt");
+    printf("saving mc...\n");
+    output_save_multi_column(&p, "tprs.txt");
 }
 
 int trim_demo(int argc, char *argv[]) {
@@ -809,7 +813,7 @@ int demo_ocr_char(int argc, char *argv[]) {
     return 0;
 }
 
-int demo_ocr_train(){
+int demo_ocr_train() {
     srand(time(NULL));
 
     N_cfg cfg = {.epochs = 50,
@@ -837,6 +841,39 @@ int demo_ocr_train(){
 
     return 0;
 }
+
+int words_demo() {
+    printf("loading\n");
+    Dict dict;
+    dict_load("./assets/words_en.txt", &dict);
+
+    clock_t begin = clock();
+
+    /* here, do your time-consuming job */
+
+    for (size_t i = 0; i < 100; i++) {
+        char sentence[] = "hello i thonk you for this test";
+        char *word = strtok(sentence, " ");
+
+        while (word != NULL) {
+            char *result = calloc(100, sizeof(char));
+            dict_find_closest_word(&dict, word, result);
+
+            // printf("closest of %s is %s\n", word, result);
+            word = strtok(NULL, " ");
+        }
+    }
+
+    clock_t end = clock();
+    double time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
+    printf("%f\n", time_spent);
+
+    printf("loaded\n");
+    dict_free(&dict);
+
+    return 0;
+}
+
 int demo(int argc, char *argv[]) {
     char *c = argv[1];
 
@@ -911,7 +948,6 @@ int demo(int argc, char *argv[]) {
         return 0;
     }
     if (!strcmp(c, "save_pages_m")) {
-        // save_pages_demo(argc, argv);
         output_save_multi_column_demo();
         return 0;
     }
@@ -937,6 +973,11 @@ int demo(int argc, char *argv[]) {
     if (!strcmp(c, "train")) {
         return demo_ocr_train();
     }
+
+    if (!strcmp(c, "words")) {
+        return words_demo();
+    }
+
     printf("what?\n");
 
     return 1;
