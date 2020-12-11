@@ -98,7 +98,7 @@ void dict_find_closest_word(Dict *dict, char *word, char *result) {
     size_t score = 0;
     size_t score_max = 10;
 
-    size_t len = strlen(word) - 1; // STRTOK !!
+    size_t len = strlen(word); // STRTOK !!
 
     while (dict_iterate(dict, w)) {
         if (!strcmp(w, word)) {

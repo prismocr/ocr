@@ -37,7 +37,7 @@ int segment(Matrix image, Page **page) {
             Matrix line_image
               = image_crop(region->x + line->x, region->y + line->y, line->w,
                            line->h, image);
-            word_segment(line_image, &line->words);
+            word_segment_prob(line_image, &line->words);
 
             size_t k = 0;
             for (Word *word = line->words; word != NULL; word = word->next) {
