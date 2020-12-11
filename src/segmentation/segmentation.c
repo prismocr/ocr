@@ -29,7 +29,6 @@ int segment(Matrix image, Page **page) {
           = image_crop(region->x, region->y, region->w, region->h, image);
         sprintf(buff, "seg/region-%zu.bmp", i);
         bitmap_save(buff, &region_image);
-
         line_segment_morph_hist(region_image, &region->lines);
 
         size_t j = 0;
@@ -38,9 +37,6 @@ int segment(Matrix image, Page **page) {
             Matrix line_image
               = image_crop(region->x + line->x, region->y + line->y, line->w,
                            line->h, image);
-            sprintf(buff, "seg/line-%zu-%zu.bmp", i, j);
-            bitmap_save(buff, &line_image);
-
             word_segment(line_image, &line->words);
 
             size_t k = 0;
@@ -71,9 +67,6 @@ int segment(Matrix image, Page **page) {
                 matrix_free(&word_image);
             }
 
-            j++;
-            matrix_free(&line_image);
-
             if (line->words == NULL) {
                 Line *next = line->next;
                 line_free(&line);
@@ -84,13 +77,16 @@ int segment(Matrix image, Page **page) {
                     prev_line->next = next;
                 }
             } else {
+                sprintf(buff, "seg/line-%zu-%zu.bmp", i, j);
+                bitmap_save(buff, &line_image);
+
                 prev_line = line;
                 line = line->next;
             }
-        }
 
-        i++;
-        matrix_free(&region_image);
+            j++;
+            matrix_free(&line_image);
+        }
 
         if (region->lines == NULL) {
             Region *next = region->next;
@@ -102,9 +98,15 @@ int segment(Matrix image, Page **page) {
                 prev_region->next = next;
             }
         } else {
+            sprintf(buff, "seg/region-%zu.bmp", i);
+            bitmap_save(buff, &region_image);
+
             prev_region = region;
             region = region->next;
         }
+
+        i++;
+        matrix_free(&region_image);
     }
 
     return 0;

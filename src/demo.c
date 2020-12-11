@@ -816,15 +816,15 @@ int demo_ocr_char(int argc, char *argv[]) {
 int demo_ocr_train() {
     srand(time(NULL));
 
-    N_cfg cfg = {.epochs = 30,
+    N_cfg cfg = {.epochs = 50,
                  .batch_size = 5,
-                 .eta = 0.2,
-                 .momentum = 0.1f,
-                 .test_data_ratio = 0.0f,
+                 .eta = 0.15f,
+                 .momentum = 0.0f,
+                 .test_data_ratio = 0.2f,
                  .dataset_path = "dataset/",
                  .nb_layers = 3,
                  .layer_sizes
-                 = (size_t[]){IMAGE_WIDTH * IMAGE_WIDTH, 100, OUTPUT_SIZE}};
+                 = (size_t[]){IMAGE_WIDTH * IMAGE_WIDTH, 500, OUTPUT_SIZE}};
 
     Model model;
     char netword_name[14];
