@@ -68,7 +68,7 @@ int character_segment_cc(Matrix word, MatrixLinkedList *characters) {
     bitmap_save(buff, &word_copy);
 
     float class = 256.f;
-    connected_components_labeling(&word_copy, &class);
+    cc_labeling(&word_copy, &class);
 
     for (float c = 256.f; c < class; c++) {
         size_t top, bot, left, right;

@@ -4,7 +4,7 @@
 
 #define MIN(a, b) (a <= b ? a : b)
 
-void connected_components_labeling(Matrix *image, float *label) {
+void cc_labeling(Matrix *image, float *label) {
     for (size_t i = 0; i < image->h; i++) {
         for (size_t j = 0; j < image->w; j++) {
             if (image->val[i][j] == 255.f) {

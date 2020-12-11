@@ -94,7 +94,7 @@ int region_segment_rlsa(Matrix page, Region **regions) {
     matrix_free(&kernel);
 
     float class = 256.f;
-    connected_components_labeling(&horizontal_morph_im, &class);
+    cc_labeling(&horizontal_morph_im, &class);
 
     // consider bounding box as region of interest
     Region *first_region = NULL;
