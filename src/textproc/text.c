@@ -52,19 +52,25 @@ void dict_load(const char *path, Dict *dict) {
 }
 
 void dict_find_closest_word(Dict *dict, char *word, char *result) {
+    if (strlen(word) == 1) {
+        strcpy(result, word);
+        return;
+    }
+
     char *w = calloc(100, sizeof(char));
     size_t min = 999;
     dict->pos = 0;
 
+    size_t len = strlen(word);
+
     while (dict_iterate(dict, w)) {
-        if (!strcmp(w, word) || strlen(word) == 1) {
+        if (!strcmp(w, word)) {
             strcpy(result, word);
             break;
         }
 
-        if (strlen(w) != strlen(word)) {
+        if (strlen(w) != len)
             continue;
-        }
 
         size_t distance = levenshtein(w, word);
         if (distance < min) {
@@ -75,6 +81,7 @@ void dict_find_closest_word(Dict *dict, char *word, char *result) {
         if (distance == 0)
             break;
     }
+
     free(w);
     dict->pos = 0;
 }
