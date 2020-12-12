@@ -54,9 +54,9 @@ void post_process_words(const char *path, Page *page) {
                         actual_word->candidates = calloc(256, sizeof(char));
                         find_closest_word(&dict, actual_word->letters,
                                           actual_word->candidates);
-                        // printf("closest of %s is %s and len is %zu\n",
-                        // actual_word->letters, actual_word->candidates,
-                        // actual_word->length);
+                        if (!strcmp(actual_word->candidates,
+                                    actual_word->letters))
+                            actual_word->candidates = NULL;
                     } else {
                         actual_word->candidates = NULL;
                     }
@@ -73,10 +73,6 @@ void post_process_words(const char *path, Page *page) {
 
 void find_closest_word(Dict *dict, char *word, char *result) {
     size_t len = strlen(word);
-    if (len < 3) {
-        strcpy(result, word);
-        return;
-    }
 
     char *w = calloc(100, sizeof(char));
     size_t min = 999;

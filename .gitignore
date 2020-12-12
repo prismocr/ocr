@@ -17,3 +17,5 @@ tags
 .vscode
 res/layout/*.glade~
 tmp
+network_perfs/*.txt
+network_perfs/*.png
