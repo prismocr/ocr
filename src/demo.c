@@ -858,7 +858,7 @@ int words_demo() {
 
         while (word != NULL) {
             char *result = calloc(4096, sizeof(char));
-            find_closest_word(&dict, word, result);
+            find_closest_word(&dict, word, result, 0);
 
             printf("closest of %s is %s\n", word, result);
             word = strtok(NULL, " ");
