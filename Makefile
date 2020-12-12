@@ -31,7 +31,7 @@ DBGOBJS := $(addprefix $(DBGOBJDIR)/,$(OBJS))
 #
 # Release variables
 #
-RLSCFLAGS := $(CFLAGS) -O3 -DNDEBUG -static
+RLSCFLAGS := $(CFLAGS) -O3 -DNDEBUG
 
 RLSDIR := $(BUILDDIR)/release
 RLSOBJDIR := $(RLSDIR)/obj
