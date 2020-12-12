@@ -63,8 +63,10 @@ void post_process_words(const char *path, Page *page) {
                         strncpy(dest, actual_word->letters,
                                 actual_word->length);
                         dest[actual_word->length] = '\0';
-                        if (!strcmp(actual_word->candidates, dest))
+                        if (!strcmp(actual_word->candidates, dest)) {
+                            free(actual_word->candidates);
                             actual_word->candidates = NULL;
+                        }
                     } else {
                         actual_word->candidates = NULL;
                     }
