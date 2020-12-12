@@ -30,7 +30,7 @@ void model_free(Model *model) {
 void model_train(Model *model, int monitor) {
     network_sgd(&model->network, &model->training_data, model->cfg->epochs,
                 model->cfg->batch_size, model->cfg->eta, model->cfg->lambda,
-                &model->test_data, monitor, monitor,monitor);
+                &model->test_data, monitor, monitor, monitor);
 }
 
 float model_evaluate(Model *model) {
