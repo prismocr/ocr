@@ -9,12 +9,23 @@
 #include "utils/linked_list.h"
 #include "imgproc/image.h"
 #include "imgproc/morphology.h"
+#include "imgproc/connected_components.h"
 #include "utils/error.h"
 #include "utils/linked_list.h"
+#include "utils/union_find.h"
 
 static size_t average_space(Vector hist);
 static size_t max_space_between_words(Vector hist, size_t *space_number,
                                       float *mean, float *deviation);
+
+typedef struct connected_component ConnectedComponent;
+
+struct connected_component {
+    // Bounding box
+    size_t x, y, w, h;
+
+    float label;
+};
 
 int word_new(size_t x, size_t y, size_t w, size_t h, Word **word) {
     assert(*word == NULL);
@@ -198,6 +209,122 @@ int word_segment_prob(Matrix line, Word **words) {
     *words = first_word;
 
     vector_free(&hist);
+
+    return 0;
+}
+
+int word_segment_cc(Matrix line, Word **words) {
+    image_threshold_otsu(&line);
+    image_invert_color(255.f, &line);
+
+    Matrix kernel = structuring_element(3, 1);
+    dilate(&line, kernel);
+    matrix_free(&kernel);
+
+    UnionFind u;
+    cc_labeling(&line, &u);
+
+    ConnectedComponent *ccs
+      = (ConnectedComponent *) calloc(u.num_nodes, sizeof(ConnectedComponent));
+    int num_cc = 0;
+
+    // Insertion sort connected components left to right
+    for (int i = 0; i < u.num_nodes; i++) {
+        int root = uf_find(i, &u);
+        if (root == -1) {
+            continue;
+        }
+
+        for (int j = i; j < u.num_nodes; j++) {
+            if (uf_find(j, &u) == root) {
+                u.parents[j] = -1;
+            }
+        }
+
+        float class = 256.f + root;
+
+        size_t x, y, w, h;
+        cc_bounding_box(line, class, &x, &y, &w, &h);
+
+        int j = num_cc++;
+        while (j > 0 && ccs[j - 1].x > x) {
+            ccs[j] = ccs[j - 1];
+            j -= 1;
+        }
+        ccs[j] = (ConnectedComponent){
+          .x = x,
+          .y = y,
+          .w = w,
+          .h = h,
+          .label = class,
+        };
+    }
+
+    uf_free(&u);
+
+    // Compute horizontal distance between connected components histogram
+    Vector h_dist_hist;
+    vector_new(line.w, &h_dist_hist);
+    for (int i = 0; i < num_cc - 1; i++) {
+        int cc_dist = ccs[i + 1].x - (ccs[i].x + ccs[i].w);
+        if (cc_dist >= 0) {
+            h_dist_hist.val[cc_dist] += 1;
+        } else {
+            h_dist_hist.val[0] += 1;
+        }
+    }
+
+    size_t most_dist = 0;
+    for (size_t i = 0; i < h_dist_hist.size; i++) {
+        if (h_dist_hist.val[i] > h_dist_hist.val[most_dist]) {
+            most_dist = i;
+        }
+    }
+    vector_free(&h_dist_hist);
+
+    size_t cc_dist_thresh = most_dist + 2;
+
+    for (int i = 0; i < num_cc - 1; i++) {
+        int cc_dist = ccs[i + 1].x - (ccs[i].x + ccs[i].w);
+        if (cc_dist <= (int) cc_dist_thresh) {
+            // Merge two connected components
+            ccs[i].w += cc_dist + ccs[i + 1].w;
+            size_t temp_y = ccs[i].y < ccs[i + 1].y ? ccs[i].y : ccs[i + 1].y;
+            ccs[i].h = ccs[i].y + ccs[i].h > ccs[i + 1].y + ccs[i + 1].h
+                         ? ccs[i].y + ccs[i].h - temp_y
+                         : ccs[i + 1].y + ccs[i + 1].h - temp_y;
+            ccs[i].y = temp_y;
+            for (int j = i + 1; j < num_cc - 1; j++) {
+                ccs[j] = ccs[j + 1];
+            }
+            num_cc -= 1;
+            i -= 1;
+        }
+    }
+
+    Word *first_word = NULL;
+    Word *prev_word = NULL;
+    for (int i = 0; i < num_cc; i++) {
+        Word *current_word = NULL;
+        size_t x = ccs[i].x == 0 ? 0 : ccs[i].x - 1;
+        size_t y = ccs[i].y == 0 ? 0 : ccs[i].y - 1;
+        size_t w = x + ccs[i].w + 2 < line.w ? ccs[i].w + 2 : ccs[i].w;
+        size_t h = y + ccs[i].h + 2 < line.h ? ccs[i].h + 2 : ccs[i].h;
+        if (word_new(x, y, w, h, &current_word)) {
+            return 1;
+        }
+
+        if (first_word == NULL) {
+            first_word = current_word;
+        } else { // prev_word is not NULL
+            prev_word->next = current_word;
+        }
+        prev_word = current_word;
+    }
+
+    free(ccs);
+
+    *words = first_word;
 
     return 0;
 }

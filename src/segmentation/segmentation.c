@@ -37,7 +37,7 @@ int segment(Matrix image, Page **page) {
             Matrix line_image
               = image_crop(region->x + line->x, region->y + line->y, line->w,
                            line->h, image);
-            word_segment(line_image, &line->words);
+            word_segment_cc(line_image, &line->words);
 
             size_t k = 0;
             for (Word *word = line->words; word != NULL; word = word->next) {
@@ -47,7 +47,7 @@ int segment(Matrix image, Page **page) {
                 sprintf(buff, "seg/word-%zu-%zu-%zu.bmp", i, j, k);
                 bitmap_save(buff, &word_image);
 
-                character_segment(word_image, &word->images);
+                character_segment_cc(word_image, &word->images);
                 word->length = word->images.length;
                 word->letters
                   = (char *) calloc((1 + word->length), sizeof(char));

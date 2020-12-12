@@ -37,3 +37,27 @@ void cc_labeling(Matrix *image, UnionFind *u) {
         }
     }
 }
+
+void cc_bounding_box(Matrix image, float c, size_t *x, size_t *y, size_t *w,
+                     size_t *h) {
+    size_t top, bot, left, right;
+    top = image.h;
+    bot = 0;
+    left = image.w;
+    right = 0;
+    for (size_t i = 0; i < image.h; i++) {
+        for (size_t j = 0; j < image.w; j++) {
+            if (image.val[i][j] == c) {
+                left = j < left ? j : left;
+                right = j > right ? j : right;
+                top = i < top ? i : top;
+                bot = i > bot ? i : bot;
+            }
+        }
+    }
+
+    *x = left;
+    *y = top;
+    *w = right - left;
+    *h = bot - top;
+}

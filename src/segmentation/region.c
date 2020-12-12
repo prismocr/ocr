@@ -70,6 +70,7 @@ int region_segment_rlsa(Matrix page, Region **regions) {
     erode(&vertical_morph_im, kernel);
     matrix_free(&kernel);
 
+    // Perform AND between vertical and horizontal
     for (size_t i = 0; i < page.h; i++) {
         for (size_t j = 0; j < page.w; j++) {
             horizontal_morph_im.val[i][j]
@@ -115,34 +116,12 @@ int region_segment_rlsa(Matrix page, Region **regions) {
         }
         float c = 256 + root;
 
-        size_t top, bot, left, right;
-        top = page.h;
-        bot = 0;
-        left = page.w;
-        right = 0;
-        for (size_t i = 0; i < horizontal_morph_im.h; i++) {
-            for (size_t j = 0; j < horizontal_morph_im.w; j++) {
-                if (horizontal_morph_im.val[i][j] == c) {
-                    if (i < top) {
-                        top = i;
-                    }
-                    if (i > bot) {
-                        bot = i;
-                    }
-                    if (j < left) {
-                        left = j;
-                    }
-                    if (j > right) {
-                        right = j;
-                    }
-                }
-            }
-        }
+        size_t x, y, w, h;
+        cc_bounding_box(horizontal_morph_im, c, &x, &y, &w, &h);
 
-        if (right > left && bot > top) {
+        if (w > 0 && h > 0) {
             Region *current_region = NULL;
-            if (region_new(left, top, right - left, bot - top,
-                           &current_region)) {
+            if (region_new(x, y, w, h, &current_region)) {
                 return 1;
             }
 
