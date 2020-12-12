@@ -3,6 +3,15 @@
 
 #include "utils/union_find.h"
 
+typedef struct connected_component ConnectedComponent;
+
+struct connected_component {
+    // Bounding box
+    size_t x, y, w, h;
+
+    float label;
+};
+
 /*
  * Hoshen-Kopelman algorithm that labels connected components.
  */
