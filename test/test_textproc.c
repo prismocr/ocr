@@ -19,6 +19,15 @@ void test_textproc() {
 
     find_closest_word(&dict, "thonk", r, 0);
     TEST_ASSERT_EQUAL_INT(0, strcmp("thank/think/thong/thunk/tronk", r));
+
+    find_closest_word(&dict, "a", r, 0);
+    TEST_ASSERT_EQUAL_INT(0, strcmp("a", r));
+
+    find_closest_word(&dict, "is", r, 0);
+    TEST_ASSERT_EQUAL_INT(0, strcmp("is", r));
+
+    find_closest_word(&dict, "log", r, 0);
+    TEST_ASSERT_EQUAL_INT(0, strcmp("log", r));
 }
 
 int main() {
