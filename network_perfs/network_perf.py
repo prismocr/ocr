@@ -28,7 +28,8 @@ def main():
 	minY = min(min(training_accuracy),min(evaluation_accuracy))
 	plt.axis([1, int(epochs), minY, 100])
 
-	plt.show()
+	#plt.show()
+	plt.savefig(path[:-3]+'png')
 	f.close()
 
 if len(sys.argv) < 2:
