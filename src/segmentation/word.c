@@ -18,15 +18,6 @@ static size_t average_space(Vector hist);
 static size_t max_space_between_words(Vector hist, size_t *space_number,
                                       float *mean, float *deviation);
 
-typedef struct connected_component ConnectedComponent;
-
-struct connected_component {
-    // Bounding box
-    size_t x, y, w, h;
-
-    float label;
-};
-
 int word_new(size_t x, size_t y, size_t w, size_t h, Word **word) {
     assert(*word == NULL);
 
@@ -57,14 +48,13 @@ void word_free(Word **word) {
     mll_free(&(*word)->images);
     free((*word)->letters);
 
-    if ((*word)->candidates)
-        free((*word)->candidates);
+    free((*word)->candidates);
 
     free(*word);
     *word = NULL;
 }
 
-int word_segment(Matrix line, Word **words) {
+int word_segment_hist(Matrix line, Word **words) {
     Matrix kernel;
     Vector hist;
 
@@ -311,9 +301,18 @@ int word_segment_cc(Matrix line, Word **words) {
     Word *prev_word = NULL;
     for (int i = 0; i < num_cc; i++) {
         Word *current_word = NULL;
-        size_t x = ccs[i].x == 0 ? 0 : ccs[i].x - 1;
+
+        size_t x = 0;
+        if (i > 0 && ccs[i - 1].x + ccs[i - 1].w + 1 < line.w) {
+            x = ccs[i - 1].x + ccs[i - 1].w + 1;
+        }
+
+        size_t w = line.w - x;
+        if (i + 1 < num_cc) {
+            w = ccs[i + 1].x - 1 - x;
+        }
+
         size_t y = ccs[i].y == 0 ? 0 : ccs[i].y - 1;
-        size_t w = x + ccs[i].w + 2 < line.w ? ccs[i].w + 2 : ccs[i].w;
         size_t h = y + ccs[i].h + 2 < line.h ? ccs[i].h + 2 : ccs[i].h;
         if (word_new(x, y, w, h, &current_word)) {
             return 1;

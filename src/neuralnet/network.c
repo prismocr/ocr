@@ -298,6 +298,7 @@ int network_load(const char *path, Network *out) {
 
     *out = network;
 
+    free(sizes);
     fclose(f);
     return 0;
 }

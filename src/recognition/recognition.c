@@ -29,7 +29,6 @@ void recognize_line(Word *word, Network *network) {
         // printf("x:%ld y:%ld w:%ld h:%ld length:%ld\n",word->x, word->y,
         // word->w, word->h, word->length);
         word->length = word->images.length;
-        word->letters = malloc(word->length);
         if (word->length)
             recognize_word(word->images.first, word->letters, network);
         printf(" ");
@@ -85,4 +84,7 @@ void ocr(Network *network, char *image_path) {
     output_save_corrector(page, "corrector.txt");
     output_save_default(page, "post.txt");
     output_save_multi_column(page, "outmc.txt");
+
+    matrix_free(&image);
+    page_free(&page);
 }

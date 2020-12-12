@@ -99,7 +99,7 @@ int line_segment_water_flow(Matrix region);
  * @param image of the text line.
  * @param resulting segmented words.
  */
-int word_segment(Matrix line, Word **words);
+int word_segment_hist(Matrix line, Word **words);
 
 /**
  *
