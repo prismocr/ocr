@@ -15,6 +15,7 @@
 #include "neuralnet/model.h"
 #include "recognition/recognition.h"
 #include "textproc/text.h"
+#include "gui/gui.h"
 
 void sharpen_demo(int argc, char *argv[]) {
     Matrix image;
@@ -975,6 +976,10 @@ int demo(int argc, char *argv[]) {
 
     if (!strcmp(c, "words")) {
         return words_demo();
+    }
+
+    if (!strcmp(c, "gui")) {
+        return start_gui(argc, argv);
     }
 
     printf("what?\n");
