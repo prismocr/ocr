@@ -4,7 +4,7 @@
 #include "neuralnet/network.h"
 #include "neuralnet/data.h"
 
-#define OUTPUT_SIZE 73
+#define OUTPUT_SIZE 47
 //#define OUTPUT_SIZE 26
 #define IMAGE_WIDTH 28
 

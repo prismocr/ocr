@@ -10,9 +10,9 @@
 #include "utils/bitmap.h"
 
 #define LOWER_LETTER_ORG 0
-#define UPPER_LETTER_ORG 26
-#define DIGIT_ORG 52
-#define SPECIAL_CHAR_ORG 62
+//#define UPPER_LETTER_ORG 26
+#define DIGIT_ORG 26
+#define SPECIAL_CHAR_ORG 36
 
 int dataset_new(Dataset *dataset, size_t size) {
     assert(size > 0);
@@ -69,10 +69,10 @@ char output_to_char(float *output) {
         }
     }
 
-    if (max < UPPER_LETTER_ORG)
-        return max + 'a';
     if (max < DIGIT_ORG)
-        return max - UPPER_LETTER_ORG + 'A';
+        return max + 'a';
+    /*if (max < DIGIT_ORG)
+        return max - UPPER_LETTER_ORG + 'A';*/
     if (max < SPECIAL_CHAR_ORG)
         return max - DIGIT_ORG + '0';
     switch (max - SPECIAL_CHAR_ORG) {
@@ -128,9 +128,9 @@ void data_init_target(char character, Vector *target) {
 
     if (character >= 'a' && character <= 'z') {
         target->val[character - 'a' + LOWER_LETTER_ORG] = 1.f;
-    } else if (character >= 'A' && character <= 'Z') {
+    } /*else if (character >= 'A' && character <= 'Z') {
         target->val[character - 'A' + UPPER_LETTER_ORG] = 1.f;
-    } else if (character >= '0' && character <= '9') {
+    }*/ else if (character >= '0' && character <= '9') {
         target->val[character - '0' + DIGIT_ORG] = 1.f;
     } else {
         switch (character) {

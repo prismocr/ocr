@@ -818,11 +818,11 @@ int demo_ocr_char(int argc, char *argv[]) {
 int demo_ocr_train() {
     srand(time(NULL));
 
-    N_cfg cfg = {.epochs = 50,
-                 .batch_size = 10,
+    N_cfg cfg = {.epochs = 25,
+                 .batch_size = 5,
                  .eta = 0.3f,
-                 .lambda = 5.0f,
-                 .test_data_ratio = 0.3f,
+                 .lambda = 0.0f,
+                 .test_data_ratio = 0.2f,
                  .dataset_path = "dataset/",
                  .nb_layers = 3,
                  .layer_sizes
