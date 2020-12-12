@@ -11,9 +11,10 @@ void post_process_words(const char *path, Page *page);
  *
  * @param dict dictionary to use
  * @param word word to find the closest word of
+ * @param len size of the word
  * @param result
  */
-void find_closest_word(Dict *dict, char *word, char *result);
+void find_closest_word(Dict *dict, char *word, char *result, size_t len);
 
 /**
  * Compute the Levenshtein distance between two words

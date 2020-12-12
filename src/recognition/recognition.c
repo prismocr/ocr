@@ -83,6 +83,6 @@ void ocr(Network *network, char *image_path) {
     // Export
     printf("Saving...\n");
     output_save_corrector(page, "corrector.txt");
-    // output_save_default(page, "post.txt");
-    // output_save_multi_column(page, "outmc.txt");
+    output_save_default(page, "post.txt");
+    output_save_multi_column(page, "outmc.txt");
 }

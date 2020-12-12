@@ -4,7 +4,7 @@
 #include "neuralnet/network.h"
 #include "neuralnet/data.h"
 
-#define OUTPUT_SIZE 73
+#define OUTPUT_SIZE 47
 //#define OUTPUT_SIZE 26
 #define IMAGE_WIDTH 28
 
@@ -13,7 +13,7 @@ struct Network_config {
     size_t epochs;
     size_t batch_size;
     float eta;
-    float momentum;
+    float lambda;
     float test_data_ratio;
     char *dataset_path;
     size_t nb_layers;

@@ -58,8 +58,9 @@ float *network_feed_forward(Network *network, float *input);
  * @param boolean for monitoring
  */
 void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
-                 size_t batch_size, float learning_rate, float momentum,
-                 Dataset *dataset_evaluation, int monitor_training);
+                 size_t batch_size, float learning_rate, float lambda,
+                 Dataset *dataset_evaluation, int monitor_accuracy_training,
+                 int monitor_accuracy_evaluation, int save_perf);
 /**
  * Applies gradient descent on a network
  *
@@ -94,7 +95,7 @@ void init_cost(Layer *out_layer, float *target);
  * @param the learning rate
  */
 void apply_grad(Network *network, size_t size_batch, float learning_rate,
-                float momentum);
+                float lambda, size_t n);
 
 /**
  * Prints all datas of a network
@@ -132,5 +133,8 @@ void network_save(const char *path, Network *network);
  */
 int network_load(const char *path, Network *out);
 
-size_t network_evaluate(Network *network, Dataset *test_data, int show_errors);
+size_t network_accuracy(Network *network, Dataset *test_data, int show_errors);
+float network_cost(Network *network, Data *data);
+float network_squared_weights(Network *network);
+float network_total_cost(Network *network, Dataset *dataset, float lambda);
 #endif

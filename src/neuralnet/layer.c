@@ -88,10 +88,6 @@ void initialize_biases_and_weights(Layer *layer) {
         layer->d_biases = NULL;
         layer->z = NULL;
 
-        // Velocity
-        layer->v_weights.val = NULL;
-        layer->v_biases = NULL;
-
     } else {
         // Initializing biases
         layer->biases = (float *) malloc(nb_neurons * sizeof(float));
@@ -115,11 +111,6 @@ void initialize_biases_and_weights(Layer *layer) {
                    &(layer->d_weights));
         layer->d_biases = (float *) calloc(nb_neurons, sizeof(float));
         layer->z = (float *) calloc(nb_neurons, sizeof(float));
-
-        // Velocity
-        matrix_new(nb_neurons, layer->prev_layer->nb_neurons,
-                   &(layer->v_weights));
-        layer->v_biases = (float *) calloc(nb_neurons, sizeof(float));
     }
 }
 
