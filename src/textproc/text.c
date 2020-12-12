@@ -53,10 +53,17 @@ void post_process_words(const char *path, Page *page) {
                     if (actual_word->length > 3) {
                         actual_word->candidates = calloc(256, sizeof(char));
                         find_closest_word(&dict, actual_word->letters,
-                                          actual_word->candidates);
-                        // printf("closest of %s is %s and len is %zu\n",
-                        // actual_word->letters, actual_word->candidates,
-                        // actual_word->length);
+                                          actual_word->candidates,
+                                          actual_word->length);
+                        // printf("%s has a len of %zu with strlen and a len of
+                        // %zu in the struct\n", actual_word->letters,
+                        // strlen(actual_word->letters), actual_word->length);
+                        char dest[actual_word->length + 1];
+                        strncpy(dest, actual_word->letters,
+                                actual_word->length);
+                        dest[actual_word->length] = '\0';
+                        if (!strcmp(actual_word->candidates, dest))
+                            actual_word->candidates = NULL;
                     } else {
                         actual_word->candidates = NULL;
                     }
@@ -71,12 +78,9 @@ void post_process_words(const char *path, Page *page) {
     dict_free(&dict);
 }
 
-void find_closest_word(Dict *dict, char *word, char *result) {
-    size_t len = strlen(word);
-    if (len < 3) {
-        strcpy(result, word);
-        return;
-    }
+void find_closest_word(Dict *dict, char *word, char *result, size_t len) {
+    if (!len)
+        len = strlen(word);
 
     char *w = calloc(100, sizeof(char));
     size_t min = 999;

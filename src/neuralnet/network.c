@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <math.h>
+#include <string.h>
 #include "neuralnet/model.h"
 #include "neuralnet/network.h"
 #include "neuralnet/layer.h"
@@ -121,8 +122,15 @@ void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
     }
 
     free(batches);
-    if (save_perf)
+    if (save_perf) {
         fclose(perf_file);
+        char pyCommand[200];
+        strcpy(pyCommand, "python3 scripts/network_perfs.py ");
+        strcat(pyCommand, perf_file_name);
+        printf("%s\n", pyCommand);
+        if (system(pyCommand))
+            printf("Can't save plot png\n");
+    }
 }
 
 void network_backpropagation(Network *network, Data data) {

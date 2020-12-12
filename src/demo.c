@@ -780,11 +780,11 @@ int all(int argc, char *argv[]) {
 
 int demo_ocr(int argc, char *argv[]) {
     if (argc < 3) {
-        printf("Missing image path.\n");
+        printf("Missing network name.\n");
         return 1;
     }
     if (argc < 4) {
-        printf("Missing network name.\n");
+        printf("Missing image path.\n");
         return 1;
     }
 
@@ -797,11 +797,11 @@ int demo_ocr(int argc, char *argv[]) {
 
 int demo_ocr_char(int argc, char *argv[]) {
     if (argc < 3) {
-        printf("Missing image path.\n");
+        printf("Missing network name.\n");
         return 1;
     }
     if (argc < 4) {
-        printf("Missing network name.\n");
+        printf("Missing image path.\n");
         return 1;
     }
 
@@ -818,11 +818,11 @@ int demo_ocr_char(int argc, char *argv[]) {
 int demo_ocr_train() {
     srand(time(NULL));
 
-    N_cfg cfg = {.epochs = 50,
-                 .batch_size = 10,
-                 .eta = 0.3f,
-                 .lambda = 5.0f,
-                 .test_data_ratio = 0.3f,
+    N_cfg cfg = {.epochs = 1,
+                 .batch_size = 5,
+                 .eta = 0.2f,
+                 .lambda = 0.0f,
+                 .test_data_ratio = 0.2f,
                  .dataset_path = "dataset/",
                  .nb_layers = 3,
                  .layer_sizes
@@ -858,7 +858,7 @@ int words_demo() {
 
         while (word != NULL) {
             char *result = calloc(4096, sizeof(char));
-            find_closest_word(&dict, word, result);
+            find_closest_word(&dict, word, result, 0);
 
             printf("closest of %s is %s\n", word, result);
             word = strtok(NULL, " ");
