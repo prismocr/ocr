@@ -12,7 +12,7 @@ void tearDown() {
 }
 
 void test_segmentation() {
-    TEST_ASSERT_EQUAL_INT(0, bitmap_load("./examples/text.bmp", &image));
+    TEST_ASSERT_EQUAL_INT(0, bitmap_load("./res/images/text.bmp", &image));
 
     Page *page = NULL;
     TEST_ASSERT_EQUAL_INT(0, segment(image, &page));
