@@ -9,7 +9,7 @@
 
 CC := gcc
 CPPFLAGS := -MMD -Iinclude/
-CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic $$(pkg-config --cflags gtk+-3.0) 
+CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic $$(pkg-config --cflags gtk+-3.0)
 LDLIBS := -lm $$(pkg-config --libs gtk+-3.0) -export-dynamic -rdynamic
 
 BUILDDIR := build
@@ -125,8 +125,8 @@ prep-temp:
 	@mkdir -p $(TMPOBJSUBDIRS)
 
 $(TMPDIR)/$(EXEC): $(TMPOBJS)
-	$(CC) $^ -o $@ $(CPPFLAGS) $(TMPCFLAGS) $(LDLIBS)
+	$(CC) $^ -o $@ $(CPPFLAGS) $(TMPCFLAGS) $(LDLIBS) $$(pkg-config --cflags gtk+-3.0)
 
 $(TMPOBJDIR)/%.o: src/%.c
-	$(CC) -c $< -o $@ $(CPPFLAGS) $(TMPCFLAGS)
+	$(CC) -c $< -o $@ $(CPPFLAGS) $(TMPCFLAGS) $$(pkg-config --cflags gtk+-3.0)
 
