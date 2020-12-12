@@ -16,6 +16,9 @@ void test_textproc() {
     char *r = calloc(100, sizeof(char));
     find_closest_word(&dict, "three", r);
     TEST_ASSERT_EQUAL_INT(0, strcmp("three", r));
+
+    find_closest_word(&dict, "thonk", r);
+    TEST_ASSERT_EQUAL_INT(0, strcmp("thank/think/thong/thunk/tronk", r));
 }
 
 int main() {
