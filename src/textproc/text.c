@@ -58,7 +58,7 @@ void post_process_words(const char *path, Page *page) {
                         // printf("%s has a len of %zu with strlen and a len of
                         // %zu in the struct\n", actual_word->letters,
                         // strlen(actual_word->letters), actual_word->length);
-                        char dest[actual_word->length];
+                        char dest[actual_word->length+1];
                         strncpy(dest, actual_word->letters,
                                 actual_word->length);
                         dest[actual_word->length] = '\0';
