@@ -13,6 +13,8 @@ struct word {
     size_t length;
     char *letters;
 
+    char *candidates;
+
     MatrixLinkedList images;
     Word *next; // next word in the line
 };

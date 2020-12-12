@@ -9,8 +9,8 @@
 
 CC := gcc
 CPPFLAGS := -MMD -Iinclude/
-CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic
-LDLIBS := -lm
+CFLAGS := -std=c99 -Wall -Wextra -Werror -Wpedantic $$(pkg-config --cflags gtk+-3.0) 
+LDLIBS := -lm $$(pkg-config --libs gtk+-3.0) -export-dynamic -rdynamic
 
 BUILDDIR := build
 EXEC := ocr
@@ -31,7 +31,7 @@ DBGOBJS := $(addprefix $(DBGOBJDIR)/,$(OBJS))
 #
 # Release variables
 #
-RLSCFLAGS := $(CFLAGS) -O3 -DNDEBUG -static
+RLSCFLAGS := $(CFLAGS) -O3 -DNDEBUG
 
 RLSDIR := $(BUILDDIR)/release
 RLSOBJDIR := $(RLSDIR)/obj
@@ -85,7 +85,7 @@ $(RLSOBJDIR)/%.o: src/%.c
 #
 # Test rules
 #
-test: release Unity $(TSTEXEC)
+test: clean release Unity $(TSTEXEC)
 	$(foreach TEST,$(filter $(TSTDIR)/%,$^),./$(TEST) &&) echo "All test passed"
 
 Unity:

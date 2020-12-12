@@ -69,14 +69,20 @@ void ocr(Network *network, char *image_path) {
     exit_on_error(bitmap_load(image_path, &image));
 
     // Pre-process
+    printf("Preprocessing...\n");
     preprocessing(&image);
     // Segmentation
+    printf("Segmentation...\n");
     segment(image, &page);
     // Recognition
+    printf("Recognizing...\n");
     recognize(page, network);
+    // Post processing
+    printf("Post processing...\n");
+    post_process_words("./res/dictionaries/words_en.txt", page);
     // Export
+    printf("Saving...\n");
+    output_save_corrector(page, "corrector.txt");
     // output_save_default(page, "post.txt");
     // output_save_multi_column(page, "outmc.txt");
-
-    // postprocessing("post.txt"); //, "postprocessed.txt");
 }

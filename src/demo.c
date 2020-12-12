@@ -14,7 +14,9 @@
 #include "neuralnet/output.h"
 #include "neuralnet/model.h"
 #include "recognition/recognition.h"
+#include "textproc/dict.h"
 #include "textproc/text.h"
+#include "gui/gui.h"
 
 void sharpen_demo(int argc, char *argv[]) {
     Matrix image;
@@ -818,8 +820,8 @@ int demo_ocr_train() {
 
     N_cfg cfg = {.epochs = 50,
                  .batch_size = 5,
-                 .eta = 0.075f,
-                 .momentum = 0.7f,
+                 .eta = 0.15f,
+                 .momentum = 0.0f,
                  .test_data_ratio = 0.2f,
                  .dataset_path = "dataset/",
                  .nb_layers = 3,
@@ -844,21 +846,21 @@ int demo_ocr_train() {
 int words_demo() {
     printf("loading\n");
     Dict dict;
-    dict_load("./assets/words_en.txt", &dict);
+    dict_load("./res/dictionaries/words_en.txt", &dict);
 
     clock_t begin = clock();
 
     /* here, do your time-consuming job */
 
-    for (size_t i = 0; i < 100; i++) {
+    for (size_t i = 0; i < 1; i++) {
         char sentence[] = "hello i thonk you for this test";
         char *word = strtok(sentence, " ");
 
         while (word != NULL) {
-            char *result = calloc(100, sizeof(char));
-            dict_find_closest_word(&dict, word, result);
+            char *result = calloc(4096, sizeof(char));
+            find_closest_word(&dict, word, result);
 
-            // printf("closest of %s is %s\n", word, result);
+            printf("closest of %s is %s\n", word, result);
             word = strtok(NULL, " ");
         }
     }
@@ -975,6 +977,10 @@ int demo(int argc, char *argv[]) {
 
     if (!strcmp(c, "words")) {
         return words_demo();
+    }
+
+    if (!strcmp(c, "gui")) {
+        return start_gui(argc, argv);
     }
 
     printf("what?\n");

@@ -43,7 +43,8 @@ int word_new(size_t x, size_t y, size_t w, size_t h, Word **word) {
                     .h = h,
                     .length = 0,
                     .letters = NULL,
-                    .next = NULL};
+                    .next = NULL,
+                    .candidates = NULL};
 
     mll_new(&(*word)->images);
 
@@ -55,6 +56,9 @@ void word_free(Word **word) {
 
     mll_free(&(*word)->images);
     free((*word)->letters);
+
+    if ((*word)->candidates)
+        free((*word)->candidates);
 
     free(*word);
     *word = NULL;
@@ -159,10 +163,11 @@ int word_segment_prob(Matrix line, Word **words) {
     size_t space_number = 0;
     float mean = 0.f;
     float deviation = 0.f;
-    size_t max_space
-      = max_space_between_words(hist, &space_number, &mean, &deviation);
+    // size_t max_space =
+    max_space_between_words(hist, &space_number, &mean, &deviation);
+
     // TODO: tweak value
-    size_t space_threshold = (size_t)(0.5f * max_space);
+    size_t space_threshold = (size_t)(mean);
     // size_t space_threshold = (size_t) (mean + sqrt(deviation) / 2);
 
     Word *first_word = NULL;

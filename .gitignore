@@ -5,13 +5,15 @@ build
 *.d
 *.txt
 Unity/
-# Only allow bmp in examples/
 *.bmp
-!examples/*.bmp
+!res/**/*.bmp
 !test/assets/**/*.bmp
 !test/assets/*.txt
-!assets/*.txt
+!res/**/*.txt
 .vscode
 *.csv
 *.hex
 tags
+.vscode
+res/layout/*.glade~
+tmp

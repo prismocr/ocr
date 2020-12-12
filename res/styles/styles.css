@@ -1,0 +1,54 @@
+button {
+    color: white;
+    background: #12171c;
+}
+
+window {
+    background: #12171c;
+}
+
+button {
+    border-radius: 8px;
+    box-shadow: none;
+    outline: none;
+}
+
+button.add_pictures:hover {
+    background: #1f2830;
+}
+
+image {
+    text-shadow: none;
+    box-shadow: none;
+}
+
+label {
+    color: white;
+    text-shadow: none;
+}
+
+button.results {
+    border: none;
+    background: #0C67EF;
+}
+
+button.results:hover {
+    background: #0d55c2;
+}
+button.results:active {
+    background: #0d4fb1;
+}
+
+label.builtby {
+    font-size: 12px;
+}
+
+box.add_picture {
+    border: solid 1px #949494;
+    padding: 25px;
+    border-radius: 8px;
+}
+
+box.result {
+    margin-top: 10px;
+}

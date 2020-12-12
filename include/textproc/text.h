@@ -1,23 +1,29 @@
-#ifndef TEXT_PROC
-#define TEXT_PROC
+#ifndef TEXT_PROC_H
+#define TEXT_PROC_H
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "segmentation/segmentation.h"
 
-typedef struct dict Dict;
+void post_process_words(const char *path, Page *page);
+/**
+ * Find closest word of a word in a dictionary
+ *
+ * @param dict dictionary to use
+ * @param word word to find the closest word of
+ * @param result
+ */
+void find_closest_word(Dict *dict, char *word, char *result);
 
-struct dict {
-    size_t size;
-    char *words;
-    size_t pos;
-};
-
-void postprocessing(char *post_process);
-void dict_load(const char *path, Dict *dict);
-int dict_iterate(Dict *dict, char *word);
-void dict_free(Dict *dict);
-void dict_find_closest_word(Dict *dict, char *word, char *result);
-
+/**
+ * Compute the Levenshtein distance between two words
+ *
+ * @param s1
+ * @param s2
+ * @return Levenshtein distance
+ */
 size_t levenshtein(char *s1, char *s2);
 
-#endif // TEXT_PROC
+// void postprocessing(char *post_process);
+
+#endif // TEXT_PROC_H
