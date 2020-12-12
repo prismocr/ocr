@@ -19,6 +19,10 @@ void test_textproc() {
 
     find_closest_word(&dict, "thonk", r);
     TEST_ASSERT_EQUAL_INT(0, strcmp("thank/think/thong/thunk/tronk", r));
+
+    char word[] = {'t', 'h', 'r', 'e', 'e', '@', '\r', '\0'};
+    find_closest_word(&dict, word, r);
+    TEST_ASSERT_EQUAL_INT(0, strcmp("three", r));
 }
 
 int main() {
