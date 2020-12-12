@@ -16,4 +16,5 @@ Unity/
 *.hex
 tags
 .vscode
-layout/*.glade~
+res/layout/*.glade~
+tmp

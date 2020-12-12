@@ -85,7 +85,7 @@ $(RLSOBJDIR)/%.o: src/%.c
 #
 # Test rules
 #
-test: release Unity $(TSTEXEC)
+test: clean release Unity $(TSTEXEC)
 	$(foreach TEST,$(filter $(TSTDIR)/%,$^),./$(TEST) &&) echo "All test passed"
 
 Unity:

@@ -1,0 +1,13 @@
+build
+*.out
+*.swp
+*.o
+*.d
+*.bmp
+!examples/*.bmp
+!test/assets/**/*.bmp
+!test/assets/*.txt
+seg
+Unity
+*.hex
+tmp
