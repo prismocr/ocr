@@ -38,9 +38,9 @@ void postprocessing(char *post_process) {
     fclose(f_save);
 }
 
-void post_process_words(Page *page) {
+void post_process_words(const char *path, Page *page) {
     Dict dict;
-    dict_load("./assets/words_en.txt", &dict);
+    dict_load(path, &dict);
 
     Page *actual_page = page;
     while (actual_page) {

@@ -846,7 +846,7 @@ int demo_ocr_train() {
 int words_demo() {
     printf("loading\n");
     Dict dict;
-    dict_load("./assets/words_en.txt", &dict);
+    dict_load("./res/dictionaries/words_en.txt", &dict);
 
     clock_t begin = clock();
 

@@ -79,7 +79,7 @@ void ocr(Network *network, char *image_path) {
     recognize(page, network);
     // Post processing
     printf("Post processing...\n");
-    post_process_words(page);
+    post_process_words("./res/dictionaries/words_en.txt", page);
     // Export
     printf("Saving...\n");
     output_save_corrector(page, "corrector.txt");

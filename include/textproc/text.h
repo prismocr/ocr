@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "segmentation/segmentation.h"
 
-void post_process_words(Page *page);
+void post_process_words(const char *path, Page *page);
 /**
  * Find closest word of a word in a dictionary
  *
