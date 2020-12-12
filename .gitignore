@@ -10,7 +10,7 @@ Unity/
 !examples/*.bmp
 !test/assets/**/*.bmp
 !test/assets/*.txt
-!assets/*.txt
+!res/**/*.txt
 .vscode
 *.csv
 *.hex
