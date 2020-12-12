@@ -96,7 +96,6 @@ int output_save_corrector(Page *page, const char *path) {
     while (actual_page) {
         Region *actual_region = actual_page->regions;
         while (actual_region) {
-            save_char('\t', f);
             Line *actual_line = actual_region->lines;
             while (actual_line) {
                 Word *actual_word = actual_line->words;
