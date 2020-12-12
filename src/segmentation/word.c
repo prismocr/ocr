@@ -48,8 +48,7 @@ void word_free(Word **word) {
     mll_free(&(*word)->images);
     free((*word)->letters);
 
-    if ((*word)->candidates)
-        free((*word)->candidates);
+    free((*word)->candidates);
 
     free(*word);
     *word = NULL;

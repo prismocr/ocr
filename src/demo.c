@@ -790,7 +790,10 @@ int demo_ocr(int argc, char *argv[]) {
 
     Network network;
     network_load(argv[2], &network);
+
     ocr(&network, argv[3]);
+
+    network_free(&network);
 
     return 0;
 }
