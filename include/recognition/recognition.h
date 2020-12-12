@@ -3,6 +3,7 @@
 
 #include "neuralnet/network.h"
 #include "segmentation/segmentation.h"
+#include "textproc/dict.h"
 
 void preprocessing(Matrix *image);
 void recognize(Page *page, Network *network);
