@@ -64,7 +64,7 @@ void word_free(Word **word) {
     *word = NULL;
 }
 
-int word_segment(Matrix line, Word **words) {
+int word_segment_hist(Matrix line, Word **words) {
     Matrix kernel;
     Vector hist;
 
