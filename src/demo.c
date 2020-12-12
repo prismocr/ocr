@@ -780,11 +780,11 @@ int all(int argc, char *argv[]) {
 
 int demo_ocr(int argc, char *argv[]) {
     if (argc < 3) {
-        printf("Missing image path.\n");
+        printf("Missing network name.\n");
         return 1;
     }
     if (argc < 4) {
-        printf("Missing network name.\n");
+        printf("Missing image path.\n");
         return 1;
     }
 
@@ -797,11 +797,11 @@ int demo_ocr(int argc, char *argv[]) {
 
 int demo_ocr_char(int argc, char *argv[]) {
     if (argc < 3) {
-        printf("Missing image path.\n");
+        printf("Missing network name.\n");
         return 1;
     }
     if (argc < 4) {
-        printf("Missing network name.\n");
+        printf("Missing image path.\n");
         return 1;
     }
 

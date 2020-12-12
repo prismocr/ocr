@@ -122,13 +122,13 @@ void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
     }
 
     free(batches);
-    if (save_perf){
+    if (save_perf) {
         fclose(perf_file);
         char pyCommand[200];
         strcpy(pyCommand, "python3 scripts/network_perfs.py ");
-        strcat(pyCommand,perf_file_name);
+        strcat(pyCommand, perf_file_name);
         printf("%s\n", pyCommand);
-        if(system(pyCommand))
+        if (system(pyCommand))
             printf("Can't save plot png\n");
     }
 }

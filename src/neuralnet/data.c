@@ -130,7 +130,8 @@ void data_init_target(char character, Vector *target) {
         target->val[character - 'a' + LOWER_LETTER_ORG] = 1.f;
     } /*else if (character >= 'A' && character <= 'Z') {
         target->val[character - 'A' + UPPER_LETTER_ORG] = 1.f;
-    }*/ else if (character >= '0' && character <= '9') {
+    }*/
+    else if (character >= '0' && character <= '9') {
         target->val[character - '0' + DIGIT_ORG] = 1.f;
     } else {
         switch (character) {

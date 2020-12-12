@@ -54,7 +54,8 @@ void post_process_words(const char *path, Page *page) {
                         actual_word->candidates = calloc(256, sizeof(char));
                         find_closest_word(&dict, actual_word->letters,
                                           actual_word->candidates);
-                        if (!strcmp(actual_word->candidates, actual_word->letters))
+                        if (!strcmp(actual_word->candidates,
+                                    actual_word->letters))
                             actual_word->candidates = NULL;
                     } else {
                         actual_word->candidates = NULL;
