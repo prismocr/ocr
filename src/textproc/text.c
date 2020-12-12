@@ -86,7 +86,8 @@ void dict_load(const char *path, Dict *dict) {
     dict->words[dict->size] = 0;
 }
 void dict_find_closest_word(Dict *dict, char *word, char *result) {
-    if (strlen(word) == 3) {
+    size_t len = strlen(word);
+    if (len < 3) {
         strcpy(result, word);
         return;
     }
@@ -97,8 +98,6 @@ void dict_find_closest_word(Dict *dict, char *word, char *result) {
 
     size_t score = 0;
     size_t score_max = 10;
-
-    size_t len = strlen(word); // STRTOK !!
 
     while (dict_iterate(dict, w)) {
         if (!strcmp(w, word)) {
