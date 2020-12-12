@@ -1,5 +1,4 @@
-FROM gcc:10.2.0 AS builder
-RUN apt update && apt install libgtk-3-dev -y
+FROM aureleoules/prism-builder
 
 WORKDIR /app
 RUN git clone https://github.com/ThrowTheSwitch/Unity.git
