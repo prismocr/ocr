@@ -111,20 +111,13 @@ void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
         if(save_perf){
             fprintf(perf_file,"%f %f\n",accuracy_training,accuracy_evaluation);
         }
+        printf("\n");
     }
 
     free(batches);
     if(save_perf)
         fclose(perf_file);
 }
-
-/*void batch_gd(Network *network, Dataset *batch, float learning_rate, float
-lambda, float dataset_size) { for (size_t i = 0; i < batch->size; i++) {
-        network_backpropagation(network, batch->datas[i]);
-    }
-    // Update network's weights and biases
-    apply_grad(network, batch->size, learning_rate, float lambda, );
-}*/
 
 void network_backpropagation(Network *network, Data data) {
     // Forward Propagation

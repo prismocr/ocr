@@ -14,8 +14,6 @@ def main():
 		training_accuracy.append(float(d[0]))
 		evaluation_accuracy.append(float(d[1]))
 
-	print(training_accuracy)
-	print(evaluation_accuracy)
 	plt.title(f"epoch:{epochs} batch_size:{batch_size} eta:{eta} lambda:{lmbda}")
 
 	xPos = range(1,len(data)+1)
@@ -27,7 +25,8 @@ def main():
 
 	plt.legend()
 
-	plt.axis([1, int(epochs), 0, 100])
+	minY = min(min(training_accuracy),min(evaluation_accuracy))
+	plt.axis([1, int(epochs), minY, 100])
 
 	plt.show()
 	f.close()
