@@ -22,8 +22,7 @@ fi
 
 make TMPCFLAGS="${CFLAGS}" temp
 
-valgrind --leak-check=full \
-         --show-leak-kinds=all \
+valgrind --show-leak-kinds=all \
          --track-origins=yes \
          ./build/temp/ocr \
          ${args[@]}
