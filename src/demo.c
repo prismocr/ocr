@@ -11,6 +11,7 @@
 #include "utils/matrix.h"
 #include "neuralnet/network.h"
 #include "neuralnet/layer.h"
+#include "gui/gui.h"
 
 void sharpen_demo(int argc, char *argv[]) {
     Matrix image;
@@ -384,6 +385,10 @@ int demo(int argc, char *argv[]) {
 
     if (!strcmp(c, "auto_rotate")) {
         return auto_rotate(argc, argv);
+    }
+
+    if (!strcmp(c, "gui")) {
+        return start_gui(argc, argv);
     }
 
     printf("what?\n");

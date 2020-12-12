@@ -1,9 +1,5 @@
-// #include "demo.h"
-
-#include "gui/gui.h"
+#include "demo.h"
 
 int main(int argc, char *argv[]) {
-    return start_gui(argc, argv);
-
-    // return demo(argc, argv);
+    return demo(argc, argv);
 }
