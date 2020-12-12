@@ -221,7 +221,7 @@ void network_demo(int argc, char *argv[]) {
 
         size_t sizes_static[] = {2, 2, 1};
         network = network_new(nb_layers, sizes_static);
-        network_sgd(&network, &dataset, 100000, 4, 1.f, 0.5, &dataset, 1);
+        network_sgd(&network, &dataset, 100000, 4, 1.f, 0.5, &dataset, 1, 1,0);
     } else if (!strcmp("add", argv[2])) {
         // --- Create dataset---
         dataset_new(&dataset, 8);
@@ -237,7 +237,7 @@ void network_demo(int argc, char *argv[]) {
 
         size_t sizes_static[] = {3, 3, 2};
         network = network_new(nb_layers, sizes_static);
-        network_sgd(&network, &dataset, 1000, 4, 12.f, 0.5, &dataset, 1);
+        network_sgd(&network, &dataset, 1000, 4, 12.f, 0.5, &dataset, 1, 1,0);
     }
     network_print_results(network, dataset);
 
@@ -819,14 +819,14 @@ int demo_ocr_train() {
     srand(time(NULL));
 
     N_cfg cfg = {.epochs = 50,
-                 .batch_size = 5,
-                 .eta = 0.15f,
-                 .momentum = 0.0f,
-                 .test_data_ratio = 0.2f,
+                 .batch_size = 10,
+                 .eta = 0.3f,
+                 .lambda = 5.0f,
+                 .test_data_ratio = 0.3f,
                  .dataset_path = "dataset/",
                  .nb_layers = 3,
                  .layer_sizes
-                 = (size_t[]){IMAGE_WIDTH * IMAGE_WIDTH, 500, OUTPUT_SIZE}};
+                 = (size_t[]){IMAGE_WIDTH * IMAGE_WIDTH, 200, OUTPUT_SIZE}};
 
     Model model;
     char netword_name[14];

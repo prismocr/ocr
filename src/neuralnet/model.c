@@ -29,13 +29,13 @@ void model_free(Model *model) {
 
 void model_train(Model *model, int monitor) {
     network_sgd(&model->network, &model->training_data, model->cfg->epochs,
-                model->cfg->batch_size, model->cfg->eta, model->cfg->momentum,
-                &model->test_data, monitor);
+                model->cfg->batch_size, model->cfg->eta, model->cfg->lambda,
+                &model->test_data, monitor, monitor,monitor);
 }
 
 float model_evaluate(Model *model) {
     size_t nb_correct_output
-      = network_evaluate(&model->network, &model->dataset, 1);
+      = network_accuracy(&model->network, &model->dataset, 1);
     float percentage = (float) nb_correct_output * 100 / model->dataset.size;
     printf("%ld/%ld : %f\n", nb_correct_output, model->dataset.size,
            percentage);

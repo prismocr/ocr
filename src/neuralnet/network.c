@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <math.h>
+#include "neuralnet/model.h"
 #include "neuralnet/network.h"
 #include "neuralnet/layer.h"
 #include "neuralnet/neuron.h"
@@ -61,10 +62,21 @@ float *network_feed_forward(Network *network, float *input) {
 }
 
 void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
-                 size_t batch_size, float learning_rate, float momentum,
-                 Dataset *dataset_evaluation, int monitor_training) {
+                 size_t batch_size, float learning_rate, float lambda,
+                 Dataset *dataset_evaluation, int monitor_accuracy_training,
+                 int monitor_accuracy_evaluation, int save_perf) {
+    char perf_file_name[100];
+    FILE *perf_file = NULL;
+    if(save_perf){
+        sprintf(perf_file_name, "network_perfs/perf_e%ld_b%ld_r%.2f_l%.2f.txt",
+            epochs,batch_size,learning_rate,lambda);
+        perf_file = fopen(perf_file_name,"w");
+        fprintf(perf_file, "%ld %ld %.2f %.2f\n",epochs,batch_size,learning_rate,lambda);
+    }  
     Dataset *batches = initialize_batches(dataset_training, batch_size);
-    size_t nb_batches = dataset_training->size / batch_size, nb_correct_output;
+    
+    size_t nb_batches = dataset_training->size / batch_size;
+    float accuracy_training=0.f, accuracy_evaluation=0.f;
     // Main training loop
     for (size_t i = 1; i <= epochs; i++) {
         dataset_shuffle(dataset_training);
@@ -79,19 +91,31 @@ void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
                 network_backpropagation(network, batches[j].datas[i]);
             }
             // Update network's weights and biases
-            apply_grad(network, batch_size, learning_rate, momentum);
+            apply_grad(network, batch_size, learning_rate, lambda, dataset_training->size);
         }
         printf("Epoch %ld complete\n", i);
-        if (monitor_training && dataset_evaluation->size > 0) {
-            nb_correct_output
-              = network_evaluate(network, dataset_evaluation, 0);
-            printf("Epoch %ld: %ld/%ld : %f\n", i, nb_correct_output,
-                   dataset_evaluation->size,
-                   (float) nb_correct_output * 100 / dataset_evaluation->size);
+        if (monitor_accuracy_training && dataset_training->size > 0) {
+            size_t nb_correct = network_accuracy(network, dataset_training, 0);
+            accuracy_training = (float) nb_correct * 100 / dataset_training->size;
+
+            printf("dataset_training %ld/%ld :\t%f\n", nb_correct, dataset_training->size,
+                   accuracy_training);
+        }
+        if (monitor_accuracy_evaluation && dataset_evaluation->size > 0) {
+            size_t nb_correct = network_accuracy(network, dataset_evaluation, 0);
+            accuracy_evaluation = (float) nb_correct * 100 / dataset_evaluation->size;
+
+            printf("dataset_test %ld/%ld :\t%f\n", nb_correct, dataset_evaluation->size,
+                   accuracy_evaluation);
+        }
+        if(save_perf){
+            fprintf(perf_file,"%f %f\n",accuracy_training,accuracy_evaluation);
         }
     }
 
     free(batches);
+    if(save_perf)
+        fclose(perf_file);
 }
 
 /*void batch_gd(Network *network, Dataset *batch, float learning_rate, float
@@ -126,23 +150,19 @@ void network_backpropagation(Network *network, Data data) {
 }
 
 void apply_grad(Network *network, size_t size_batch, float learning_rate,
-                float momentum) {
+                float lambda, size_t n) {
     size_t i, j, k;
     float scale = learning_rate / size_batch;
     for (i = 1; i < network->nb_layers; i++) {
         Layer *layer = &network->layers[i];
         for (j = 0; j < layer->nb_neurons; j++) {
-            layer->v_biases[j]
-              = momentum * layer->v_biases[j] - scale * layer->d_biases[j];
-            layer->biases[j] += layer->v_biases[j];
+            layer->biases[j] -=scale*layer->d_biases[j];
             layer->d_biases[j] = 0.f;
             for (k = 0; k < layer->prev_layer->nb_neurons; k++) {
-                layer->v_weights.val[j][k]
-                  = momentum * layer->v_weights.val[j][k]
-                    - scale * layer->d_weights.val[j][k];
-                layer->weights.val[j][k] += layer->v_weights.val[j][k];
-                // layer->weights.val[j][k] -= scale *
-                // layer->d_weights.val[j][k];
+                layer->weights.val[j][k] = 
+                    (1-learning_rate *(lambda/n))*
+                    layer->weights.val[j][k]-
+                    scale*layer->d_weights.val[j][k];
                 layer->d_weights.val[j][k] = 0.f;
             }
         }
@@ -276,7 +296,7 @@ int network_load(const char *path, Network *out) {
     return 0;
 }
 
-size_t network_evaluate(Network *network, Dataset *test_data, int show_errors) {
+size_t network_accuracy(Network *network, Dataset *test_data, int show_errors) {
     size_t nb_correct = 0;
     char target_char, output_char;
     for (size_t i = 0; i < test_data->size; i++) {
@@ -291,4 +311,46 @@ size_t network_evaluate(Network *network, Dataset *test_data, int show_errors) {
         }
     }
     return nb_correct;
+}
+
+float network_squared_weights(Network *network){
+    float sum = 0.f;
+    Layer *start_layer = network->input_layer->next_layer;
+    float w;
+    for(Layer *layer=start_layer; layer != NULL; layer = layer->next_layer){
+        for (size_t i = 0; i < layer->weights.h; i++) {
+            for (size_t j = 0; j < layer->weights.w; j++) {
+                w = layer->weights.val[i][j];
+                sum += w*w;
+            }
+        }
+    }
+    return sum;
+}
+
+float network_cost(Network *network, Data *data){
+    float total_cost = 0.f;
+    Layer *output_layer = network->output_layer;
+    float a, y, c;
+
+    network_feed_forward(network, data->input.val);
+
+    for(size_t i =0; i < output_layer->nb_neurons; i++){
+        a = output_layer->values[i];
+        y = data->target.val[i];
+        c = -y*log(a)-(1-y)*log(1-a);
+        if(!isnan(c))
+            total_cost += c;
+    }
+    return total_cost/OUTPUT_SIZE;
+}
+
+float network_total_cost(Network *network, Dataset *dataset, float lambda){
+    float total_cost = 0.f;
+    float scale = 0.5*(lambda/dataset->size);
+    for (size_t i = 0; i < dataset->size; i++) {
+        total_cost += network_cost(network, &dataset->datas[i])/dataset->size;
+    }
+    total_cost += scale*network_squared_weights(network);
+    return total_cost;
 }
