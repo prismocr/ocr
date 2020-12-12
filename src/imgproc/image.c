@@ -453,9 +453,9 @@ float max_color(Matrix *image) {
 }
 
 void image_normalize_brightness(Matrix *image) {
-    float  = max_color(image);
-    matrix_scale(&image, 0.99f * m / 255);
-    matrix_add_const(&image, 0.01f);
+    float m = max_color(image);
+    matrix_scale(image, 0.99f * m / 255);
+    matrix_add_const(image, 0.01f);
     /*for (size_t x = 0; x < image->w; x++) {
         for (size_t y = 0; y < image->h; y++) {
             image->val[y][x] *= (255.f / m);
