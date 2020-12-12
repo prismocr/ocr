@@ -14,6 +14,7 @@
 #include "neuralnet/output.h"
 #include "neuralnet/model.h"
 #include "recognition/recognition.h"
+#include "textproc/dict.h"
 #include "textproc/text.h"
 #include "gui/gui.h"
 
@@ -857,7 +858,7 @@ int words_demo() {
 
         while (word != NULL) {
             char *result = calloc(4096, sizeof(char));
-            dict_find_closest_word(&dict, word, result);
+            find_closest_word(&dict, word, result);
 
             printf("closest of %s is %s\n", word, result);
             word = strtok(NULL, " ");

@@ -1,3 +1,5 @@
+#include "textproc/dict.h"
+#include "utils/utils.h"
 #include "textproc/text.h"
 #include "segmentation/segmentation.h"
 #include <ctype.h>
@@ -50,8 +52,8 @@ void post_process_words(Page *page) {
                 while (actual_word) {
                     if (actual_word->length > 3) {
                         actual_word->candidates = calloc(256, sizeof(char));
-                        dict_find_closest_word(&dict, actual_word->letters,
-                                               actual_word->candidates);
+                        find_closest_word(&dict, actual_word->letters,
+                                          actual_word->candidates);
                         // printf("closest of %s is %s and len is %zu\n",
                         // actual_word->letters, actual_word->candidates,
                         // actual_word->length);
@@ -69,23 +71,7 @@ void post_process_words(Page *page) {
     dict_free(&dict);
 }
 
-void dict_load(const char *path, Dict *dict) {
-    FILE *f = fopen(path, "rb");
-    fseek(f, 0, SEEK_END);
-    dict->size = (size_t) ftell(f);
-    dict->pos = 0;
-    fseek(f, 0, SEEK_SET); /* same as rewind(f); */
-
-    dict->words = malloc(dict->size + 1);
-
-    size_t e = fread(dict->words, 1, dict->size, f);
-    if (e)
-        printf("%ld\n", e);
-    fclose(f);
-
-    dict->words[dict->size] = 0;
-}
-void dict_find_closest_word(Dict *dict, char *word, char *result) {
+void find_closest_word(Dict *dict, char *word, char *result) {
     size_t len = strlen(word);
     if (len < 3) {
         strcpy(result, word);
@@ -128,28 +114,6 @@ void dict_find_closest_word(Dict *dict, char *word, char *result) {
     dict->pos = 0;
 }
 
-int dict_iterate(Dict *dict, char *word) {
-    size_t k = dict->pos;
-    size_t i = 0;
-    while (dict->words[k] != '\n' && dict->words[k] != 0) {
-        *(word + i) = dict->words[k];
-        i++;
-        k++;
-    }
-    *(word + i) = 0;
-    dict->pos = k + 1;
-
-    return dict->pos <= dict->size - 1;
-}
-
-void dict_free(Dict *dict) {
-    free(dict->words);
-}
-
-int min(int a, int b, int c) {
-    return a < b ? (a < c ? a : c) : (b < c ? b : c);
-}
-
 size_t levenshtein(char *s1, char *s2) {
     size_t x, y, s1len, s2len;
     s1len = strlen(s1);
@@ -164,8 +128,8 @@ size_t levenshtein(char *s1, char *s2) {
     for (x = 1; x <= s2len; x++)
         for (y = 1; y <= s1len; y++)
             matrix[x][y]
-              = min(matrix[x - 1][y] + 1, matrix[x][y - 1] + 1,
-                    matrix[x - 1][y - 1] + (s1[y - 1] == s2[x - 1] ? 0 : 1));
+              = min3(matrix[x - 1][y] + 1, matrix[x][y - 1] + 1,
+                     matrix[x - 1][y - 1] + (s1[y - 1] == s2[x - 1] ? 0 : 1));
 
     return (matrix[s2len][s1len]);
 }
