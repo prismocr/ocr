@@ -856,13 +856,14 @@ int words_demo() {
         char sentence[] = "hello i thonk you for this test";
         char *word = strtok(sentence, " ");
 
+        char *result = calloc(4096, sizeof(char));
         while (word != NULL) {
-            char *result = calloc(4096, sizeof(char));
             find_closest_word(&dict, word, result, 0);
 
             printf("closest of %s is %s\n", word, result);
             word = strtok(NULL, " ");
         }
+        free(result);
     }
 
     clock_t end = clock();
