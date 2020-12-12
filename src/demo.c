@@ -818,9 +818,9 @@ int demo_ocr_char(int argc, char *argv[]) {
 int demo_ocr_train() {
     srand(time(NULL));
 
-    N_cfg cfg = {.epochs = 25,
+    N_cfg cfg = {.epochs = 1,
                  .batch_size = 5,
-                 .eta = 0.3f,
+                 .eta = 0.2f,
                  .lambda = 0.0f,
                  .test_data_ratio = 0.2f,
                  .dataset_path = "dataset/",

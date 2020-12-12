@@ -125,7 +125,7 @@ void network_sgd(Network *network, Dataset *dataset_training, size_t epochs,
     if (save_perf){
         fclose(perf_file);
         char pyCommand[200];
-        strcpy(pyCommand, "python3 network_perfs/network_perfs.py ");
+        strcpy(pyCommand, "python3 scripts/network_perfs.py ");
         strcat(pyCommand,perf_file_name);
         printf("%s\n", pyCommand);
         if(system(pyCommand))
