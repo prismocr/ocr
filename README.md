@@ -85,7 +85,7 @@ git add ${STAGED_FILES}
 
 ## Authors
 
-[Naexys](https://github.com/Naexys)\
+[Flowtter](https://github.com/Flowtter)\
 [aureleoules](https://github.com/aureleoules)\
 [TrAyZeN](https://github.com/TrAyZeN)\
 [Obeeron](https://github.com/Obeeron)
