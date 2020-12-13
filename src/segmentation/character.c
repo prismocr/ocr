@@ -70,7 +70,7 @@ int character_segment_cc(Matrix word, MatrixLinkedList *characters) {
     image_invert_color(255.f, &word);
 
     UnionFind u;
-    cc_labeling(&word, &u);
+    cc_labeling_8conn(&word, &u);
 
     ConnectedComponent *ccs
       = (ConnectedComponent *) calloc(u.num_nodes, sizeof(ConnectedComponent));

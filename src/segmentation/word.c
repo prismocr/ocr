@@ -217,7 +217,7 @@ int word_segment_cc(Matrix line, Word **words) {
     matrix_free(&kernel);
 
     UnionFind u;
-    cc_labeling(&line, &u);
+    cc_labeling_4conn(&line, &u);
 
     ConnectedComponent *ccs
       = (ConnectedComponent *) calloc(u.num_nodes, sizeof(ConnectedComponent));

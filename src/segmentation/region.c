@@ -96,7 +96,7 @@ int region_segment_rlsa(Matrix page, Region **regions) {
     matrix_free(&kernel);
 
     UnionFind u;
-    cc_labeling(&horizontal_morph_im, &u);
+    cc_labeling_4conn(&horizontal_morph_im, &u);
 
     // consider bounding box as region of interest
     Region *first_region = NULL;

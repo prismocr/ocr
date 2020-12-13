@@ -27,8 +27,6 @@ int segment(Matrix image, Page **page) {
     for (Region *region = (*page)->regions; region != NULL;) {
         Matrix region_image
           = image_crop(region->x, region->y, region->w, region->h, image);
-        sprintf(buff, "seg/region-%zu.bmp", i);
-        bitmap_save(buff, &region_image);
         line_segment_morph_hist(region_image, &region->lines);
 
         size_t j = 0;

@@ -15,7 +15,9 @@ struct connected_component {
 /*
  * Hoshen-Kopelman algorithm that labels connected components.
  */
-void cc_labeling(Matrix *image, UnionFind *u);
+void cc_labeling_4conn(Matrix *image, UnionFind *u);
+
+void cc_labeling_8conn(Matrix *image, UnionFind *u);
 
 /*
  * Gets image bouding box.

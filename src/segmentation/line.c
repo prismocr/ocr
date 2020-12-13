@@ -125,7 +125,7 @@ Vector processed_histogram_y(Matrix image) {
     Vector hist_y = image_histogram_y(image);
 
     // Threshold based on average line length
-    float length_thresh = vector_average(hist_y) * 0.2f; // TODO: tweak value
+    float length_thresh = vector_average(hist_y) * 0.1f;
     for (size_t i = 0; i < hist_y.size; i++) {
         hist_y.val[i] = hist_y.val[i] > length_thresh ? hist_y.val[i] : 0;
     }
