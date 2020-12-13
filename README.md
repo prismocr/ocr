@@ -2,11 +2,11 @@
   <br>
   <img src="https://i.imgur.com/W85GUpg.png" alt="Prism" width="200">
 </h1>
-<center>
+<p align="center">
   <img src="https://img.shields.io/github/last-commit/prismocr/ocr"/>
   <img src="https://img.shields.io/github/license/prismocr/ocr"/>
   <img src="https://img.shields.io/github/workflow/status/prismocr/ocr/Run%20tests/master">
-</center>
+</p>
 
 # Prism
 
