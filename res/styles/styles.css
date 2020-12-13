@@ -52,3 +52,10 @@ box.add_picture {
 box.result {
     margin-top: 10px;
 }
+
+.dialog {
+    background: #12171c;
+}
+.dialog label {
+    color: white;
+}

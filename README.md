@@ -2,16 +2,18 @@
   <br>
   <img src="https://i.imgur.com/W85GUpg.png" alt="Prism" width="200">
 </h1>
+<p align="center">
+  <img src="https://img.shields.io/github/last-commit/prismocr/ocr"/>
+  <img src="https://img.shields.io/github/license/prismocr/ocr"/>
+  <img src="https://img.shields.io/github/workflow/status/prismocr/ocr/Run%20tests/master">
+</p>
 
 # Prism
 
-Prism is an efficient OCR written in C.
+Prism is an efficient OCR written in C.  
+Convert scanned documents and images into editable text files.
 
-### Built With
-
-* [GNU Make](https://www.gnu.org/software/make/)
-
-## Getting Started
+## Get started
 
 ### Prerequisites
 
@@ -85,7 +87,7 @@ git add ${STAGED_FILES}
 
 ## Authors
 
-[Naexys](https://github.com/Naexys)\
+[Flowtter](https://github.com/Flowtter)\
 [aureleoules](https://github.com/aureleoules)\
 [TrAyZeN](https://github.com/TrAyZeN)\
 [Obeeron](https://github.com/Obeeron)

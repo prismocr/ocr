@@ -51,18 +51,22 @@ void post_process_words(const char *path, Page *page) {
                 Word *actual_word = actual_line->words;
                 while (actual_word) {
                     if (actual_word->length > 3) {
-                        actual_word->candidates
-                          = (char *) calloc(256, sizeof(char));
+                        actual_word->candidates = calloc(256, sizeof(char));
                         find_closest_word(&dict, actual_word->letters,
                                           actual_word->candidates,
                                           actual_word->length);
-                        // printf("%s has a len of %zu with strlen and a len of
-                        // %zu in the struct\n", actual_word->letters,
-                        // strlen(actual_word->letters), actual_word->length);
+
                         char dest[actual_word->length + 1];
-                        strncpy(dest, actual_word->letters,
-                                actual_word->length);
-                        dest[actual_word->length] = '\0';
+                        if (actual_word->letters[actual_word->length - 1]
+                            == '.') {
+                            strncpy(dest, actual_word->letters,
+                                    actual_word->length);
+                            dest[actual_word->length - 1] = '\0';
+                        } else {
+                            strncpy(dest, actual_word->letters,
+                                    actual_word->length);
+                            dest[actual_word->length] = '\0';
+                        }
                         if (!strcmp(actual_word->candidates, dest)) {
                             free(actual_word->candidates);
                             actual_word->candidates = NULL;
@@ -84,6 +88,9 @@ void post_process_words(const char *path, Page *page) {
 void find_closest_word(Dict *dict, char *word, char *result, size_t len) {
     if (!len)
         len = strlen(word);
+
+    if (word[len - 1] == '.')
+        --len;
 
     char *w = calloc(100, sizeof(char));
     size_t min = 999;
