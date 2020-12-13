@@ -5,7 +5,8 @@
 
 # Prism
 
-Prism is an efficient OCR written in C.
+Prism is an efficient OCR written in C.  
+Convert scanned documents and images into editable text files.
 
 ### Built With
 
