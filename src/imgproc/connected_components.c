@@ -58,6 +58,6 @@ void cc_bounding_box(Matrix image, float c, size_t *x, size_t *y, size_t *w,
 
     *x = left;
     *y = top;
-    *w = right - left;
-    *h = bot - top;
+    *w = right - left + 1;
+    *h = bot - top + 1;
 }
