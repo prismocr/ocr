@@ -3,15 +3,23 @@
 #include "utils/error.h"
 #include "utils/bitmap.h"
 #include "imgproc/rotation.h"
+#include "recognition/recognition.h"
+#include "neuralnet/network.h"
+#include "utils/file.h"
+
+#define UNUSED(x) (void) (x)
+
+GtkWidget *window;
 
 GtkWidget *input;
 GtkWidget *picture_btn;
 GtkWidget *files_box;
 GtkWidget *result_template;
 
+Network net;
+
 int start_gui(int argc, char *argv[]) {
     GtkBuilder *builder;
-    GtkWidget *window;
 
     gtk_init(&argc, &argv);
     builder = gtk_builder_new();
@@ -51,11 +59,53 @@ int start_gui(int argc, char *argv[]) {
                                               GTK_STYLE_PROVIDER(cssProvider),
                                               GTK_STYLE_PROVIDER_PRIORITY_USER);
 
+    // Load network
+    network_load("./res/networks/main.hex", &net);
+
     // Run GUI
     gtk_widget_show(window);
     gtk_main();
 
+    while (gtk_events_pending())
+        gtk_main_iteration();
+
     return 0;
+}
+
+void copy_data(GtkButton *button, gpointer data) {
+    UNUSED(button);
+    char *content = (char *) data;
+    GtkClipboard *clip = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+    gtk_clipboard_set_text(clip, content, strlen(content));
+    printf("content to copy: %s\n", content);
+}
+
+void process_file(GtkButton *button, gpointer data) {
+    UNUSED(button);
+    char *path = (char *) data;
+
+    ocr(&net, path);
+
+    char *content = file_read("./outmc.txt");
+    printf("content : \n%s\n", content);
+
+    const char format[]
+      = "\n<span size=\"large\">Here are the results:</span>\n\n%s";
+    GtkWidget *dialog = gtk_message_dialog_new_with_markup(
+      GTK_WINDOW(window), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER,
+      GTK_BUTTONS_CLOSE, format, content);
+    GtkStyleContext *dialog_ctx = gtk_widget_get_style_context(dialog);
+
+    gtk_style_context_add_class(dialog_ctx, "dialog");
+    GtkWidget *copy_btn = gtk_dialog_add_button(GTK_DIALOG(dialog), "Copy", -1);
+    g_signal_connect(copy_btn, "clicked", G_CALLBACK(copy_data),
+                     (gpointer) content);
+
+    gtk_window_set_title(GTK_WINDOW(dialog), "Results");
+
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    free(content);
 }
 
 void add_file_entry(const gchar *path) {
@@ -79,6 +129,9 @@ void add_file_entry(const gchar *path) {
     gtk_container_add(GTK_CONTAINER(result), label);
     gtk_container_add(GTK_CONTAINER(result), button);
     gtk_container_add(GTK_CONTAINER(files_box), result);
+
+    g_signal_connect(button, "clicked", G_CALLBACK(process_file),
+                     (gpointer) path);
 
     gtk_widget_show(label);
     gtk_widget_show(button);
