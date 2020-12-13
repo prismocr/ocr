@@ -72,6 +72,14 @@ int start_gui(int argc, char *argv[]) {
     return 0;
 }
 
+void copy_data(GtkButton *button, gpointer data) {
+    UNUSED(button);
+    char *content = (char *) data;
+    GtkClipboard *clip = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+    gtk_clipboard_set_text(clip, content, strlen(content));
+    printf("content to copy: %s\n", content);
+}
+
 void process_file(GtkButton *button, gpointer data) {
     UNUSED(button);
     char *path = (char *) data;
@@ -89,6 +97,10 @@ void process_file(GtkButton *button, gpointer data) {
     GtkStyleContext *dialog_ctx = gtk_widget_get_style_context(dialog);
 
     gtk_style_context_add_class(dialog_ctx, "dialog");
+    GtkWidget *copy_btn = gtk_dialog_add_button(GTK_DIALOG(dialog), "Copy", -1);
+    g_signal_connect(copy_btn, "clicked", G_CALLBACK(copy_data),
+                     (gpointer) content);
+
     gtk_window_set_title(GTK_WINDOW(dialog), "Results");
 
     gtk_dialog_run(GTK_DIALOG(dialog));
