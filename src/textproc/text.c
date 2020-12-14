@@ -57,9 +57,9 @@ void post_process_words(const char *path, Page *page) {
                                           actual_word->length);
 
                         char dest[actual_word->length + 1];
-                        if (actual_word->letters[actual_word->length - 1]
-                            == '.' || actual_word->letters[actual_word->length - 1]
-                            == ',') {
+                        if (actual_word->letters[actual_word->length - 1] == '.'
+                            || actual_word->letters[actual_word->length - 1]
+                                 == ',') {
                             strncpy(dest, actual_word->letters,
                                     actual_word->length);
                             dest[actual_word->length - 1] = '\0';
