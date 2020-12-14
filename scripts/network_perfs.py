@@ -17,8 +17,12 @@ def main():
     plt.title(f"epoch:{epochs} batch_size:{batch_size} eta:{eta} lambda:{lmbda}")
 
     xPos = range(1, len(data)+1)
-    plt.plot(xPos, training_accuracy, label = 'training_accuracy')
-    plt.plot(xPos, evaluation_accuracy, label = 'evaluation_accuracy')
+    plt.plot(xPos, training_accuracy, label = 'training accuracy')
+    plt.plot(xPos, evaluation_accuracy, label = 'evaluation accuracy')
+
+    for var in (training_accuracy, evaluation_accuracy):
+    	plt.annotate('%0.2f' % max(var), xy=(1, max(var)),
+    		xytext=(8, 0), xycoords=('axes fraction', 'data'), textcoords='offset points')
 
     plt.xlabel('epochs')
     plt.ylabel('accuracy %')
