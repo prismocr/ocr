@@ -57,11 +57,28 @@ void post_process_words(const char *path, Page *page) {
                                           actual_word->length);
 
                         char dest[actual_word->length + 1];
-                        if (actual_word->letters[actual_word->length - 1]
-                            == '.') {
+                        if (actual_word->letters[actual_word->length - 1] == '.'
+                            || actual_word->letters[actual_word->length - 1]
+                                 == ',') {
                             strncpy(dest, actual_word->letters,
                                     actual_word->length);
                             dest[actual_word->length - 1] = '\0';
+                            if (actual_word->letters[actual_word->length - 1]
+                                  == '.'
+                                && actual_word->next
+                                && actual_word->next->length > 0) {
+                                size_t index_c = 0;
+                                size_t index_c_max = actual_word->next->length;
+                                while (index_c < index_c_max) {
+                                    char c
+                                      = actual_word->next->letters[index_c];
+                                    if (c >= 97 && c <= 122) {
+                                        actual_word->next->letters[index_c]
+                                          = c - 0x20;
+                                        break;
+                                    }
+                                }
+                            }
                         } else {
                             strncpy(dest, actual_word->letters,
                                     actual_word->length);
@@ -89,7 +106,7 @@ void find_closest_word(Dict *dict, char *word, char *result, size_t len) {
     if (!len)
         len = strlen(word);
 
-    if (word[len - 1] == '.')
+    if (word[len - 1] == '.' || word[len - 1] == ',')
         --len;
 
     char *w = calloc(100, sizeof(char));
