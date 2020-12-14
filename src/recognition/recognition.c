@@ -56,10 +56,14 @@ void recognize(Page *page, Network *network) {
     }
 }
 
-void preprocessing(Matrix *image) {
-    sharpen(image);
-    image_contrast(image, 20.f);
-    image_auto_rotate(image, 0.01f);
+Matrix preprocessing(Matrix *image) {
+    Matrix trimmed = trim(image);
+
+    image_auto_rotate(&trimmed, 0.01f);
+    sharpen(&trimmed);
+    image_contrast(&trimmed, 20.f);
+
+    return trimmed;
 }
 
 void ocr(Network *network, char *image_path) {
@@ -69,10 +73,10 @@ void ocr(Network *network, char *image_path) {
 
     // Pre-process
     printf("Preprocessing...\n");
-    preprocessing(&image);
+    Matrix trimmed = preprocessing(&image);
     // Segmentation
     printf("Segmentation...\n");
-    segment(image, &page);
+    segment(trimmed, &page);
     // Recognition
     printf("Recognizing...\n");
     recognize(page, network);
@@ -87,5 +91,6 @@ void ocr(Network *network, char *image_path) {
     output_save_multi_column(page, "outmc.txt");
 
     matrix_free(&image);
+    matrix_free(&trimmed);
     page_free(&page);
 }
