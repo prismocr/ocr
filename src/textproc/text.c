@@ -63,6 +63,22 @@ void post_process_words(const char *path, Page *page) {
                             strncpy(dest, actual_word->letters,
                                     actual_word->length);
                             dest[actual_word->length - 1] = '\0';
+                            if (actual_word->letters[actual_word->length - 1]
+                                  == '.'
+                                && actual_word->next
+                                && actual_word->next->length > 0) {
+                                size_t index_c = 0;
+                                size_t index_c_max = actual_word->next->length;
+                                while (index_c < index_c_max) {
+                                    char c
+                                      = actual_word->next->letters[index_c];
+                                    if (c >= 97 && c <= 122) {
+                                        actual_word->next->letters[index_c]
+                                          = c - 0x20;
+                                        break;
+                                    }
+                                }
+                            }
                         } else {
                             strncpy(dest, actual_word->letters,
                                     actual_word->length);
