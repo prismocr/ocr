@@ -124,7 +124,7 @@ int character_segment_cc(Matrix word, MatrixLinkedList *characters) {
     avg_height /= num_cc > 0 ? num_cc : 1;
 
     // ccs below this thresh are considered as dots
-    float height_thresh = avg_height * 0.25f;
+    float height_thresh = avg_height * 0.3f + 1;
     float y_thresh = word.h * 0.5f;
     num_cc = merge_dots(height_thresh, y_thresh, ccs, num_cc);
 
@@ -211,7 +211,10 @@ int character_segment_cc(Matrix word, MatrixLinkedList *characters) {
 static int merge_dots(float height_thresh, float y_thresh,
                       ConnectedComponent *ccs, int num_cc) {
     for (int i = 0; i < num_cc; i++) {
-        if (ccs[i].h <= height_thresh && ccs[i].y < y_thresh) {
+        // printf("%zu %f %zu %f\n", ccs[i].h, height_thresh, ccs[i].y,
+        // y_thresh);
+        if (ccs[i].h <= height_thresh && ccs[i].y < y_thresh
+            && ccs[i].h < 1.2f * ccs[i].w) {
             int dist_prev_cc
               = i > 0 ? ccs[i].x - (ccs[i - 1].x + ccs[i - 1].w) : 0;
             int dist_next_cc
