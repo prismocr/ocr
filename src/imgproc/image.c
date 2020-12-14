@@ -454,30 +454,41 @@ float max_color(Matrix *image) {
 
 void image_normalize_brightness(Matrix *image) {
     float m = max_color(image);
-    matrix_scale(image, 0.99f * m / 255);
-    matrix_add_const(image, 0.01f);
-    /*for (size_t x = 0; x < image->w; x++) {
+    // matrix_scale(image, 0.99f * m / 255);
+    // matrix_add_const(image, 0.01f);
+    for (size_t x = 0; x < image->w; x++) {
         for (size_t y = 0; y < image->h; y++) {
             image->val[y][x] *= (255.f / m);
         }
-    }*/
+    }
 }
 
 Matrix pre_process_char(Matrix *image) {
     // Matrix cpy;
     // matrix_copy(*image, &cpy);
     // return cpy;
-    // image_threshold_otsu(&image);
-    Matrix img = trim(image);
-    Matrix s = scale_square(&img, 28);
 
-    image_levels(&s, 10);
-    image_invert_color(255.f, &s);
-    image_normalize_brightness(&s);
+    image_levels(image, 10);
+    image_invert_color(255.f, image);
+    image_normalize_brightness(image);
+    image_invert_color(255.f, image);
 
-    matrix_free(&img);
+    for (size_t x = 0; x < image->w; x++) {
+        for (size_t y = 0; y < image->h; y++) {
+            if (image->val[y][x] >= 200.f)
+                image->val[y][x] = 255.f;
+            else if (image->val[y][x] <= 80)
+                image->val[y][x] = 0;
+        }
+    }
 
-    return s;
+    Matrix s = trim(image);
+    Matrix final = scale_square(&s, 28);
+    image_invert_color(255.f, &final);
+
+    matrix_free(&s);
+
+    return final;
 }
 
 void image_levels(Matrix *mat, size_t n) {

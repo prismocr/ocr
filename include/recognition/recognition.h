@@ -5,7 +5,7 @@
 #include "segmentation/segmentation.h"
 #include "textproc/dict.h"
 
-void preprocessing(Matrix *image);
+Matrix preprocessing(Matrix *image);
 void recognize(Page *page, Network *network);
 void ocr(Network *network, char *image_path);
 char network_get_result(Network *network, Matrix *image);

@@ -41,6 +41,7 @@ Charles Trodet
     <property name="can_focus">False</property>
     <property name="default_width">1000</property>
     <property name="default_height">600</property>
+    <signal name="destroy" handler="on_window_main_destroy" swapped="no"/>
     <child type="titlebar">
       <placeholder/>
     </child>
@@ -113,6 +114,40 @@ Charles Trodet
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">5</property>
+                <property name="label" translatable="yes">Process type</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_top">3</property>
+                <property name="active">0</property>
+                <property name="active_id">0</property>
+                <items>
+                  <item id="0" translatable="yes">Default</item>
+                  <item id="1" translatable="yes">Multi-column</item>
+                  <item id="2" translatable="yes">Post-process</item>
+                </items>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
               </packing>
             </child>
             <style>
