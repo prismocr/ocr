@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
+#include <errno.h>
 #include "segmentation/segmentation.h"
 #include "imgproc/image.h"
 #include "imgproc/morphology.h"
@@ -7,6 +9,7 @@
 #include "utils/matrix.h"
 #include "utils/vector.h"
 #include "utils/utils.h"
+#include "utils/error.h"
 
 // TODO: Remove
 #include <stdio.h>
@@ -129,7 +132,22 @@ int character_segment_cc(Matrix word, MatrixLinkedList *characters) {
     for (int i = 0; i < num_cc; i++) {
         if (ccs[i].w >= ccs[i].h * wh_factor_thresh) {
             // TODO: Check not more than max cc + realloc if needed
-            if (num_cc < max_cc) {
+            if (num_cc == max_cc) {
+                max_cc += 10;
+                ConnectedComponent *new = (ConnectedComponent *) realloc(
+                  ccs, max_cc * sizeof(ConnectedComponent));
+                if (new == NULL) {
+                    set_last_errorf(
+                      "Failed to reallocate for connected component memory: %s",
+                      strerror(errno));
+                    free(ccs);
+                    return 1;
+                } else {
+                    ccs = new;
+                }
+            }
+
+            if (num_cc < max_cc - 1) {
                 for (int j = num_cc + 1; j > i; j--) {
                     ccs[j] = ccs[j - 1];
                 }
@@ -148,6 +166,10 @@ int character_segment_cc(Matrix word, MatrixLinkedList *characters) {
     }
 
     for (int i = 0; i < num_cc; i++) {
+        if (ccs[i].w < avg_width * 0.2f && ccs[i].h < avg_height * 0.2f) {
+            continue;
+        }
+
         size_t x = 0;
         if (i > 0 && ccs[i - 1].x + ccs[i - 1].w + 1 < word.w) {
             x = min2(ccs[i - 1].x + ccs[i - 1].w + 1, ccs[i].x);
