@@ -75,8 +75,10 @@ int line_segment_morph_hist(Matrix region, Line **lines) {
                 }
 
                 Line *current_line = NULL;
-                size_t y = prev_top;
-                size_t h = i == hist.size ? i - 1 - y : i - y;
+                // size_t y = prev_top;
+                // size_t h = i == hist.size ? i - 1 - y : i - y;
+                size_t y = (top + prev_top) / 2;
+                size_t h = (bot + i) / 2 - y - 2;
                 if (line_new(0, y, region.w, h, &current_line)) {
                     return 1;
                 }
@@ -124,11 +126,14 @@ static void feature_extract_morph_based(Matrix *image) {
 Vector processed_histogram_y(Matrix image) {
     Vector hist_y = image_histogram_y(image);
 
+    // Commenting that yields better result for non overlapping lines
+    /*
     // Threshold based on average line length
     float length_thresh = vector_average(hist_y) * 0.1f;
     for (size_t i = 0; i < hist_y.size; i++) {
         hist_y.val[i] = hist_y.val[i] > length_thresh ? hist_y.val[i] : 0;
     }
+    */
 
     // Threshold based on line height
     float height_thresh = average_height(hist_y) * 0.2f; // TODO: tweak value

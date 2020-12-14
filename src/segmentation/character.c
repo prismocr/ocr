@@ -78,7 +78,7 @@ int character_segment_cc(Matrix word, MatrixLinkedList *characters) {
     ConnectedComponent *ccs
       = (ConnectedComponent *) calloc(u.num_nodes, sizeof(ConnectedComponent));
     int num_cc = 0;
-    int max_cc = u.num_nodes;
+    // int max_cc = u.num_nodes;
 
     // Insertion sort connected components left to right
     for (int i = 0; i < u.num_nodes; i++) {
@@ -128,6 +128,7 @@ int character_segment_cc(Matrix word, MatrixLinkedList *characters) {
     float y_thresh = word.h * 0.5f;
     num_cc = merge_dots(height_thresh, y_thresh, ccs, num_cc);
 
+    /*
     float wh_factor_thresh = 1.6f;
     for (int i = 0; i < num_cc; i++) {
         if (ccs[i].w >= ccs[i].h * wh_factor_thresh) {
@@ -164,6 +165,7 @@ int character_segment_cc(Matrix word, MatrixLinkedList *characters) {
             }
         }
     }
+    */
 
     for (int i = 0; i < num_cc; i++) {
         if (ccs[i].w < avg_width * 0.2f && ccs[i].h < avg_height * 0.2f) {
@@ -211,8 +213,6 @@ int character_segment_cc(Matrix word, MatrixLinkedList *characters) {
 static int merge_dots(float height_thresh, float y_thresh,
                       ConnectedComponent *ccs, int num_cc) {
     for (int i = 0; i < num_cc; i++) {
-        // printf("%zu %f %zu %f\n", ccs[i].h, height_thresh, ccs[i].y,
-        // y_thresh);
         if (ccs[i].h <= height_thresh && ccs[i].y < y_thresh
             && ccs[i].h < 1.2f * ccs[i].w) {
             int dist_prev_cc
