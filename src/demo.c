@@ -323,8 +323,7 @@ int auto_rotate(int argc, char *argv[]) {
     }
 
     exit_on_error(bitmap_load(argv[2], &image));
-    image_auto_rotate(&image, 0.005f);
-    image_auto_rotate(&image, 0.005f);
+    image_auto_rotate(&image, 0.01f);
     exit_on_error(bitmap_save("out.bmp", &image));
 
     matrix_free(&image);

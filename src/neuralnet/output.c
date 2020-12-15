@@ -205,7 +205,7 @@ int output_save_multi_column(Page *page, const char *path) {
     while (actual_page) {
         // Loop through x and y
         // We start with an offset to make sure to encounter each lines;
-        y = average_size_char / 2;
+        y = average_size_char / 3;
         // printf("\nPAGES SIZES %zu %zu\n", actual_page->h, actual_page->w);
         while (y < actual_page->h) {
             // printf("%zu %zu %zu\n", actual_page->w, average_size_char,
@@ -258,11 +258,13 @@ int output_save_multi_column(Page *page, const char *path) {
                             // actual_region->x, actual_line->y +
                             // actual_region->y, actual_line->h,
                             // actual_line->w);
-                            size_t test_coordinates_region = verify_coordinates(
+                            size_t test_coordinates_line = verify_coordinates(
                               x, y, actual_line->x + actual_region->x,
                               actual_line->y + actual_region->y, actual_line->h,
                               actual_line->w);
-                            if (test_coordinates_region) {
+                            if (test_coordinates_line
+                                && actual_line->tagged == 0) {
+                                actual_line->tagged = 1;
                                 // printf("\033[1;32mYOU'RE INSIDE A
                                 // LINE\n\033[0m");
                                 // STEP 5 : add this to the current string to

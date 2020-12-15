@@ -15,6 +15,7 @@ GtkWidget *input;
 GtkWidget *picture_btn;
 GtkWidget *files_box;
 GtkWidget *result_template;
+GtkWidget *process_method;
 
 Network net;
 
@@ -44,6 +45,7 @@ int start_gui(int argc, char *argv[]) {
     picture_btn = GTK_WIDGET(gtk_builder_get_object(builder, "picture_btn"));
     files_box = GTK_WIDGET(gtk_builder_get_object(builder, "files_box"));
     result_template = GTK_WIDGET(gtk_builder_get_object(builder, "Result"));
+    process_method = GTK_WIDGET(gtk_builder_get_object(builder, "method"));
 
     // Unref builder
     g_object_unref(builder);
@@ -86,7 +88,17 @@ void process_file(GtkButton *button, gpointer data) {
 
     ocr(&net, path);
 
-    char *content = file_read("./outmc.txt");
+    gint method = gtk_combo_box_get_active(GTK_COMBO_BOX(process_method));
+    char *content = "";
+
+    if (method == 0) {
+        content = file_read("./post.txt");
+    } else if (method == 1) {
+        content = file_read("./outmc.txt");
+    } else if (method == 2) {
+        content = file_read("./corrector.txt");
+    }
+
     printf("content : \n%s\n", content);
 
     const char format[]
