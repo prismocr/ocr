@@ -57,9 +57,10 @@ void recognize(Page *page, Network *network) {
 }
 
 Matrix preprocessing(Matrix *image) {
+    image_auto_rotate(image, 0.01f);
+
     Matrix trimmed = trim(image);
 
-    image_auto_rotate(&trimmed, 0.01f);
     sharpen(&trimmed);
     image_contrast(&trimmed, 20.f);
 
