@@ -52,17 +52,19 @@ make
 ./build/release/ocr [options]
 ```
 Possible options :
+* gui
+* ocr [network_path] [image_path]
 * sharpen [image_path]
 * blur [image_path]
 * rotate [image_path] [angle]
+* skew_detect [image_path]
+* auto_rotate [image_path]
 * edge_detect [image_path]
 * contrast [image_path] [delta]
 * invert [image_path]
 * network [xor/add]
 * segmentation [image_path]
 * network_load
-* skew_detect [image_path]
-* auto_rotate [image_path]
 
 ## Tests
 
