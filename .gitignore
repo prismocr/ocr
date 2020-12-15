@@ -6,13 +6,14 @@ build
 *.txt
 Unity/
 *.bmp
+*.hex
 !res/**/*.bmp
+!res/networks/main.hex
 !test/assets/**/*.bmp
 !test/assets/*.txt
 !res/**/*.txt
 .vscode
 *.csv
-*.hex
 tags
 .vscode
 res/layout/*.glade~
