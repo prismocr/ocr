@@ -99,6 +99,9 @@ void process_file(GtkButton *button, gpointer data) {
         content = file_read("./corrector.txt");
     }
 
+    if (!content)
+        return;
+
     printf("content : \n%s\n", content);
 
     const char format[]
