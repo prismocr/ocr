@@ -64,7 +64,7 @@ Possible options :
 * invert [image_path]
 * network [xor/add]
 * segmentation [image_path]
-* network_load
+* network_load [network_path]
 
 ## Tests
 
