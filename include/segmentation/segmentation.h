@@ -24,6 +24,8 @@ struct line {
     size_t x, y; // coors in the region
     size_t w, h;
 
+    size_t tagged;
+
     Word *words;
     Line *next; // next line in the region
 };
