@@ -15,6 +15,9 @@ Convert scanned documents and images into editable text files.
 
 ## Get started
 
+![GUI](https://github.com/prismocr/ocr/blob/master/res/images/gui.png?raw=true)
+
+
 ### Prerequisites
 
 * [GNU Make](https://www.gnu.org/software/make/)
