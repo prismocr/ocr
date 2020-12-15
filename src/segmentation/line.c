@@ -22,8 +22,8 @@ int line_new(size_t x, size_t y, size_t w, size_t h, Line **line) {
         return 1;
     }
 
-    **line
-      = (Line){.x = x, .y = y, .w = w, .h = h, .words = NULL, .next = NULL, .tagged = 0};
+    **line = (Line){
+      .x = x, .y = y, .w = w, .h = h, .words = NULL, .next = NULL, .tagged = 0};
 
     return 0;
 }

@@ -262,7 +262,8 @@ int output_save_multi_column(Page *page, const char *path) {
                               x, y, actual_line->x + actual_region->x,
                               actual_line->y + actual_region->y, actual_line->h,
                               actual_line->w);
-                            if (test_coordinates_line && actual_line->tagged == 0) {
+                            if (test_coordinates_line
+                                && actual_line->tagged == 0) {
                                 actual_line->tagged = 1;
                                 // printf("\033[1;32mYOU'RE INSIDE A
                                 // LINE\n\033[0m");
