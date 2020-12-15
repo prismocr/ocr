@@ -89,7 +89,7 @@ void process_file(GtkButton *button, gpointer data) {
     ocr(&net, path);
 
     gint method = gtk_combo_box_get_active(GTK_COMBO_BOX(process_method));
-    char *content;
+    char *content = "";
 
     if (method == 0) {
         content = file_read("./post.txt");
@@ -98,9 +98,6 @@ void process_file(GtkButton *button, gpointer data) {
     } else if (method == 2) {
         content = file_read("./corrector.txt");
     }
-
-    if (!content)
-        return;
 
     printf("content : \n%s\n", content);
 
