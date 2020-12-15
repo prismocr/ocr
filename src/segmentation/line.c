@@ -23,7 +23,7 @@ int line_new(size_t x, size_t y, size_t w, size_t h, Line **line) {
     }
 
     **line
-      = (Line){.x = x, .y = y, .w = w, .h = h, .words = NULL, .next = NULL};
+      = (Line){.x = x, .y = y, .w = w, .h = h, .words = NULL, .next = NULL, .tagged = 0};
 
     return 0;
 }
