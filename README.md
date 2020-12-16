@@ -13,10 +13,9 @@
 Prism is an efficient OCR written in C.  
 Convert scanned documents and images into editable text files.
 
-## Get started
-
 ![GUI](https://github.com/prismocr/ocr/blob/master/res/images/gui.png?raw=true)
 
+## Get started
 
 ### Prerequisites
 
