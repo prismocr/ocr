@@ -11,7 +11,7 @@
 # Prism
 
 Prism is an efficient OCR written in C.  
-Convert scanned documents and images into editable text files.
+> Convert scanned documents and images into editable text files.
 
 ## Get started
 
@@ -66,28 +66,39 @@ Possible options :
 * segmentation [image_path]
 * network_load
 
-## Tests
+## Development
+### Tests
 
-To run tests, first you have to clone Unity at the root of the repository:
+You have to have Unity at the root of the repository:
 ```
 git clone https://github.com/ThrowTheSwitch/Unity.git
 ```
 
-Then to run test:
+And then:
 ```
 make test
 ```
 
-## Development
 ### Auto-format before commit
 Add the following code to `.git/hooks/pre-commit` (create the file if not
-already existing) and make it executable `chmod +x .git/hooks/pre-commit`.
+already existing).
 ```bash
 #!/bin/sh
 
 STAGED_FILES=$(git diff --name-only --cached)
 make format
 git add ${STAGED_FILES}
+```
+And make it executable `chmod +x .git/hooks/pre-commit`
+
+### Valgrind script
+To compile and run the project there is a script available at `./scripts/valgrind.sh`
+```
+./scripts/valgrind.sh [target] [program arguments]
+```
+For example to run the xor demo in debug:
+```
+./scripts/valgrind.sh debug network xor
 ```
 
 ## Authors
